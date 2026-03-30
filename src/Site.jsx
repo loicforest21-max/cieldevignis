@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   STATS, RACES, RACE_PREVIEWS, CLASS_PREVIEWS,
   WIKI_ITEMS, WIKI_MOBS, WIKI_RECIPES, ITEM_CATS, QUALITY_COLORS, MOB_CATS, SALVAGE_CATS,
+  DUNGEONS, DUNGEON_TIERS,
 } from './data.js';
 import { G } from './styles.jsx';
 import { BuildCreator } from './BuildCreator.jsx';
@@ -94,6 +95,7 @@ function Navbar({ page, setPage }) {
   const links = [
     { id: "home", label: "Accueil", icon: "🏠" },
     { id: "builds", label: "Build Creator", icon: "⚔️" },
+    { id: "dungeons", label: "Donjons", icon: "🏰" },
     { id: "wiki", label: "Wiki", icon: "📖" },
     { id: "map", label: "Carte", icon: "🗺️" },
     { id: "discord", label: "Discord", icon: "💬" },
@@ -327,7 +329,7 @@ function HomePage({ setPage }) {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
           <FeatureCard icon="⚔️" title="Build Creator" desc="Crée et simule tes builds avec un calcul précis de toutes tes stats. Race, classes, SP, augments — tout y est." color={G.teal} delay={0.1} onClick={() => setPage("builds")} />
-          <FeatureCard icon="🏰" title="Donjons & Monstres" desc="Explore le wiki pour découvrir les créatures, leurs drops, et les stratégies pour chaque donjon." color={G.accent2} delay={0.2} onClick={() => setPage("wiki")} />
+          <FeatureCard icon="🏰" title="Donjons & Monstres" desc="Explore les donjons du serveur — niveaux, boss, scaling et loot pour chaque instance." color={G.accent2} delay={0.2} onClick={() => setPage("dungeons")} />
           <FeatureCard icon="🗡️" title="Armes & Armures" desc="Toutes les armes et armures du serveur avec leurs stats, bonus, et compatibilité de classe." color={G.orange} delay={0.3} onClick={() => setPage("wiki")} />
           <FeatureCard icon="📊" title="Partage & Compare" desc="Sauvegarde tes builds, partage-les avec ta guilde, et compare les stats entre différentes configurations." color={G.purple} delay={0.4} />
         </div>
@@ -420,7 +422,7 @@ function HomePage({ setPage }) {
             <div>
               <div style={{ fontSize: 12, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Outils</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {[{label:"Build Creator",icon:"⚔️",id:"builds"},{label:"Wiki",icon:"📖",id:"wiki"}].map(l=>(
+                {[{label:"Build Creator",icon:"⚔️",id:"builds"},{label:"Donjons",icon:"🏰",id:"dungeons"},{label:"Wiki",icon:"📖",id:"wiki"}].map(l=>(
                   <span key={l.id} onClick={()=>setPage(l.id)} className="footer-link" style={{ fontSize: "var(--text-sm)", color: G.muted, display: "flex", alignItems: "center", gap: 6 }}
                   >{l.icon} {l.label}</span>
                 ))}
@@ -430,7 +432,7 @@ function HomePage({ setPage }) {
             <div>
               <div style={{ fontSize: 12, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Contenu</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {[{v:"12",l:"Races",c:G.accent2},{v:"14",l:"Classes",c:G.teal},{v:"55",l:"Augments",c:G.purple},{v:"72",l:"Évolutions",c:G.blue}].map(s=>(
+                {[{v:"12",l:"Races",c:G.accent2},{v:"14",l:"Classes",c:G.teal},{v:"59",l:"Augments",c:G.purple},{v:"72",l:"Évolutions",c:G.blue},{v:"9",l:"Donjons",c:G.orange}].map(s=>(
                   <div key={s.l} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: G.muted }}>
                     <span style={{ fontSize: 14, fontWeight: 800, color: s.c, minWidth: 24 }}>{s.v}</span>{s.l}
                   </div>
@@ -452,7 +454,7 @@ function HomePage({ setPage }) {
           </div>
           {/* Bottom bar */}
           <div style={{ borderTop: `1px solid ${G.teal}10`, paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-            <div style={{ fontSize: 12, color: "#3a5068" }}>© 2025 CielDeVignis — EndlessLeveling v6.7</div>
+            <div style={{ fontSize: 12, color: "#3a5068" }}>© 2025 CielDeVignis — EndlessLeveling v7.0.6</div>
             <div style={{ fontSize: 11, color: "#3a5068" }}>Fait avec passion pour la communauté Hytale</div>
           </div>
         </div>
@@ -694,4 +696,245 @@ function MapPage() {
   );
 }
 
-export { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage };
+// ═══════════════════════════════════════════════════
+// DUNGEONS PAGE
+// ═══════════════════════════════════════════════════
+function DungeonsPage() {
+  const [expanded, setExpanded] = useState(null);
+  const [filterTier, setFilterTier] = useState("ALL");
+
+  const filtered = filterTier === "ALL" ? DUNGEONS : DUNGEONS.filter(d => d.tier === filterTier);
+  const grouped = DUNGEON_TIERS.map(t => ({
+    ...t,
+    dungeons: filtered.filter(d => d.tier === t.id),
+  })).filter(g => g.dungeons.length > 0);
+
+  const fmtAug = (id) => id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+  return (
+    <div style={{ position: "relative", zIndex: 1, padding: "100px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
+      {/* Header */}
+      <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: G.orange + "10", border: "1px solid " + G.orange + "20", fontSize: 11, fontWeight: 800, color: G.orange, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>
+        Instances PvE
+      </div>
+      <h1 style={{ fontSize: 38, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1 }}>
+        Donjons
+      </h1>
+      <p style={{ fontSize: 16, color: G.muted, margin: "0 0 24px" }}>
+        {DUNGEONS.length} donjons · 3 mods · Progression Niv. 10 → 80+
+      </p>
+
+      {/* Tier filter */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 28, flexWrap: "wrap" }}>
+        <button onClick={() => setFilterTier("ALL")} style={{
+          padding: "8px 18px", borderRadius: "var(--radius-md)", border: "2px solid " + (filterTier === "ALL" ? G.teal : G.border),
+          background: filterTier === "ALL" ? G.teal + "15" : "transparent", color: filterTier === "ALL" ? G.teal : G.muted,
+          fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "var(--fb)",
+        }}>Tous ({DUNGEONS.length})</button>
+        {DUNGEON_TIERS.map(t => {
+          const count = DUNGEONS.filter(d => d.tier === t.id).length;
+          return (
+            <button key={t.id} onClick={() => setFilterTier(t.id)} style={{
+              padding: "8px 18px", borderRadius: "var(--radius-md)", border: "2px solid " + (filterTier === t.id ? t.color : G.border),
+              background: filterTier === t.id ? t.color + "15" : "transparent", color: filterTier === t.id ? t.color : G.muted,
+              fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "var(--fb)", display: "flex", alignItems: "center", gap: 6,
+            }}>
+              <span style={{ fontSize: 15 }}>{t.icon}</span> {t.label} ({count})
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Dungeon groups by tier */}
+      {grouped.map(group => (
+        <div key={group.id} style={{ marginBottom: 36 }}>
+          {/* Tier header */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 12, marginBottom: 16,
+            paddingBottom: 10, borderBottom: "2px solid " + group.color + "25",
+          }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: "var(--radius-md)",
+              background: group.color + "15", border: "2px solid " + group.color + "30",
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20,
+            }}>{group.icon}</div>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: group.color, fontFamily: "var(--fd)", letterSpacing: 1 }}>
+                {group.label}
+              </div>
+              <div style={{ fontSize: 12, color: G.muted }}>{group.range}</div>
+            </div>
+          </div>
+
+          {/* Dungeon cards */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {group.dungeons.map(dg => {
+              const isOpen = expanded === dg.id;
+              return (
+                <div key={dg.id} onClick={() => setExpanded(isOpen ? null : dg.id)} style={{
+                  background: isOpen ? G.card : G.card + "80",
+                  border: "1px solid " + (isOpen ? dg.color + "40" : G.border),
+                  borderLeft: "4px solid " + dg.color + (isOpen ? "" : "60"),
+                  borderRadius: "var(--radius-md)", cursor: "pointer",
+                  transition: "all 0.2s ease", overflow: "hidden",
+                }}>
+                  {/* Card header */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px" }}>
+                    <span style={{ fontSize: 28, flexShrink: 0 }}>{dg.emoji}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 17, fontWeight: 800, color: isOpen ? "#fff" : G.text, fontFamily: "var(--fd)" }}>
+                          {dg.name}
+                        </span>
+                        <span style={{
+                          fontSize: 10, padding: "2px 8px", borderRadius: 4,
+                          background: dg.color + "15", color: dg.color, fontWeight: 700,
+                        }}>Niv. {dg.levels}</span>
+                        <span style={{
+                          fontSize: 10, padding: "2px 8px", borderRadius: 4,
+                          background: G.border, color: G.muted, fontWeight: 600,
+                        }}>{dg.source}</span>
+                      </div>
+                      <div style={{ fontSize: 13, color: G.muted, marginTop: 4 }}>{dg.desc}</div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                      {dg.boss && <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+                        <span style={{ fontSize: 11, color: "#e05252", fontWeight: 700 }}>👑 {dg.boss.name}</span>
+                        <span style={{ fontSize: 10, color: G.muted }}>{dg.boss.hp.toLocaleString()} PV{dg.boss.level ? " · Lv" + dg.boss.level : ""}</span>
+                      </div>}
+                      <span style={{
+                        fontSize: 14, color: G.muted,
+                        transform: isOpen ? "rotate(180deg)" : "", transition: "transform 0.2s",
+                      }}>▼</span>
+                    </div>
+                  </div>
+
+                  {/* Expanded detail */}
+                  {isOpen && (
+                    <div style={{ padding: "0 18px 18px", borderTop: "1px solid " + G.border }} onClick={e => e.stopPropagation()}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, marginTop: 16 }}>
+
+                        {/* Scaling */}
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
+                            ⚙️ Scaling des mobs
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            {[
+                              { l: "PV", v: `×${dg.scaling.hp.base} base + ${(dg.scaling.hp.perLv * 100).toFixed(1)}%/niv`, c: "#ff6b6b" },
+                              { l: "Dégâts", v: `×${dg.scaling.dmg.base} base + ${(dg.scaling.dmg.perLv * 100).toFixed(1)}%/niv`, c: "#ff9f43" },
+                              { l: "Défense", v: `${(dg.scaling.def.negMax * 100).toFixed(0)}% – ${(dg.scaling.def.posMax * 100).toFixed(0)}% (cap ${(dg.scaling.def.abovePos * 100).toFixed(0)}%)`, c: "#54a0ff" },
+                            ].map(s => (
+                              <div key={s.l} style={{
+                                display: "flex", justifyContent: "space-between", alignItems: "center",
+                                padding: "6px 10px", background: s.c + "08", borderRadius: 6, border: "1px solid " + s.c + "15",
+                              }}>
+                                <span style={{ fontSize: 12, color: s.c, fontWeight: 700 }}>{s.l}</span>
+                                <span style={{ fontSize: 12, color: G.text }}>{s.v}</span>
+                              </div>
+                            ))}
+                          </div>
+                          {dg.tiered && (
+                            <div style={{
+                              marginTop: 8, padding: "6px 10px", background: G.purple + "08",
+                              borderRadius: 6, border: "1px solid " + G.purple + "15", fontSize: 11, color: G.purple,
+                            }}>
+                              ♾️ Tiers infinis · +{dg.levelsPerTier} niv/tier · S'adapte au joueur
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Mobs */}
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: G.accent2, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
+                            🐉 Créatures ({dg.mobs.length})
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                            {dg.mobs.map((m, i) => (
+                              <div key={i} style={{
+                                display: "flex", justifyContent: "space-between", alignItems: "center",
+                                padding: "5px 10px", background: G.bg + "80", borderRadius: 6, border: "1px solid " + G.border,
+                              }}>
+                                <div>
+                                  <span style={{ fontSize: 12, fontWeight: 700, color: G.text }}>{m.name}</span>
+                                  <span style={{ fontSize: 10, color: G.muted, marginLeft: 6 }}>{m.type}</span>
+                                </div>
+                                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                  <span style={{ fontSize: 11, color: "#ff6b6b", fontWeight: 700 }}>{m.hp} PV</span>
+                                  {m.dmg && <span style={{ fontSize: 10, color: G.muted }}>{m.dmg}</span>}
+                                  {m.augments && <span style={{ fontSize: 9, color: G.purple }}>🔮 {m.augments.length}</span>}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Boss detail */}
+                        {dg.boss && (
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 800, color: "#e05252", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
+                              👑 Boss
+                            </div>
+                            <div style={{
+                              background: "#e0525208", border: "1px solid #e0525220", borderRadius: 8, padding: 12,
+                            }}>
+                              <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", fontFamily: "var(--fd)", marginBottom: 6 }}>
+                                {dg.boss.name}
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                <div style={{ fontSize: 12, color: G.text }}>
+                                  ❤️ <span style={{ fontWeight: 700, color: "#ff6b6b" }}>{dg.boss.hp.toLocaleString()} PV</span>
+                                  {dg.boss.level && <span style={{ color: G.muted }}> · Niveau fixé {dg.boss.level}</span>}
+                                </div>
+                                {dg.boss.dmg && <div style={{ fontSize: 12, color: G.text }}>⚔️ {dg.boss.dmg}</div>}
+                                {dg.boss.augments && dg.boss.augments.length > 0 && (
+                                  <div style={{ marginTop: 4 }}>
+                                    <span style={{ fontSize: 10, color: G.purple, fontWeight: 700 }}>Augments: </span>
+                                    {dg.boss.augments.map((a, i) => (
+                                      <span key={i} style={{
+                                        fontSize: 10, padding: "2px 6px", borderRadius: 4, marginLeft: 3,
+                                        background: G.purple + "15", color: G.purple, fontWeight: 600,
+                                      }}>{fmtAug(a)}</span>
+                                    ))}
+                                  </div>
+                                )}
+                                {dg.boss.scaling && (
+                                  <div style={{ marginTop: 6, padding: "4px 8px", background: "#ff6b6b08", borderRadius: 4, border: "1px solid #ff6b6b15", fontSize: 10, color: G.muted }}>
+                                    Boss scaling: PV ×{dg.boss.scaling.hp.base} +{(dg.boss.scaling.hp.perLv * 100)}%/niv · Dmg ×{dg.boss.scaling.dmg.base} +{(dg.boss.scaling.dmg.perLv * 100)}%/niv · Def cap {(dg.boss.scaling.def.abovePos * 100).toFixed(1)}%
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Loot */}
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: G.accent2, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
+                            🎁 Loot
+                          </div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                            {dg.loot.map((item, i) => (
+                              <span key={i} style={{
+                                fontSize: 11, padding: "4px 10px", borderRadius: 4,
+                                background: G.accent2 + "10", border: "1px solid " + G.accent2 + "18",
+                                color: G.accent2, fontWeight: 600,
+                              }}>{item}</span>
+                            ))}
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage, DungeonsPage };
