@@ -362,4 +362,145 @@ export {
   WEAPON_PRESETS, RECOMMENDED_BUILDS, ROLE_META,
   RACE_PREVIEWS, CLASS_PREVIEWS,
   WIKI_ITEMS, WIKI_MOBS, WIKI_RECIPES, ITEM_CATS, QUALITY_COLORS, MOB_CATS, SALVAGE_CATS,
+  DUNGEONS, DUNGEON_TIERS,
 };
+
+// ═══════════════════════════════════════════
+// DUNGEONS
+// ═══════════════════════════════════════════
+const DUNGEON_TIERS = [
+  {id:"beginner",label:"Débutant",color:"#51cf66",icon:"🌿",range:"Niv. 10-40"},
+  {id:"intermediate",label:"Intermédiaire",color:"#f5a623",icon:"⚔️",range:"Niv. 30-60"},
+  {id:"advanced",label:"Avancé",color:"#e8653a",icon:"🔥",range:"Niv. 45-75"},
+  {id:"endgame",label:"Endgame",color:"#e05252",icon:"💀",range:"Niv. 60-80+"},
+];
+
+const DUNGEONS = [
+  // === BEGINNER ===
+  {
+    id:"frozen_dungeon",tier:"beginner",name:"Frozen Dungeon",
+    desc:"Un donjon gelé peuplé de créatures du froid. Le dragon de givre vous attend au fond.",
+    source:"Endgame",levels:"10-25",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:3.0,perLv:0.1},dmg:{base:1.25,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Rat Frost",hp:80,type:"Beast"},
+      {name:"Toad Frost",hp:90,type:"Beast"},
+      {name:"Golem Crystal Frost",hp:200,type:"Elemental"},
+      {name:"Spirit Frost",hp:100,type:"Elemental"},
+      {name:"Yeti",hp:350,type:"Elite"},
+    ],
+    boss:{name:"Frost Dragon",hp:1400,level:30,dmg:"27 Phys + 10 Ice",augments:["blood_surge"],scaling:{hp:{base:2.0,perLv:0.075},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    loot:["Flocon Currency","Dragon Heart","Frost Gear"],
+    emoji:"❄️",color:"#74b9ff",
+  },
+  {
+    id:"major_d01",tier:"beginner",name:"Major Dungeon I",
+    desc:"Les ruines de SilverMoon, repaire du chevalier déchu Azaroth et de ses prétoriens squelettes.",
+    source:"MajorDungeons",levels:"20-35",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:3.0,perLv:0.075},dmg:{base:1.25,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Mimic",hp:300,type:"Undead",dmg:"60 Phys"},
+    ],
+    boss:{name:"Azaroth",hp:3000,level:40,dmg:"Épée + Bouclier",augments:["rebirth","frozen_domain"],scaling:{hp:{base:1.0,perLv:0.1},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    loot:["TreasureBag D01","Clé D02","Longsword Azaroth (10%)","Dark Coins","Devil Cards"],
+    emoji:"⚔️",color:"#f5a623",
+  },
+  {
+    id:"overgrown_ruins",tier:"beginner",name:"Overgrown Ruins",
+    desc:"Des ruines envahies par la végétation, peuplées de squelettes et gardées par un golem de cristal ancien.",
+    source:"Dexx",levels:"25-40",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:3.0,perLv:0.05},dmg:{base:1.25,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Skeleton Warrior",hp:80,type:"Undead"},
+      {name:"Skeleton Archer",hp:50,type:"Undead"},
+      {name:"Skeleton Alchemist",hp:100,type:"Undead"},
+    ],
+    boss:{name:"Crystal Golem",hp:1000,type:"Elemental"},
+    loot:["Overgrown Boss Drop"],
+    emoji:"🌿",color:"#51cf66",
+  },
+  // === INTERMEDIATE ===
+  {
+    id:"swamp_dungeon",tier:"intermediate",name:"Swamp Dungeon",
+    desc:"Un marécage maudit où rôdent des créatures toxiques. Hedera, la gardienne végétale, domine les lieux.",
+    source:"Endgame",levels:"30-45",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:3.0,perLv:0.075},dmg:{base:1.25,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Bramble Elite",hp:250,type:"Beast"},
+      {name:"Grooble",hp:100,type:"Beast"},
+      {name:"Fen Stalker",hp:200,type:"Mythic"},
+      {name:"Swamp Crocodile",hp:400,type:"Elite"},
+    ],
+    boss:{name:"Hedera",hp:1800,level:50,dmg:"Racines + AoE",augments:["rebirth"],scaling:{hp:{base:2.0,perLv:0.075},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    loot:["Swamp Currency","Hedera Gem","Swamp Ingot","Hedera Bramble"],
+    emoji:"🐊",color:"#2ed573",
+  },
+  {
+    id:"major_d02",tier:"intermediate",name:"Major Dungeon II",
+    desc:"La crypte de Katherina la fauchause, gardée par un Dark Titan colossal. Danger mortel.",
+    source:"MajorDungeons",levels:"40-55",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:3.0,perLv:0.075},dmg:{base:1.25,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Dark Titan",hp:1300,level:60,type:"Construct",scaling:{hp:{base:1.0,perLv:0.075},dmg:{base:1.0,perLv:0.05},def:{negMax:0.375,posMax:0.9,belowNeg:0,abovePos:0.95}}},
+    ],
+    boss:{name:"Katherina",hp:3800,level:60,dmg:"80 Phys (Faux)",augments:["bloodthirster","vampirism"],scaling:{hp:{base:1.0,perLv:0.1},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    loot:["TreasureBag D02","Clé D03","Dark Coins","Devil Cards","Scythe Katherina"],
+    emoji:"💀",color:"#845ef7",
+  },
+  // === ADVANCED ===
+  {
+    id:"forbidden_labyrinth",tier:"advanced",name:"Forbidden Labyrinth",
+    desc:"Un labyrinthe interdit hanté par des molosses spectraux et des chevaliers maudits. Le Hound Boss rôde dans les profondeurs.",
+    source:"Dexx",levels:"45-60",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:3.0,perLv:0.05},dmg:{base:1.35,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Forbidden Hound",hp:126,type:"Undead",dmg:"20 Phys"},
+      {name:"Forbidden Knight",hp:120,type:"Undead"},
+    ],
+    boss:{name:"Forbidden Hound Boss",hp:1500,type:"Undead"},
+    loot:["Forbidden Hound Drop"],
+    emoji:"🐺",color:"#e17055",
+  },
+  {
+    id:"golem_void",tier:"advanced",name:"Golem Void",
+    desc:"Une dimension du Vide où un golem colossal corrompu attend les plus braves. Scaling brutal.",
+    source:"Endgame",levels:"50-65",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:3.0,perLv:0.075},dmg:{base:1.25,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Spectre Void",hp:150,type:"Void"},
+      {name:"Golem Eye Void",hp:200,type:"Void"},
+      {name:"Necromancer Void",hp:250,type:"Endgame"},
+    ],
+    boss:{name:"Golem Void",hp:3500,level:70,dmg:"AoE massif",augments:["rebirth"],scaling:{hp:{base:2.0,perLv:0.075},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    loot:["Void Drops","Forest Essence"],
+    emoji:"🌀",color:"#6c5ce7",
+  },
+  // === ENDGAME ===
+  {
+    id:"major_d03",tier:"endgame",name:"Major Dungeon III",
+    desc:"Le donjon le plus dangereux de SilverMoon. Le Baron et ses cultistes/loups-garous n'ont aucune pitié.",
+    source:"MajorDungeons",levels:"60-75",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:3.0,perLv:0.075},dmg:{base:1.25,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Cult Knight",hp:350,type:"Cultist",dmg:"40 Phys"},
+      {name:"Cult Werewolf",hp:1000,type:"Cultist",dmg:"35 Phys"},
+      {name:"Cult Knight Miniboss",hp:500,level:75,type:"Cultist",augments:["blood_surge","blood_frenzy","vampirism"]},
+      {name:"Cult Werewolf Miniboss",hp:1200,level:75,type:"Cultist",augments:["blood_surge","blood_frenzy","vampirism"]},
+    ],
+    boss:{name:"Baron",hp:4000,level:80,dmg:"40 Phys + Cult Blast",augments:["blood_surge","bloodthirster"],scaling:{hp:{base:1.0,perLv:0.1},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    loot:["TreasureBag D03","Dark Coins","Devil Cards","Cult Greatblade","Mogruith Crossbow","DarkSilver Armor"],
+    emoji:"👑",color:"#e05252",
+  },
+  {
+    id:"reliquary",tier:"endgame",name:"Reliquary",
+    desc:"Un sanctuaire ancien au scaling extrême. HP ×4.0 et dégâts ×1.35 de base. Réservé aux vétérans.",
+    source:"Dexx",levels:"60-75",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:4.0,perLv:0.05},dmg:{base:1.35,perLv:0.07},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Wraith",hp:250,type:"Undead"},
+    ],
+    boss:{name:"Wraith Boss",hp:250,type:"Undead"},
+    loot:["Wraith Drops"],
+    emoji:"⚰️",color:"#636e72",
+  },
+];
