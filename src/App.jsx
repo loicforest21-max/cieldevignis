@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════
 import { useState, useEffect } from "react";
 import { G, GlobalStyles } from './styles.jsx';
-import { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage } from './Site.jsx';
+import { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage, DungeonsPage } from './Site.jsx';
 
 function SiteApp() {
   const [page, setPage] = useState("home");
@@ -17,6 +17,7 @@ function SiteApp() {
       <Navbar page={page} setPage={setPage} />
       {page === "home" && <HomePage setPage={setPage} />}
       {page === "builds" && <BuildsPage />}
+      {page === "dungeons" && <DungeonsPage />}
       {page === "wiki" && <WikiPage />}
       {page === "map" && <MapPage />}
     </div>
