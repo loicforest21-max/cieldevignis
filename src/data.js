@@ -59,63 +59,454 @@ const CLASS_TIER_COLORS=["#95a5a6","#3498db","#e67e22","#e74c3c","#9b59b6"];
 
 
 const AUGMENTS=[
-{id:"common",name:"Common",tier:"COMMON",desc:"Boosts aléatoires (roll variable par stat)"},
-{id:"absolute_focus",name:"Absolute Focus",tier:"ELITE",desc:"Garantit un critique périodiquement."},
-{id:"arcane_instability",name:"Arcane Instability",tier:"ELITE",desc:"SOR+ si Mana haut, pénalité si bas."},
-{id:"arcane_mastery",name:"Arcane Mastery",tier:"ELITE",desc:"+10% de la Sorcellerie en Flow.",scaling:[{source:"sorcery",target:"flow",ratio:0.1}]},
-{id:"bailout",name:"Bailout",tier:"ELITE",desc:"Triche la mort sauf kill."},
-{id:"blood_echo",name:"Blood Echo",tier:"ELITE",desc:"Soins → dégâts + lifesteal."},
-{id:"blood_frenzy",name:"Blood Frenzy",tier:"ELITE",desc:"+5% Lifesteal, +25% Hâte.",bonuses:{haste:25}},
-{id:"burn",name:"Burn",tier:"ELITE",desc:"DoT AoE + 100 Vitalité.",bonuses:{life_force:100}},
-{id:"cripple",name:"Cripple",tier:"ELITE",desc:"Stun 2s + 100 Vitalité.",bonuses:{life_force:100}},
-{id:"critical_guard",name:"Critical Guard",tier:"ELITE",desc:"Précision → réduction dégâts."},
-{id:"cutdown",name:"Cutdown",tier:"ELITE",desc:"+ dégâts cibles haute vie."},
-{id:"death_bomb",name:"Death Bomb",tier:"ELITE",desc:"Explosion à la mort."},
-{id:"drain",name:"Drain",tier:"ELITE",desc:"Bonus dmg % PV cible."},
-{id:"endure_pain",name:"Endure Pain",tier:"ELITE",desc:"Dégâts différés en saignement."},
-{id:"executioner",name:"Executioner",tier:"ELITE",desc:"Exécute cibles basse vie."},
-{id:"first_strike",name:"First Strike",tier:"ELITE",desc:"1er coup = burst puissant."},
-{id:"fleet_footwork",name:"Fleet Footwork",tier:"ELITE",desc:"Frappe soin + vitesse."},
-{id:"fortress",name:"Fortress",tier:"ELITE",desc:"Bouclier au seuil de mort. Buff temporaire: +15% DEF, +50% FOR/SOR."},
-{id:"four_leaf_clover",name:"Four Leaf Clover",tier:"ELITE",desc:"Luck (double-drops + XP)."},
-{id:"frozen_domain",name:"Frozen Domain",tier:"ELITE",desc:"Aura gel + 100 Vitalité.",bonuses:{life_force:100}},
-{id:"glass_cannon",name:"Glass Cannon",tier:"ELITE",desc:"+50% Hâte, +50% Dmg, -20% PV max.",bonuses:{haste:50}},
-{id:"goliath",name:"Goliath",tier:"ELITE",desc:"+20% PV max, +7.5% FOR, +7.5% SOR.",bonuses:{strength:7.5,sorcery:7.5}},
-{id:"magic_blade",name:"Magic Blade",tier:"ELITE",desc:"SOR → dégâts d'arme."},
-{id:"magic_missile",name:"Magic Missile",tier:"ELITE",desc:"Missile magique /2s."},
-{id:"mana_infusion",name:"Mana Infusion",tier:"ELITE",desc:"+20% du Flow en Sorcellerie.",scaling:[{source:"flow",target:"sorcery",ratio:0.2}]},
-{id:"overdrive",name:"Overdrive",tier:"ELITE",desc:"On hit: +4% Hâte/stack, +5% Crit Dmg/stack (8 max, temporaire)."},
-{id:"overheal",name:"Overheal",tier:"ELITE",desc:"Soins excédentaires → bouclier."},
-{id:"phantom_hits",name:"Phantom Hits",tier:"ELITE",desc:"Frappes fantômes (FOR+SOR)."},
-{id:"predator",name:"Predator",tier:"ELITE",desc:"On kill: +12% Hâte/stack, +6% FOR/stack (4 max). -10% DEF avant max stacks."},
-{id:"protective_bubble",name:"Protective Bubble",tier:"ELITE",desc:"Annule 1 attaque."},
-{id:"rebirth",name:"Rebirth",tier:"ELITE",desc:"Triche mort + gros soin."},
-{id:"soul_reaver",name:"Soul Reaver",tier:"ELITE",desc:"Kills soignent % PV cible."},
-{id:"supersonic",name:"Supersonic",tier:"ELITE",desc:"+50% Hâte, -10% Force.",bonuses:{haste:50,strength:-10}},
-{id:"time_master",name:"Time Master",tier:"ELITE",desc:"Kills réduisent tous CD."},
-{id:"titans_might",name:"Titan's Might",tier:"ELITE",desc:"+15% de la Vitalité en Force. -15% Hâte.",bonuses:{haste:-15},scaling:[{source:"life_force",target:"strength",ratio:0.15}]},
-{id:"titans_wisdom",name:"Titan's Wisdom",tier:"ELITE",desc:"+15% de la Vitalité en Sorcellerie. -15% Hâte.",bonuses:{haste:-15},scaling:[{source:"life_force",target:"sorcery",ratio:0.15}]},
-{id:"vampiric_strike",name:"Vampiric Strike",tier:"ELITE",desc:"+15% Précision, +25% Lifesteal on crit.",bonuses:{precision:15}},
-{id:"vampirism",name:"Vampirism",tier:"ELITE",desc:"+12.5% Life Steal."},
-{id:"wither",name:"Wither",tier:"ELITE",desc:"Slow + % dmg."},
-{id:"arcane_comet",name:"Arcane Comet",tier:"LEGENDARY",desc:"/8s: +dmg SOR."},
-{id:"brute_force",name:"Brute Force",tier:"LEGENDARY",desc:"0 crit → puissance brute."},
-{id:"conqueror",name:"Conqueror",tier:"LEGENDARY",desc:"Momentum combat + soins + +5% dmg/stack."},
-{id:"raging_momentum",name:"Raging Momentum",tier:"LEGENDARY",desc:"Stack +2.5% FOR/SOR, ×2 au cap."},
-{id:"snipers_reach",name:"Sniper's Reach",tier:"LEGENDARY",desc:"Dmg scale avec distance."},
-{id:"tank_engine",name:"Tank Engine",tier:"LEGENDARY",desc:"Combat → +PV max massifs."},
-{id:"arcane_cataclysm",name:"Arcane Cataclysm",tier:"MYTHIC",desc:"5ème coup = explosion SOR."},
-{id:"blood_surge",name:"Blood Surge",tier:"MYTHIC",desc:"PV bas → +Life Steal."},
-{id:"bloodthirster",name:"Bloodthirster",tier:"MYTHIC",desc:"Fort si sain, sustain si blessé."},
-{id:"giant_slayer",name:"Giant Slayer",tier:"MYTHIC",desc:"+dmg si cible + PV."},
-{id:"nesting_doll",name:"Nesting Doll",tier:"MYTHIC",desc:"Multi-rez, chacune + faible."},
-{id:"phase_rush",name:"Phase Rush",tier:"MYTHIC",desc:"On hit rapide: +50% Hâte temporaire → puissance."},
-{id:"raid_boss",name:"Raid Boss",tier:"MYTHIC",desc:"+50% PV max, +15% Dmg."},
-{id:"reckoning",name:"Reckoning",tier:"MYTHIC",desc:"+dmg au prix de PV."},
-{id:"undying_rage",name:"Undying Rage",tier:"MYTHIC",desc:"Unkillable + +15% Précision + Crit Dmg.",bonuses:{precision:15}},
-{id:"grasp_of_the_undying",name:"Grasp of the Undying",tier:"ELITE",desc:"Toutes les 2s en combat: +25 PV/stack, soin 4% PV max, slam 2.5% PV max."},
-{id:"haymaker",name:"Haymaker",tier:"ELITE",desc:"Après 5s en combat, prochain coup +10% PV max en dégâts. CD 10s."},
-{id:"missile_shot",name:"Missile Shot",tier:"ELITE",desc:"Tirs à distance explosent autour de la cible. Scale FOR/PRÉ/FÉR."}
+// ─── COMMON ───
+{id:"common",name:"Common",tier:"COMMON",stackable:true,
+  desc:"Boosts aléatoires sur toutes les stats de base.",
+  sections:[{title:"Buffs",body:"5-20 Vitalité · 1-4 Force · 1-4 Sorcellerie\n0.5-1.5 Défense · 1-4 Hâte · 0.5-1.5 Précision\n0.75-2.5 Férocité · 2-6 Discipline / Flow / Endurance",color:"#8adf9e"}]
+},
+
+// ─── ELITE ───
+{id:"absolute_focus",name:"Absolute Focus",tier:"ELITE",
+  desc:"Garantit un critique périodiquement. L'excès de Précision se convertit en bonus de dégâts.",
+  sections:[
+    {title:"Buffs",body:"Précision : +100%\nRatio conversion excès : 1:1",color:"#8adf9e"},
+    {title:"Règles",body:"Stat : Précision",color:"#ffb86b"},
+    {title:"Cooldown",body:"8s",color:"#ffd56b"}
+  ]
+},
+{id:"arcane_instability",name:"Arcane Instability",tier:"ELITE",
+  desc:"SOR+ si Mana haut, pénalité si bas.",
+  sections:[
+    {title:"Buffs",body:"+40% Sorcellerie quand >75% Mana",color:"#8adf9e"},
+    {title:"Debuffs",body:"-25% Sorcellerie quand <25% Mana",color:"#ff9a9a"},
+    {title:"Règles",body:"Ressource : MANA",color:"#ffb86b"}
+  ],
+  dpsImpact:{sorPct:0.4,sorPctNote:"Conditionnel (>75% Mana)"}
+},
+{id:"arcane_mastery",name:"Arcane Mastery",tier:"ELITE",
+  desc:"Gagne du Mana égal à une fraction de ta Sorcellerie.",
+  sections:[
+    {title:"Buffs",body:"10% de la Sorcellerie en Mana",color:"#8adf9e"},
+    {title:"Règles",body:"Stat de scaling : Sorcellerie",color:"#ffb86b"}
+  ],
+  scaling:[{source:"sorcery",target:"flow",ratio:0.1}]
+},
+{id:"bailout",name:"Bailout",tier:"ELITE",
+  desc:"Triche la mort brièvement, décline rapidement sauf kill.",
+  sections:[
+    {title:"Buffs",body:"Soin à la résurrection : +75% PV\nHeal manquant : +25%",color:"#8adf9e"},
+    {title:"Débuff",body:"Perd 25% PV max/s (jusqu'à 0)\nAnnulé par un kill",color:"#ff9a9a"},
+    {title:"Cooldown",body:"45s",color:"#ffd56b"}
+  ]
+},
+{id:"blood_echo",name:"Blood Echo",tier:"ELITE",
+  desc:"Convertit les soins en dégâts + lifesteal.",
+  sections:[
+    {title:"Buffs",body:"+5% Life Steal\n+15% des soins convertis en dégâts",color:"#8adf9e"}
+  ]
+},
+{id:"blood_frenzy",name:"Blood Frenzy",tier:"ELITE",
+  desc:"+5% Lifesteal et +25% Hâte.",
+  sections:[
+    {title:"Buffs",body:"+5% Life Steal\n+25% Hâte",color:"#8adf9e"}
+  ],
+  bonuses:{haste:25}
+},
+{id:"burn",name:"Burn",tier:"ELITE",
+  desc:"Brûle les ennemis proches avec une aura DoT basée sur les PV max.",
+  sections:[
+    {title:"Buffs",body:"1% PV max/s en dégâts AoE\n+0.15% bonus HP scaling\nRayon : 5 (+1 bloc / 400 PV max)\n+100 Vitalité",color:"#8adf9e"},
+    {title:"Durée",body:"10s (CD 10s)",color:"#9ecbff"}
+  ],
+  bonuses:{life_force:100}
+},
+{id:"cripple",name:"Cripple",tier:"ELITE",
+  desc:"On hit : stun 2s (CD 20s) + bonus de Vitalité.",
+  sections:[
+    {title:"Buffs",body:"+100 Vitalité",color:"#8adf9e"},
+    {title:"Stun",body:"Durée : 2s",color:"#9ecbff"},
+    {title:"Cooldown",body:"20s",color:"#ffd56b"}
+  ],
+  bonuses:{life_force:100}
+},
+{id:"critical_guard",name:"Critical Guard",tier:"ELITE",
+  desc:"Ta Précision accorde une réduction de dégâts quand ta défense critique.",
+  sections:[
+    {title:"Buffs",body:"0-25% réduction dégâts\n(basé sur Précision)",color:"#8adf9e"},
+    {title:"Règles",body:"Stat : Précision · Catégorie : ON_DAMAGE_TAKEN",color:"#ffb86b"}
+  ]
+},
+{id:"cutdown",name:"Cutdown",tier:"ELITE",
+  desc:"Dégâts augmentés contre les cibles à haute santé.",
+  sections:[
+    {title:"Buffs",body:"+50% Bonus Dmg si cible >80% PV\n+25% Bonus Dmg si cible >60% PV",color:"#8adf9e"}
+  ],
+  dpsImpact:{dmgMultNote:"Conditionnel : +50% (>80% PV) ou +25% (>60% PV)"}
+},
+{id:"death_bomb",name:"Death Bomb",tier:"ELITE",
+  desc:"À ta mort, déclenche une explosion retardée basée sur ta vie et tes stats.",
+  sections:[
+    {title:"Explosion",body:"Délai : 3s · Rayon : 5\nDmg : 50% PV max + 10% FOR + 10% SOR",color:"#8adf9e"},
+    {title:"Cooldown",body:"0s",color:"#ffd56b"}
+  ]
+},
+{id:"drain",name:"Drain",tier:"ELITE",
+  desc:"On hit : bonus de dégâts basé sur les PV actuels de la cible.",
+  sections:[
+    {title:"Buffs",body:"+10% des PV actuels de la cible en dégâts\n(max 1000 par tick)",color:"#8adf9e"},
+    {title:"Règles",body:"Crit : Non · CD interne : 1s",color:"#ffb86b"}
+  ],
+  dpsImpact:{procs:[{label:"Drain",icon:"🩸",trigger:"cd",cd:1,flat:0,sorRatio:0,strRatio:0,targetHpPct:0.1,canCrit:false,note:"10% PV actuels cible (max 1000)"}]}
+},
+{id:"endure_pain",name:"Endure Pain",tier:"ELITE",
+  desc:"30% des dégâts reçus sont différés en saignement sur 3s. Kill = soin 50% des dégâts d'exécution.",
+  sections:[
+    {title:"Buffs",body:"30% dégâts entrants → Bleed sur 3s\nSoin 50% des dégâts d'exécution au kill",color:"#8adf9e"},
+    {title:"Règles",body:"Reset au kill",color:"#ffb86b"}
+  ]
+},
+{id:"executioner",name:"Executioner",tier:"ELITE",
+  desc:"Frappe dévastatrice sur les cibles à basse vie (CD 45s).",
+  sections:[
+    {title:"Buffs",body:"+250% Bonus Dmg sur cibles <15% PV",color:"#8adf9e"},
+    {title:"Seuil",body:"15% PV",color:"#ffb86b"},
+    {title:"Cooldown",body:"45s",color:"#ffd56b"}
+  ],
+  dpsImpact:{procs:[{label:"Executioner",icon:"💀",trigger:"cd",cd:45,flat:0,dmgMultOnProc:2.5,canCrit:true,note:"×2.5 dmg sur cibles <15% PV"}]}
+},
+{id:"first_strike",name:"First Strike",tier:"ELITE",
+  desc:"Ton premier coup après un CD inflige un burst puissant.",
+  sections:[
+    {title:"Buffs",body:"+175% Bonus Dmg au premier coup",color:"#8adf9e"},
+    {title:"Cooldown",body:"25s",color:"#ffd56b"}
+  ],
+  dpsImpact:{procs:[{label:"First Strike",icon:"⚡",trigger:"cd",cd:25,flat:0,dmgMultOnProc:1.75,canCrit:true,note:"×1.75 le coup d'ouverture"}]}
+},
+{id:"fleet_footwork",name:"Fleet Footwork",tier:"ELITE",
+  desc:"Périodiquement : soigne 25% des dégâts + +50% Hâte 3s.",
+  sections:[
+    {title:"Buffs",body:"+25% des dégâts en soin\n+50% Hâte pendant 3s",color:"#8adf9e"},
+    {title:"Durée",body:"3s",color:"#9ecbff"},
+    {title:"Cooldown",body:"8s",color:"#ffd56b"}
+  ]
+},
+{id:"fortress",name:"Fortress",tier:"ELITE",
+  desc:"Au seuil de mort : phase bouclier 5s, puis 15s de buffs offensifs/défensifs.",
+  sections:[
+    {title:"Buffs",body:"PV minimum : 1\n+15% Réduction dégâts\n+50% Force & Sorcellerie (pendant buff)",color:"#8adf9e"},
+    {title:"Durée",body:"Phase bouclier : 5s · Phase buff : 15s",color:"#9ecbff"},
+    {title:"Cooldown",body:"100s",color:"#ffd56b"}
+  ],
+  dpsImpact:{strPct:0.5,sorPct:0.5,note:"Temporaire (15s) — à HP très bas uniquement"}
+},
+{id:"four_leaf_clover",name:"Four Leaf Clover",tier:"ELITE",
+  desc:"Augmente la chance (double-drops et gain XP).",
+  sections:[{title:"Buffs",body:"+50% Luck (drops & XP)",color:"#8adf9e"}]
+},
+{id:"frozen_domain",name:"Frozen Domain",tier:"ELITE",
+  desc:"Aura de gel autour de toi : ralentit les ennemis et renforce ta Vitalité.",
+  sections:[
+    {title:"Buffs",body:"Slow : -30% · Vol de vitesse : 0.2×\nRayon : 5 (+1 bloc / 400 PV max)\n+100 Vitalité",color:"#8adf9e"},
+    {title:"Durée",body:"10s (CD 25s)",color:"#9ecbff"}
+  ],
+  bonuses:{life_force:100}
+},
+{id:"glass_cannon",name:"Glass Cannon",tier:"ELITE",
+  desc:"Sacrifie la durabilité pour la vitesse et les dégâts.",
+  sections:[
+    {title:"Buffs",body:"+50% Hâte\n+50% Dégâts globaux",color:"#8adf9e"},
+    {title:"Debuffs",body:"-20% PV maximum",color:"#ff9a9a"}
+  ],
+  bonuses:{haste:50},
+  dpsImpact:{dmgMult:0.5}
+},
+{id:"goliath",name:"Goliath",tier:"ELITE",
+  desc:"Devenez imposant : plus de vie et stats de combat améliorées.",
+  sections:[{title:"Buffs",body:"+20% PV max\n+7.5% Force\n+7.5% Sorcellerie",color:"#8adf9e"}],
+  bonuses:{strength:7.5,sorcery:7.5}
+},
+{id:"grasp_of_the_undying",name:"Grasp of the Undying",tier:"ELITE",
+  desc:"Toutes les 2s on-hit : stack de PV, soin 4% PV max, et dégâts 2.5% PV max.",
+  sections:[
+    {title:"Déclencheur",body:"On-hit passif · CD : 2s",color:"#f7e48b"},
+    {title:"Dégâts",body:"25 + (2.5% PV max)",color:"#8adf9e"},
+    {title:"Soin & Stacks",body:"+25 PV max / proc\nSoin : 4% PV max\nStacks infinis (expire 10s hors combat)",color:"#ffb86b"}
+  ],
+  dpsImpact:{procs:[{label:"Grasp",icon:"💀",trigger:"cd",cd:2,flat:25,maxHpRatio:0.025,canCrit:false,note:"25 + 2.5% PV max du joueur"}]}
+},
+{id:"haymaker",name:"Haymaker",tier:"ELITE",
+  desc:"Après 5s en combat, ton prochain coup inflige +10% PV max (CD 10s).",
+  sections:[
+    {title:"Coup empuissanté",body:"Après 5s en combat : +10% PV max en dégâts\nCD : 10s",color:"#8adf9e"}
+  ],
+  dpsImpact:{procs:[{label:"Haymaker",icon:"🔨",trigger:"cd",cd:15,flat:0,maxHpRatio:0.1,canCrit:true,note:"10% PV max du joueur (5s ramp + 10s CD)"}]}
+},
+{id:"magic_blade",name:"Magic Blade",tier:"ELITE",
+  desc:"75% de ta Sorcellerie s'applique aux dégâts d'arme. +20% si épée.",
+  sections:[
+    {title:"Buffs",body:"+75% de la Sorcellerie en dégâts d'arme\n+20% bonus si arme = Épée",color:"#8adf9e"},
+    {title:"Règles",body:"Stat : Sorcellerie · Arme : Épée",color:"#ffb86b"}
+  ],
+  dpsImpact:{sorWeaponConv:0.75,note:"75% SOR → s'ajoute au modificateur de dégâts"}
+},
+{id:"magic_missile",name:"Magic Missile",tier:"ELITE",
+  desc:"Toutes les 2s, tes frappes tirent un missile magique basé sur la Sorcellerie.",
+  sections:[
+    {title:"Buffs",body:"+10 + (20% Sorcellerie)",color:"#8adf9e"},
+    {title:"Règles",body:"CD : 2s · Crit : Non",color:"#ffb86b"}
+  ],
+  dpsImpact:{procs:[{label:"Magic Missile",icon:"🔮",trigger:"cd",cd:2,flat:10,sorRatio:0.2,canCrit:false}]}
+},
+{id:"mana_infusion",name:"Mana Infusion",tier:"ELITE",
+  desc:"+20% du Flow actuel en Sorcellerie.",
+  sections:[
+    {title:"Buffs",body:"+20% du Flow (Mana) en Sorcellerie",color:"#8adf9e"},
+    {title:"Règles",body:"Stat source : Flow (Mana)",color:"#ffb86b"}
+  ],
+  scaling:[{source:"flow",target:"sorcery",ratio:0.2}]
+},
+{id:"missile_shot",name:"Missile Shot",tier:"ELITE",
+  desc:"Tirs longue distance (>10 blocs) : explosion AoE basée sur FOR, PRÉ et FÉR.",
+  sections:[
+    {title:"Buffs",body:"Dégâts AoE : (10% FOR) + (50% PRÉ) + (20% FÉR)\nRayon : 3 blocs",color:"#8adf9e"},
+    {title:"Règles",body:"Type : Ranged · Dist. min : 10 blocs · CD : 5s",color:"#ffb86b"}
+  ],
+  dpsImpact:{procs:[{label:"Missile Shot",icon:"🎯",trigger:"cd",cd:5,flat:0,strRatio:0.1,preRatio:0.5,ferRatio:0.2,canCrit:false,note:"Ranged uniquement (>10 blocs)"}]}
+},
+{id:"overdrive",name:"Overdrive",tier:"ELITE",
+  desc:"Chaque frappe ajoute un stack (+4% Hâte, +5% Dégâts Crit). Max 8 stacks, 8s, reset si touché.",
+  sections:[
+    {title:"Buffs",body:"+4% Hâte par stack\n+5% Dégâts Critiques par stack\nMax stacks : 8",color:"#8adf9e"},
+    {title:"Règles",body:"Perd tous les stacks si touché",color:"#ffb86b"},
+    {title:"Durée",body:"8s",color:"#9ecbff"}
+  ],
+  dpsImpact:{hastePct:32,ferPct:40,note:"Valeurs max stacks (×8). Perdu si touché."}
+},
+{id:"overheal",name:"Overheal",tier:"ELITE",
+  desc:"Les soins excédentaires créent un bouclier temporaire (decay 8s). +5% Lifesteal.",
+  sections:[
+    {title:"Buffs",body:"Bouclier : (200% PRÉ) + (100% FÉR)\nDécay : 8s · +5% Life Steal",color:"#8adf9e"}
+  ]
+},
+{id:"phantom_hits",name:"Phantom Hits",tier:"ELITE",
+  desc:"Chaque frappe déclenche des coups fantômes (peut critiquer).",
+  sections:[
+    {title:"Buffs",body:"+20 + (10% Force & Sorcellerie)",color:"#8adf9e"},
+    {title:"Règles",body:"Crit : Oui",color:"#ffb86b"}
+  ],
+  dpsImpact:{procs:[{label:"Phantom Hits",icon:"👻",trigger:"onhit",flat:20,strRatio:0.1,sorRatio:0.1,canCrit:true}]}
+},
+{id:"predator",name:"Predator",tier:"ELITE",
+  desc:"Kills → stacks Hâte/Force. -10% DEF avant d'atteindre le max.",
+  sections:[
+    {title:"Buffs",body:"+12% Hâte par stack\n+6% Force par stack\nMax stacks : 4",color:"#8adf9e"},
+    {title:"Debuffs",body:"-10% Défense avant d'atteindre 4 stacks",color:"#ff9a9a"},
+    {title:"Durée",body:"10s",color:"#9ecbff"}
+  ],
+  dpsImpact:{hastePct:48,strPct:0.24,note:"Valeurs max stacks (×4 kills). Temporaire (10s)."}
+},
+{id:"protective_bubble",name:"Protective Bubble",tier:"ELITE",
+  desc:"Annule une attaque entrante et accorde une brève immunité (CD 30s).",
+  sections:[
+    {title:"Bouclier",body:"Annule 1 attaque + immunité brève",color:"#8adf9e"},
+    {title:"Cooldown",body:"30s",color:"#ffd56b"}
+  ]
+},
+{id:"rebirth",name:"Rebirth",tier:"ELITE",
+  desc:"Triche la mort avec un gros soin (50% PV). CD 100s.",
+  sections:[
+    {title:"Buffs",body:"+50% Soin lors d'un coup fatal",color:"#8adf9e"},
+    {title:"Cooldown",body:"100s",color:"#ffd56b"}
+  ]
+},
+{id:"soul_reaver",name:"Soul Reaver",tier:"ELITE",
+  desc:"Kills soignent 20% des PV max de l'ennemi (CD 7s).",
+  sections:[
+    {title:"Buffs",body:"+20% Soin au kill (PV max ennemi)",color:"#8adf9e"},
+    {title:"Cooldown",body:"7s",color:"#ffd56b"}
+  ]
+},
+{id:"supersonic",name:"Supersonic",tier:"ELITE",
+  desc:"Échange de la Force contre une Hâte démentielle.",
+  sections:[
+    {title:"Buffs",body:"+50% Hâte",color:"#8adf9e"},
+    {title:"Debuffs",body:"-10% Force",color:"#ff9a9a"}
+  ],
+  bonuses:{haste:50,strength:-10}
+},
+{id:"time_master",name:"Time Master",tier:"ELITE",
+  desc:"Chaque kill réduit les cooldowns de 1s + 7.5% du temps restant.",
+  sections:[{title:"Buffs",body:"Réduit tous les CD de 1s + 7.5% restant au kill",color:"#8adf9e"}]
+},
+{id:"titans_might",name:"Titan's Might",tier:"ELITE",
+  desc:"+15% de la Vitalité totale en Force. -15% Hâte.",
+  sections:[
+    {title:"Buffs",body:"+15% de la Vitalité max en Force",color:"#8adf9e"},
+    {title:"Debuffs",body:"-15% Hâte",color:"#ff9a9a"},
+    {title:"Règles",body:"Stat source : Vitalité max",color:"#ffb86b"}
+  ],
+  bonuses:{haste:-15},
+  scaling:[{source:"life_force",target:"strength",ratio:0.15}]
+},
+{id:"titans_wisdom",name:"Titan's Wisdom",tier:"ELITE",
+  desc:"+15% de la Vitalité totale en Sorcellerie. -15% Hâte.",
+  sections:[
+    {title:"Buffs",body:"+15% de la Vitalité max en Sorcellerie",color:"#8adf9e"},
+    {title:"Debuffs",body:"-15% Hâte",color:"#ff9a9a"},
+    {title:"Règles",body:"Stat source : Vitalité max",color:"#ffb86b"}
+  ],
+  bonuses:{haste:-15},
+  scaling:[{source:"life_force",target:"sorcery",ratio:0.15}]
+},
+{id:"vampiric_strike",name:"Vampiric Strike",tier:"ELITE",
+  desc:"+15% Précision. Life Steal 25% sur crit (CD 3s).",
+  sections:[
+    {title:"Buffs",body:"+15% Précision\n+25% Life Steal sur Crit",color:"#8adf9e"},
+    {title:"Cooldown",body:"Déclencheur : 3s",color:"#ffd56b"}
+  ],
+  bonuses:{precision:15}
+},
+{id:"vampirism",name:"Vampirism",tier:"ELITE",
+  desc:"Vol de vie à chaque frappe.",
+  sections:[{title:"Buffs",body:"+12.5% Life Steal",color:"#8adf9e"}]
+},
+{id:"wither",name:"Wither",tier:"ELITE",
+  desc:"On hit : DoT 1.5% PV max cible/s (5s, max 500/tick) + slow -20%.",
+  sections:[
+    {title:"Buffs",body:"+1.5% PV max cible en dégâts/s\nMax : 500 dmg/tick",color:"#8adf9e"},
+    {title:"Debuffs (cible)",body:"-20% Hâte (5s)",color:"#ff9a9a"},
+    {title:"Règles",body:"Crit : Non · Durée : 5s",color:"#ffb86b"}
+  ],
+  dpsImpact:{procs:[{label:"Wither DoT",icon:"🌿",trigger:"cd",cd:5,flat:0,targetMaxHpPct:0.075,canCrit:false,note:"1.5%/s × 5s = 7.5% PV max cible (max 2500)"}]}
+},
+
+// ─── LEGENDARY ───
+{id:"arcane_comet",name:"Arcane Comet",tier:"LEGENDARY",
+  desc:"Toutes les 8s, ta prochaine frappe inflige +50 + 50% SOR (ne peut pas critiquer).",
+  sections:[
+    {title:"Buffs",body:"+50 + (50% Sorcellerie) bonus dégâts",color:"#8adf9e"},
+    {title:"Règles",body:"Crit : Non",color:"#ffb86b"},
+    {title:"Cooldown",body:"8s",color:"#ffd56b"}
+  ],
+  dpsImpact:{procs:[{label:"Arcane Comet",icon:"☄️",trigger:"cd",cd:8,flat:50,sorRatio:0.5,canCrit:false}]}
+},
+{id:"brute_force",name:"Brute Force",tier:"LEGENDARY",
+  desc:"Échange tout le potentiel critique pour une puissance brute dévastatrice.",
+  sections:[
+    {title:"Buffs",body:"Multiplicateur Force : ×2.5\nMultiplicateur Sorcellerie : ×2.5",color:"#8adf9e"},
+    {title:"Debuffs",body:"Précision bloquée à 0 (aucun critique)",color:"#ff9a9a"}
+  ],
+  dpsImpact:{strMult:2.5,sorMult:2.5,precLock:true}
+},
+{id:"conqueror",name:"Conqueror",tier:"LEGENDARY",
+  desc:"Combat soutenu → stacks de dégâts (+5%/stack, max 8). À max stacks : vrai dégât.",
+  sections:[
+    {title:"Buffs",body:"+5% Bonus Dmg par stack · Max : 8",color:"#8adf9e"},
+    {title:"Bonus max stacks",body:"Vrai dégâts : 25 + (15% du coup pré-DEF)",color:"#8adf9e"},
+    {title:"Durée",body:"8s",color:"#9ecbff"}
+  ],
+  dpsImpact:{dmgMult:0.40,note:"@ max stacks (×8). Vrai dégât = 25+15% pré-DEF.",procs:[{label:"Conqueror True Dmg",icon:"⚔️",trigger:"cd",cd:0,flat:25,dmgPctPreDef:0.15,canCrit:false,isTrueDmg:true,note:"Vrai dégât @ max stacks uniquement"}]}
+},
+{id:"raging_momentum",name:"Raging Momentum",tier:"LEGENDARY",
+  desc:"Stacks de +2.5% FOR/SOR (20 max). Doublé au cap = +100% FOR/SOR.",
+  sections:[
+    {title:"Buffs",body:"+2.5% Force & Sorcellerie par stack\nMax stacks : 20 · Décay : 2/s",color:"#8adf9e"},
+    {title:"Bonus max stacks",body:"Force & Sorcellerie doublées (+100% au lieu de +50%)",color:"#8adf9e"},
+    {title:"Durée",body:"8s par stack",color:"#9ecbff"}
+  ],
+  dpsImpact:{strPct:1.0,sorPct:1.0,note:"@ max stacks (×20 ×2). Temporaire."}
+},
+{id:"snipers_reach",name:"Sniper's Reach",tier:"LEGENDARY",
+  desc:"Dégâts ranged scale avec la distance (max +150% à 30 blocs).",
+  sections:[
+    {title:"Buffs",body:"0-150% Bonus Dmg ranged\n(peak à 30 blocs)",color:"#8adf9e"},
+    {title:"Règles",body:"Type : Ranged · Dist. min : 5 blocs · Max : 30 blocs",color:"#ffb86b"}
+  ],
+  dpsImpact:{dmgMultNote:"Conditionnel : 0-150% (ranged, scaling distance)"}
+},
+{id:"tank_engine",name:"Tank Engine",tier:"LEGENDARY",
+  desc:"Combat continu → stacks massifs de PV max (25 max, decay 5/s).",
+  sections:[
+    {title:"Buffs",body:"+5 + (4% PV max) par stack · Max : 25",color:"#8adf9e"},
+    {title:"Durée",body:"8s · Décay : 5 stacks/s",color:"#9ecbff"}
+  ]
+},
+
+// ─── MYTHIC ───
+{id:"arcane_cataclysm",name:"Arcane Cataclysm",tier:"MYTHIC",
+  desc:"Tous les 5 coups : explosion de Sorcellerie autour de la cible.",
+  sections:[
+    {title:"5-Hit Passif",body:"Compteur : 5 hits (expire après 5s)",color:"#ffb86b"},
+    {title:"Explosion",body:"Dégâts : 50 + (150% Sorcellerie)\nRayon : 3 · Crit : Non",color:"#8adf9e"}
+  ],
+  dpsImpact:{procs:[{label:"Arcane Cataclysm",icon:"💥",trigger:"hits",hitsReq:5,flat:50,sorRatio:1.5,canCrit:false}]}
+},
+{id:"blood_surge",name:"Blood Surge",tier:"MYTHIC",
+  desc:"Life Steal basée sur les PV manquants (5-40%). 30% des soins → dégâts.",
+  sections:[
+    {title:"Buffs",body:"+5-40% Life Steal (max à <20% PV)\n+30% des soins convertis en dégâts",color:"#8adf9e"},
+    {title:"Règles",body:"Seuil plein effet : 20% PV",color:"#ffb86b"}
+  ]
+},
+{id:"bloodthirster",name:"Bloodthirster",tier:"MYTHIC",
+  desc:"Tous les 3 coups : si >50% PV → burst +50+80%STR (auto-dmg). Si <50% PV → soin.",
+  sections:[
+    {title:"3-Hit Passif",body:"Compteur : 3 hits (expire après 5s)",color:"#ffb86b"},
+    {title:">50% PV",body:"+50 + (80% Force) bonus dégâts\n-10% Self Damage",color:"#8adf9e"},
+    {title:"<50% PV",body:"Soin : 10% + (10% Force & Sorcellerie)",color:"#8adf9e"}
+  ],
+  dpsImpact:{procs:[{label:"Bloodthirster (>50% PV)",icon:"🩸",trigger:"hits",hitsReq:3,flat:50,strRatio:0.8,canCrit:false,note:"Burst si >50% PV max"}]}
+},
+{id:"giant_slayer",name:"Giant Slayer",tier:"MYTHIC",
+  desc:"0-180% bonus dégâts contre les ennemis avec plus de PV que toi (max à ×8 PV).",
+  sections:[
+    {title:"Buffs",body:"0-180% Bonus Dmg\n(basé sur écart de PV)",color:"#8adf9e"},
+    {title:"Règles",body:"Maximum à ×8 PV ennemi / PV joueur",color:"#ffb86b"}
+  ],
+  dpsImpact:{dmgMultNote:"Conditionnel : 0-180% (ratio PV ennemi/joueur)"}
+},
+{id:"nesting_doll",name:"Nesting Doll",tier:"MYTHIC",
+  desc:"Multi-résurrection (2×). Chaque mort affaiblit (-1/3 PV). Régénère 2%/s après 30s.",
+  sections:[
+    {title:"Buffs",body:"Résurrections : 2\nRégén après 30s : 2% PV/s",color:"#8adf9e"},
+    {title:"Règles",body:"Pénalité : -1/3 PV par mort",color:"#ffb86b"}
+  ]
+},
+{id:"phase_rush",name:"Phase Rush",tier:"MYTHIC",
+  desc:"Attaques rapides (5 hits) → burst de Hâte × 2 pendant 3s + la Hâte se convertit en dégâts.",
+  sections:[
+    {title:"5-Hit Passif",body:"Compteur : 5 hits (5s)",color:"#ffb86b"},
+    {title:"Buffs passifs",body:"+50% Hâte",color:"#8adf9e"},
+    {title:"Phase Rush Burst",body:"Double bonus Hâte pendant 3s\n50% du bonus Hâte → bonus dégâts",color:"#8adf9e"},
+    {title:"Durée",body:"3s",color:"#9ecbff"}
+  ],
+  bonuses:{haste:50},
+  dpsImpact:{note:"Burst : Hâte ×2 + 50% Hâte→Dmg pendant 3s après 5 hits"}
+},
+{id:"raid_boss",name:"Raid Boss",tier:"MYTHIC",
+  desc:"Domine le champ de bataille : +50% PV max et +15% dégâts globaux.",
+  sections:[{title:"Buffs",body:"+50% PV maximum\n+15% Bonus Dégâts",color:"#8adf9e"}],
+  dpsImpact:{dmgMult:0.15}
+},
+{id:"reckoning",name:"Reckoning",tier:"MYTHIC",
+  desc:"0-100% bonus dégâts (plus tu as de PV, plus tu tapes fort). Self-dmg 5% PV/coup.",
+  sections:[
+    {title:"Buffs",body:"Bonus Dégâts : 0-100% (max à 100% PV)",color:"#8adf9e"},
+    {title:"Debuffs",body:"Self Dmg : 5% PV actuels par coup",color:"#ff9a9a"},
+    {title:"Règles",body:"0% bonus à 25% PV · 100% bonus à 100% PV",color:"#ffb86b"}
+  ],
+  dpsImpact:{dmgMultNote:"Conditionnel : 0-100% bonus selon PV actuels"}
+},
+{id:"undying_rage",name:"Undying Rage",tier:"MYTHIC",
+  desc:"Au seuil de mort : unkillable + +15% PRÉ + 0-125% Crit Dmg (selon PV manquants).",
+  sections:[
+    {title:"Buffs",body:"+0-125% Bonus Dégâts Critiques\n+15% Précision\nPV minimum : 1",color:"#8adf9e"},
+    {title:"Règles",body:"Stat source : % PV manquants\nMax à <5% PV",color:"#ffb86b"},
+    {title:"Durée / CD",body:"10s · CD 100s",color:"#ffd56b"}
+  ],
+  bonuses:{precision:15},
+  dpsImpact:{ferPct:125,note:"Temporaire (10s, CD 100s) à HP très bas"}
+},
 ];
 
 const TIER_COLORS={COMMON:"#95a5a6",ELITE:"#3498db",LEGENDARY:"#e74c3c",MYTHIC:"#9b59b6"};
