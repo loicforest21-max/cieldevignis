@@ -119,7 +119,7 @@ function AugmentsTab({selectedAugments:sa,setSelectedAugments:setSA,augBonus,set
 // ═══════════════════════════════════════════
 // TAB: SUMMARY
 // ═══════════════════════════════════════════
-function SummaryTab({state:s}){const{selectedRace:race0,selectedEvo:sEvo,primaryClass:c1,secondaryClass:c2,primaryTier:t1,secondaryTier:t2,level,prestige,skillPoints:sp,selectedAugments:sa,augBonus:manualAug}=s;const race=getActiveRace(race0,sEvo||race0?.id);const totalSP=12+(level-1)*5;const usedSP=Object.values(sp).reduce((a,b)=>a+b,0);const inn=computeInnates(race,c1,t1,c2,t2,level);const flatAug=computeAugBonuses(sa,manualAug);const baseStats={};STATS.forEach(s=>{baseStats[s.key]=computeStat(s,race,inn,sp,flatAug).total});const augBonus=computeAugBonuses(sa,manualAug,baseStats);const baseStats2={};STATS.forEach(s=>{baseStats2[s.key]=computeStat(s,race,inn,sp,augBonus).total});const postBonus=computeClassPassiveScaling(c1,c2,baseStats2);const[copied,setCopied]=useState(false);const code=encodeBuild(s);return(<div><div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}><button onClick={()=>{navigator.clipboard?.writeText(code);setCopied(true);setTimeout(()=>setCopied(false),2000)}} style={{padding:"8px 16px",borderRadius:"var(--radius-md)",border:"2px solid #f5a62340",background:"#f5a62310",color:"#f5a623",fontWeight:700,fontSize:12,cursor:"pointer"}}>{copied?"✅ Copié !":"📋 Copier le code"}</button><div style={{flex:1,background:"var(--card)",borderRadius:8,padding:"6px 10px",fontSize:10,color:"#444",fontFamily:"monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",border:"1px solid var(--brd)"}}>{code.slice(0,80)}...</div></div>
+function SummaryTab({state:s,onPublishToCommunity}){const{selectedRace:race0,selectedEvo:sEvo,primaryClass:c1,secondaryClass:c2,primaryTier:t1,secondaryTier:t2,level,prestige,skillPoints:sp,selectedAugments:sa,augBonus:manualAug}=s;const race=getActiveRace(race0,sEvo||race0?.id);const totalSP=12+(level-1)*5;const usedSP=Object.values(sp).reduce((a,b)=>a+b,0);const inn=computeInnates(race,c1,t1,c2,t2,level);const flatAug=computeAugBonuses(sa,manualAug);const baseStats={};STATS.forEach(s=>{baseStats[s.key]=computeStat(s,race,inn,sp,flatAug).total});const augBonus=computeAugBonuses(sa,manualAug,baseStats);const baseStats2={};STATS.forEach(s=>{baseStats2[s.key]=computeStat(s,race,inn,sp,augBonus).total});const postBonus=computeClassPassiveScaling(c1,c2,baseStats2);const[copied,setCopied]=useState(false);const code=encodeBuild(s);return(<div><div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}><button onClick={()=>{navigator.clipboard?.writeText(code);setCopied(true);setTimeout(()=>setCopied(false),2000)}} style={{padding:"8px 16px",borderRadius:"var(--radius-md)",border:"2px solid #f5a62340",background:"#f5a62310",color:"#f5a623",fontWeight:700,fontSize:12,cursor:"pointer"}}>{copied?"✅ Copié !":"📋 Copier le code"}</button>{onPublishToCommunity&&<button onClick={()=>onPublishToCommunity(code)} style={{padding:"8px 16px",borderRadius:"var(--radius-md)",border:"2px solid #3dd8c540",background:"#3dd8c510",color:"#3dd8c5",fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>📤 Publier dans la Communauté</button>}<div style={{flex:1,background:"var(--card)",borderRadius:8,padding:"6px 10px",fontSize:10,color:"#444",fontFamily:"monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",border:"1px solid var(--brd)"}}>{code.slice(0,80)}...</div></div>
 <div style={{background:"linear-gradient(135deg,#0e1828,#111d3a)",borderRadius:"var(--radius-md)",padding:18,border:"1px solid #1a2d4f",marginBottom:14}}><div style={{display:"flex",gap:20,flexWrap:"wrap"}}>{[{l:"PRESTIGE",v:prestige,c:prestige>0?"#e74c3c":"#fff"},{l:"LEVEL",v:level,c:"#fff"}].map(x=>(<div key={x.l} style={{flex:"1 1 80px"}}><div style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:2}}>{x.l}</div><div style={{fontSize:22,fontWeight:900,color:x.c}}>{x.v}</div></div>))}<div style={{flex:"1 1 120px"}}><div style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:2}}>RACE</div>{race?<div><div style={{fontSize:16,fontWeight:800,color:race.color}}>{race.emoji} {race.activeName||race.name}</div>{race.activeStage&&race.activeStage!=="base"&&<div style={{fontSize:10,color:SC[race.activeStage]}}>{SL[race.activeStage]}</div>}</div>:<div style={{color:"#444"}}>—</div>}</div>{[{l:"PRIMARY CLASS",o:c1,t:t1},{l:"SECONDARY CLASS",o:c2,t:t2}].map(x=>(<div key={x.l} style={{flex:"1 1 140px"}}><div style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:2}}>{x.l}</div>{x.o?<div><span style={{fontSize:14,fontWeight:800,color:x.o.color}}>{x.o.emoji} {x.o.name}</span><div style={{fontSize:10,color:CLASS_TIER_COLORS[x.t]}}>{CLASS_TIERS[x.t]}</div></div>:<div style={{color:"#444"}}>—</div>}</div>))}</div></div>
 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}><div style={{display:"flex",flexDirection:"column",gap:14}}>
 {/* Total Attributes */}
@@ -864,7 +864,7 @@ function CompareTab({ savedBuilds, currentState }) {
 // ═══════════════════════════════════════════
 // BUILD CREATOR — MAIN COMPONENT
 // ═══════════════════════════════════════════
-function BuildCreator() {
+function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity }) {
   const [tab, setTab] = useState("race");
   const [selectedRace, setSelectedRace] = useState(null);
   const [selectedEvo, setSelectedEvo] = useState("");
@@ -882,6 +882,28 @@ function BuildCreator() {
   const [savedBuilds, setSavedBuilds] = useState([]);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   useEffect(() => { loadSavedBuilds().then(b => setSavedBuilds(b)); }, []);
+
+  // Auto-import si on arrive depuis la Communauté avec un code
+  useEffect(() => {
+    if (initialCode) {
+      const d = decodeBuild(initialCode);
+      if (d) {
+        setSelectedRace(d.selectedRace);
+        setSelectedEvo(d.selectedEvo || d.selectedRace?.id || "");
+        setPrimaryClass(d.primaryClass);
+        setSecondaryClass(d.secondaryClass);
+        setPrimaryTier(d.primaryTier);
+        setSecondaryTier(d.secondaryTier);
+        setLevel(d.level);
+        setPrestige(d.prestige);
+        setSkillPoints(d.skillPoints);
+        setSelectedAugments(d.selectedAugments);
+        setAugBonus(d.augBonus || {});
+        setTab("summary");
+      }
+      if (onClearInitialCode) onClearInitialCode();
+    }
+  }, [initialCode]);
 
   const totalSP = 12 + (level - 1) * 5;
   const usedSP = Object.values(skillPoints).reduce((a, b) => a + b, 0);
@@ -976,7 +998,7 @@ return(<div style={{"--bg":"#0b1120","--card":"#111d33","--brd":"#1a2d4f","--fd"
     {done&&<span style={{width:6,height:6,borderRadius:2,background:"#3dd8c5",boxShadow:"0 0 8px #3dd8c560",flexShrink:0}}/>}
     </button>)})}
   </div>
-</div><div className="build-content" style={{padding:"16px 20px",maxWidth:1200,margin:"0 auto"}}>{tab==="race"&&<RaceTab selectedRace={selectedRace} setSelectedRace={setSelectedRace} selectedEvo={selectedEvo} setSelectedEvo={setSelectedEvo}/>}{tab==="class"&&<ClassTab primaryClass={primaryClass} setPrimaryClass={setPrimaryClass} secondaryClass={secondaryClass} setSecondaryClass={setSecondaryClass} primaryTier={primaryTier} setPrimaryTier={setPrimaryTier} secondaryTier={secondaryTier} setSecondaryTier={setSecondaryTier}/>}{tab==="stats"&&<StatsTab level={level} setLevel={setLevel} prestige={prestige} setPrestige={setPrestige} skillPoints={skillPoints} setSkillPoints={setSkillPoints} totalSP={totalSP} usedSP={usedSP} selectedRace={selectedRace} primaryClass={primaryClass} primaryTier={primaryTier} secondaryClass={secondaryClass} secondaryTier={secondaryTier} augBonus={totalAugBonus} postBonus={postBonus} selectedEvo={selectedEvo}/>}{tab==="augments"&&<AugmentsTab selectedAugments={selectedAugments} setSelectedAugments={setSelectedAugments} augBonus={augBonus} setAugBonus={setAugBonus}/>}{tab==="dps"&&<DpsTab computedStats={finalComputedStats} selectedRace={selectedRace} primaryClass={primaryClass} selectedEvo={selectedEvo}/>}{tab==="guide"&&<GuideTab onImportBuild={handleImport}/>}{tab==="summary"&&<SummaryTab state={state}/>}{tab==="builds"&&<BuildsManagerTab savedBuilds={savedBuilds} onLoad={handleLoadBuild} onDelete={handleDeleteBuild} currentState={state} onSave={handleSaveBuild}/>}{tab==="compare"&&<CompareTab savedBuilds={savedBuilds} currentState={state}/>}</div>  {showImport && <ImportDialog onImport={handleImport} onClose={() => setShowImport(false)} />}
+</div><div className="build-content" style={{padding:"16px 20px",maxWidth:1200,margin:"0 auto"}}>{tab==="race"&&<RaceTab selectedRace={selectedRace} setSelectedRace={setSelectedRace} selectedEvo={selectedEvo} setSelectedEvo={setSelectedEvo}/>}{tab==="class"&&<ClassTab primaryClass={primaryClass} setPrimaryClass={setPrimaryClass} secondaryClass={secondaryClass} setSecondaryClass={setSecondaryClass} primaryTier={primaryTier} setPrimaryTier={setPrimaryTier} secondaryTier={secondaryTier} setSecondaryTier={setSecondaryTier}/>}{tab==="stats"&&<StatsTab level={level} setLevel={setLevel} prestige={prestige} setPrestige={setPrestige} skillPoints={skillPoints} setSkillPoints={setSkillPoints} totalSP={totalSP} usedSP={usedSP} selectedRace={selectedRace} primaryClass={primaryClass} primaryTier={primaryTier} secondaryClass={secondaryClass} secondaryTier={secondaryTier} augBonus={totalAugBonus} postBonus={postBonus} selectedEvo={selectedEvo}/>}{tab==="augments"&&<AugmentsTab selectedAugments={selectedAugments} setSelectedAugments={setSelectedAugments} augBonus={augBonus} setAugBonus={setAugBonus}/>}{tab==="dps"&&<DpsTab computedStats={finalComputedStats} selectedRace={selectedRace} primaryClass={primaryClass} selectedEvo={selectedEvo}/>}{tab==="guide"&&<GuideTab onImportBuild={handleImport}/>}{tab==="summary"&&<SummaryTab state={state} onPublishToCommunity={onPublishToCommunity}/>}{tab==="builds"&&<BuildsManagerTab savedBuilds={savedBuilds} onLoad={handleLoadBuild} onDelete={handleDeleteBuild} currentState={state} onSave={handleSaveBuild}/>}{tab==="compare"&&<CompareTab savedBuilds={savedBuilds} currentState={state}/>}</div>  {showImport && <ImportDialog onImport={handleImport} onClose={() => setShowImport(false)} />}
   {showShareCard && <ShareCard state={state} onClose={() => setShowShareCard(false)} />}
 
   {/* Mobile bottom nav */}
