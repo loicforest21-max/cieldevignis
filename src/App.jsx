@@ -7,6 +7,19 @@ import { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage, DungeonsPag
 
 function SiteApp() {
   const [page, setPage] = useState("home");
+  // Cross-page: code to pre-load in BuildCreator
+  const [importCode, setImportCode] = useState("");
+  // Cross-page: code to pre-fill in CommunityPage publish form
+  const [communityCode, setCommunityCode] = useState("");
+
+  const goToBuilderWithCode = (code) => {
+    setImportCode(code);
+    setPage("builds");
+  };
+  const goToCommunityWithCode = (code) => {
+    setCommunityCode(code);
+    setPage("community");
+  };
 
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
 
@@ -16,8 +29,8 @@ function SiteApp() {
       <Particles />
       <Navbar page={page} setPage={setPage} />
       {page === "home" && <HomePage setPage={setPage} />}
-      {page === "builds" && <BuildsPage />}
-      {page === "community" && <CommunityPage setPage={setPage} />}
+      {page === "builds" && <BuildsPage importCode={importCode} onClearImportCode={() => setImportCode("")} onPublishToCommunity={goToCommunityWithCode} />}
+      {page === "community" && <CommunityPage setPage={setPage} initialCode={communityCode} onClearInitialCode={() => setCommunityCode("")} onEditInBuilder={goToBuilderWithCode} />}
       {page === "dungeons" && <DungeonsPage />}
       {page === "wiki" && <WikiPage />}
       {page === "map" && <MapPage />}
