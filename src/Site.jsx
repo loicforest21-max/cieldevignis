@@ -636,10 +636,10 @@ function WikiPage() {
   );
 }
 
-function BuildsPage() {
+function BuildsPage({ importCode, onClearImportCode, onPublishToCommunity }) {
   return (
     <div style={{ position: "relative", zIndex: 1, paddingTop: 72 }}>
-      <BuildCreator />
+      <BuildCreator initialCode={importCode} onClearInitialCode={onClearImportCode} onPublishToCommunity={onPublishToCommunity} />
     </div>
   );
 }
@@ -943,7 +943,7 @@ function DungeonsPage() {
 // ═══════════════════════════════════════════════════
 // COMMUNITY PAGE — Browse & share builds
 // ═══════════════════════════════════════════════════
-function CommunityPage({ setPage }) {
+function CommunityPage({ setPage, initialCode, onClearInitialCode, onEditInBuilder }) {
   const [builds, setBuilds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -974,6 +974,15 @@ function CommunityPage({ setPage }) {
     setLoading(false);
   };
   useEffect(() => { loadBuilds(); }, []);
+
+  // Auto-open publish form if coming from BuildCreator with a code
+  useEffect(() => {
+    if (initialCode) {
+      setPubCode(initialCode);
+      setShowPublish(true);
+      if (onClearInitialCode) onClearInitialCode();
+    }
+  }, [initialCode]);
 
   useEffect(() => {
     if (!pubCode.trim()) { setDecoded(null); setDecodedStats(null); return; }
@@ -1135,7 +1144,10 @@ function CommunityPage({ setPage }) {
                     </div>
                     {b.description && <div style={{ fontSize: 13, color: G.muted, marginBottom: 6, lineHeight: 1.5 }}>{b.description}</div>}
                   </div>
-                  <button onClick={() => copyCode(b.code, b.id)} style={{ padding: "8px 14px", borderRadius: "var(--radius-md)", border: "1px solid " + (isCopied ? G.teal : G.border), background: isCopied ? G.teal + "15" : "transparent", color: isCopied ? G.teal : G.muted, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "var(--fb)", flexShrink: 0 }}>{isCopied ? "✓ Copié !" : "📋 Code"}</button>
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    {onEditInBuilder && <button onClick={() => onEditInBuilder(b.code)} style={{ padding: "8px 14px", borderRadius: "var(--radius-md)", border: "1px solid " + G.teal + "40", background: G.teal + "10", color: G.teal, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "var(--fb)" }}>⚔️ Modifier</button>}
+                    <button onClick={() => copyCode(b.code, b.id)} style={{ padding: "8px 14px", borderRadius: "var(--radius-md)", border: "1px solid " + (isCopied ? G.teal : G.border), background: isCopied ? G.teal + "15" : "transparent", color: isCopied ? G.teal : G.muted, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "var(--fb)" }}>{isCopied ? "✓ Copié !" : "📋 Code"}</button>
+                  </div>
                 </div>
                 <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: bAugs.length > 0 || Object.keys(bStats).length > 0 ? 8 : 0 }}>
                   {race && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: race.color + "15", color: race.color, fontWeight: 700 }}>{race.emoji} {race.name}</span>}
