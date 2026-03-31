@@ -983,12 +983,18 @@ function CommunityPage({ setPage }) {
       try {
         const aRace = getActiveRace(d.selectedRace, d.selectedEvo || d.selectedRace?.id);
         const inn = computeInnates(aRace, d.primaryClass, d.primaryTier, d.secondaryClass, d.secondaryTier, d.level);
-        const augBonus = computeAugBonuses(d.selectedAugments);
-        const postBonus = computeClassPassiveScaling(d.primaryClass, d.secondaryClass, aRace, inn, d.skillPoints, augBonus, d.level, d.primaryTier, d.secondaryTier);
+        // Pass 1 : flat aug bonuses
+        const flatAug = computeAugBonuses(d.selectedAugments, d.augBonus || {});
+        const bs1 = {}; STATS.forEach(s => { bs1[s.key] = computeStat(s, aRace, inn, d.skillPoints, flatAug).total; });
+        // Pass 2 : scaling aug bonuses (needs base stats)
+        const augBonus = computeAugBonuses(d.selectedAugments, d.augBonus || {}, bs1);
+        const bs2 = {}; STATS.forEach(s => { bs2[s.key] = computeStat(s, aRace, inn, d.skillPoints, augBonus).total; });
+        // Pass 3 : class passive scaling
+        const postBonus = computeClassPassiveScaling(d.primaryClass, d.secondaryClass, bs2);
         const stats = {};
         STATS.forEach(s => { const c = computeStat(s, aRace, inn, d.skillPoints, augBonus, postBonus); stats[s.key] = c.total; });
         setDecodedStats(stats);
-      } catch { setDecodedStats(null); }
+      } catch(e) { console.error("decodedStats error:", e); setDecodedStats(null); }
     } else { setDecodedStats(null); }
   }, [pubCode]);
 
