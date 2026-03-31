@@ -9,7 +9,7 @@ import {
 } from './data.js';
 import {
   getActiveRace, computeInnates, computeAugBonuses, computeStat,
-  computeClassPassiveScaling, fmt, encodeBuild, decodeBuild,
+  computeClassPassiveScaling, computeAugMultipliers, fmt, encodeBuild, decodeBuild,
   loadSavedBuilds, saveBuildsList,
 } from './engine.js';
 import { G } from './styles.jsx';
@@ -102,12 +102,58 @@ function ClassTab({primaryClass:pc,setPrimaryClass:spc,secondaryClass:sc,setSeco
 // ═══════════════════════════════════════════
 // TAB: STATS
 // ═══════════════════════════════════════════
-function StatsTab({level,setLevel,prestige,setPrestige,skillPoints:sp,setSkillPoints:setSP,totalSP,usedSP,selectedRace:race,primaryClass:c1,primaryTier:t1,secondaryClass:c2,secondaryTier:t2,augBonus,postBonus,selectedEvo}){const rem=totalSP-usedSP;const aRace=getActiveRace(race,selectedEvo||race?.id);const inn=computeInnates(aRace,c1,t1,c2,t2,level);const add=(k,a)=>{setSP(p=>{const c=p[k]||0;const nv=Math.max(0,c+a);if(nv-c>rem&&a>0)return p;return{...p,[k]:nv}})};return(<div><div style={{display:"flex",gap:12,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:6}}><label style={{fontSize:12,color:"#aaa",fontWeight:700}}>Niveau</label><input type="number" min={1} max={200} value={level} onChange={e=>{const v=parseInt(e.target.value)||1;setLevel(Math.max(1,Math.min(200,v)))}} style={{width:64,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#f5a623",padding:"6px 10px",fontSize:15,fontWeight:800,textAlign:"center",fontFamily:"var(--fb)",outline:"none"}}/></div><div style={{display:"flex",alignItems:"center",gap:6}}><label style={{fontSize:12,color:"#aaa",fontWeight:700}}>Prestige</label><input type="number" min={0} max={20} value={prestige} onChange={e=>{const v=parseInt(e.target.value)||0;setPrestige(Math.max(0,Math.min(20,v)))}} style={{width:52,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#e74c3c",padding:"6px 8px",fontSize:15,fontWeight:800,textAlign:"center",fontFamily:"var(--fb)",outline:"none"}}/></div><div style={{background:rem>0?"#2ed57312":"#ff6b6b12",padding:"6px 14px",borderRadius:"var(--radius-md)",border:"1px solid "+(rem>0?"#2ed573":"#ff6b6b")+"30",fontSize:13,fontWeight:700,color:rem>0?"#2ed573":"#ff6b6b"}}>{rem} / {totalSP} SP</div><button onClick={()=>setSP({})} style={{...bs("#ff6b6b"),padding:"6px 14px",minWidth:"auto",fontSize:11}}>Reset</button></div>{(race||c1||c2)&&STATS.some(s=>inn[s.key].perLevel>0)&&(<div style={{background:"var(--card)",borderRadius:12,padding:12,marginBottom:14,border:"1px solid var(--brd)"}}><div style={{fontSize:12,fontWeight:800,color:"#fff",marginBottom:8}}>📈 Innate Bonuses</div><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))",gap:6}}>{STATS.filter(s=>inn[s.key].perLevel>0).map(s=>{const i=inn[s.key];return(<div key={s.key} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"5px 10px",background:s.color+"08",borderRadius:8,border:"1px solid "+s.color+"18"}}><span style={{fontSize:12,color:"#ccc"}}>{s.icon} {s.name}</span><span style={{fontSize:12,fontWeight:700,color:s.color}}>+{i.perLevel.toFixed(2)}/niv <span style={{color:"#666"}}>(Total +{i.total.toFixed(1)} @ Niv {level})</span></span></div>)})}</div></div>)}<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:8}}>{STATS.map(stat=>{const pts=sp[stat.key]||0;const comp=computeStat(stat,aRace,inn,sp,augBonus,postBonus);return(<div key={stat.key} style={{background:"var(--card)",borderRadius:12,padding:12,border:"1px solid "+stat.color+"18"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:18}}>{stat.icon}</span><div><div style={{fontSize:13,fontWeight:700,color:stat.color}}>{stat.name}</div><div style={{fontSize:9,color:"#555"}}>Niv. {pts} • {stat.per_level}{stat.mode!=="flat"?"%":""}/pt{stat.mode==="mult"?" (×race)":stat.mode==="haste"?" (×race + offset)":""}</div></div></div><div style={{textAlign:"right"}}><div style={{fontSize:20,fontWeight:900,color:stat.color}}>{fmt(comp.total,stat.mode)}</div></div></div><div style={{display:"flex",gap:4,fontSize:9,color:"#555",marginBottom:6,flexWrap:"wrap"}}>{stat.mode==="mult"&&aRace&&<span style={{background:"#fff1",padding:"1px 5px",borderRadius:4}}>Race: {(aRace.attrs[stat.key]===0||aRace.attrs[stat.key]===undefined)?"×1.0 (aucun)":`×${aRace.attrs[stat.key]}`}</span>}{stat.mode==="haste"&&aRace&&<span style={{background:"#fff1",padding:"1px 5px",borderRadius:4}}>Race: {aRace.attrs[stat.key]||1} ({((aRace.attrs[stat.key]||1)-1)*100>=0?"+":""}{(((aRace.attrs[stat.key]||1)-1)*100).toFixed(0)}% base, ×gains)</span>}{stat.mode!=="mult"&&stat.mode!=="haste"&&comp.base!==0&&<span style={{background:"#fff1",padding:"1px 5px",borderRadius:4}}>Race: +{comp.base}</span>}{comp.fromInn>0&&<span style={{background:"#fff1",padding:"1px 5px",borderRadius:4}}>Innate: +{comp.fromInn.toFixed(1)}</span>}{comp.fromSP>0&&<span style={{background:stat.color+"15",padding:"1px 5px",borderRadius:4,color:stat.color}}>SP: +{comp.fromSP.toFixed(1)}</span>}{comp.fromAug!==0&&<span style={{background:comp.fromAug>0?"#f5a62320":"#ff6b6b20",padding:"1px 5px",borderRadius:4,color:comp.fromAug>0?"#f5a623":"#ff6b6b"}}>Aug: {comp.fromAug>0?"+":""}{comp.fromAug}</span>}{comp.fromPost>0&&<span style={{background:"#a55eea20",padding:"1px 5px",borderRadius:4,color:"#a55eea"}}>Passive: +{comp.fromPost.toFixed(1)}</span>}</div><div style={{display:"flex",gap:4,alignItems:"center"}}><button onClick={()=>add(stat.key,-10)} style={bs("#ff6b6b",true)}>-10</button><button onClick={()=>add(stat.key,-1)} style={bs("#ff6b6b",true)}>-1</button><div style={{flex:1,height:6,background:"#0e1828",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:Math.min(pts/4,100)+"%",background:"linear-gradient(90deg,"+stat.color+"55,"+stat.color+")",borderRadius:3,transition:"width 0.15s"}}/></div><button onClick={()=>add(stat.key,1)} style={bs("#2ed573",true)}>+1</button><button onClick={()=>add(stat.key,10)} style={bs("#2ed573",true)}>+10</button></div></div>)})}</div></div>)}
+function StatsTab({level,setLevel,prestige,setPrestige,skillPoints:sp,setSkillPoints:setSP,totalSP,usedSP,selectedRace:race,primaryClass:c1,primaryTier:t1,secondaryClass:c2,secondaryTier:t2,augBonus,postBonus,augMult,augLock,selectedEvo}){const rem=totalSP-usedSP;const aRace=getActiveRace(race,selectedEvo||race?.id);const inn=computeInnates(aRace,c1,t1,c2,t2,level);const add=(k,a)=>{setSP(p=>{const c=p[k]||0;const nv=Math.max(0,c+a);if(nv-c>rem&&a>0)return p;return{...p,[k]:nv}})};return(<div><div style={{display:"flex",gap:12,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:6}}><label style={{fontSize:12,color:"#aaa",fontWeight:700}}>Niveau</label><input type="number" min={1} max={200} value={level} onChange={e=>{const v=parseInt(e.target.value)||1;setLevel(Math.max(1,Math.min(200,v)))}} style={{width:64,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#f5a623",padding:"6px 10px",fontSize:15,fontWeight:800,textAlign:"center",fontFamily:"var(--fb)",outline:"none"}}/></div><div style={{display:"flex",alignItems:"center",gap:6}}><label style={{fontSize:12,color:"#aaa",fontWeight:700}}>Prestige</label><input type="number" min={0} max={20} value={prestige} onChange={e=>{const v=parseInt(e.target.value)||0;setPrestige(Math.max(0,Math.min(20,v)))}} style={{width:52,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#e74c3c",padding:"6px 8px",fontSize:15,fontWeight:800,textAlign:"center",fontFamily:"var(--fb)",outline:"none"}}/></div><div style={{background:rem>0?"#2ed57312":"#ff6b6b12",padding:"6px 14px",borderRadius:"var(--radius-md)",border:"1px solid "+(rem>0?"#2ed573":"#ff6b6b")+"30",fontSize:13,fontWeight:700,color:rem>0?"#2ed573":"#ff6b6b"}}>{rem} / {totalSP} SP</div><button onClick={()=>setSP({})} style={{...bs("#ff6b6b"),padding:"6px 14px",minWidth:"auto",fontSize:11}}>Reset</button></div>{(race||c1||c2)&&STATS.some(s=>inn[s.key].perLevel>0)&&(<div style={{background:"var(--card)",borderRadius:12,padding:12,marginBottom:14,border:"1px solid var(--brd)"}}><div style={{fontSize:12,fontWeight:800,color:"#fff",marginBottom:8}}>📈 Innate Bonuses</div><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))",gap:6}}>{STATS.filter(s=>inn[s.key].perLevel>0).map(s=>{const i=inn[s.key];return(<div key={s.key} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"5px 10px",background:s.color+"08",borderRadius:8,border:"1px solid "+s.color+"18"}}><span style={{fontSize:12,color:"#ccc"}}>{s.icon} {s.name}</span><span style={{fontSize:12,fontWeight:700,color:s.color}}>+{i.perLevel.toFixed(2)}/niv <span style={{color:"#666"}}>(Total +{i.total.toFixed(1)} @ Niv {level})</span></span></div>)})}</div></div>)}<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:8}}>{STATS.map(stat=>{const pts=sp[stat.key]||0;const compRaw=computeStat(stat,aRace,inn,sp,augBonus,postBonus);let cTotal=compRaw.total;if(augMult&&augMult[stat.key]!=null)cTotal*=augMult[stat.key];if(augLock&&augLock[stat.key]!=null)cTotal=augLock[stat.key];const comp={...compRaw,total:cTotal};return(<div key={stat.key} style={{background:"var(--card)",borderRadius:12,padding:12,border:"1px solid "+stat.color+"18"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:18}}>{stat.icon}</span><div><div style={{fontSize:13,fontWeight:700,color:stat.color}}>{stat.name}</div><div style={{fontSize:9,color:"#555"}}>Niv. {pts} • {stat.per_level}{stat.mode!=="flat"?"%":""}/pt{stat.mode==="mult"?" (×race)":stat.mode==="haste"?" (×race + offset)":""}</div></div></div><div style={{textAlign:"right"}}><div style={{fontSize:20,fontWeight:900,color:stat.color}}>{fmt(comp.total,stat.mode)}</div></div></div><div style={{display:"flex",gap:4,fontSize:9,color:"#555",marginBottom:6,flexWrap:"wrap"}}>{stat.mode==="mult"&&aRace&&<span style={{background:"#fff1",padding:"1px 5px",borderRadius:4}}>Race: {(aRace.attrs[stat.key]===0||aRace.attrs[stat.key]===undefined)?"×1.0 (aucun)":`×${aRace.attrs[stat.key]}`}</span>}{stat.mode==="haste"&&aRace&&<span style={{background:"#fff1",padding:"1px 5px",borderRadius:4}}>Race: {aRace.attrs[stat.key]||1} ({((aRace.attrs[stat.key]||1)-1)*100>=0?"+":""}{(((aRace.attrs[stat.key]||1)-1)*100).toFixed(0)}% base, ×gains)</span>}{stat.mode!=="mult"&&stat.mode!=="haste"&&comp.base!==0&&<span style={{background:"#fff1",padding:"1px 5px",borderRadius:4}}>Race: +{comp.base}</span>}{comp.fromInn>0&&<span style={{background:"#fff1",padding:"1px 5px",borderRadius:4}}>Innate: +{comp.fromInn.toFixed(1)}</span>}{comp.fromSP>0&&<span style={{background:stat.color+"15",padding:"1px 5px",borderRadius:4,color:stat.color}}>SP: +{comp.fromSP.toFixed(1)}</span>}{comp.fromAug!==0&&<span style={{background:comp.fromAug>0?"#f5a62320":"#ff6b6b20",padding:"1px 5px",borderRadius:4,color:comp.fromAug>0?"#f5a623":"#ff6b6b"}}>Aug: {comp.fromAug>0?"+":""}{comp.fromAug}</span>}{comp.fromPost>0&&<span style={{background:"#a55eea20",padding:"1px 5px",borderRadius:4,color:"#a55eea"}}>Passive: +{comp.fromPost.toFixed(1)}</span>}</div><div style={{display:"flex",gap:4,alignItems:"center"}}><button onClick={()=>add(stat.key,-10)} style={bs("#ff6b6b",true)}>-10</button><button onClick={()=>add(stat.key,-1)} style={bs("#ff6b6b",true)}>-1</button><div style={{flex:1,height:6,background:"#0e1828",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:Math.min(pts/4,100)+"%",background:"linear-gradient(90deg,"+stat.color+"55,"+stat.color+")",borderRadius:3,transition:"width 0.15s"}}/></div><button onClick={()=>add(stat.key,1)} style={bs("#2ed573",true)}>+1</button><button onClick={()=>add(stat.key,10)} style={bs("#2ed573",true)}>+10</button></div></div>)})}</div></div>)}
 
 // ═══════════════════════════════════════════
 // TAB: AUGMENTS (with stat bonus input)
 // ═══════════════════════════════════════════
-function AugmentsTab({selectedAugments:sa,setSelectedAugments:setSA,augBonus,setAugBonus}){const[f,setF]=useState("ALL");const fl=f==="ALL"?AUGMENTS:AUGMENTS.filter(a=>a.tier===f);const gr={};TIER_ORDER.forEach(t=>{gr[t]=fl.filter(a=>a.tier===t)});const tog=a=>setSA(p=>p.find(x=>x.id===a.id)?p.filter(x=>x.id!==a.id):[...p,a]);return(<div><div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>{["ALL",...TIER_ORDER].map(t=>(<button key={t} onClick={()=>setF(t)} style={{padding:"6px 14px",borderRadius:"var(--radius-md)",border:"2px solid "+(f===t?(TIER_COLORS[t]||"#f5a623"):"var(--brd)"),background:f===t?(TIER_COLORS[t]||"#f5a623")+"12":"var(--bg)",color:f===t?(TIER_COLORS[t]||"#f5a623"):"#444",fontWeight:700,fontSize:12,cursor:"pointer"}}>{t==="ALL"?"Tous":t}</button>))}<span style={{marginLeft:"auto",fontSize:12,color:"#666"}}>{sa.length} sélectionnés</span></div>{TIER_ORDER.map(tier=>{const augs=gr[tier];if(!augs?.length)return null;return(<div key={tier} style={{marginBottom:14}}><div style={{fontSize:11,fontWeight:800,color:TIER_COLORS[tier],marginBottom:6,textTransform:"uppercase",letterSpacing:1.5}}>{tier} ({augs.length})</div><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(260px, 1fr))",gap:6}}>{augs.map(aug=>{const sel=sa.find(a=>a.id===aug.id);return(<div key={aug.id} onClick={()=>tog(aug)} style={{background:sel?TIER_COLORS[aug.tier]+"0d":"var(--card)",border:"2px solid "+(sel?TIER_COLORS[aug.tier]:"var(--brd)"),borderRadius:"var(--radius-md)",padding:"8px 12px",cursor:"pointer"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:12,fontWeight:700,color:sel?TIER_COLORS[aug.tier]:"#bbb"}}>{aug.name}</span><span style={{fontSize:9,color:TIER_COLORS[aug.tier],background:TIER_COLORS[aug.tier]+"15",padding:"2px 6px",borderRadius:5}}>{aug.tier}</span></div><div style={{fontSize:10,color:"#666",marginTop:3}}>{aug.desc}</div>{aug.bonuses&&<div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>{Object.entries(aug.bonuses).map(([k,v])=>{const st=STATS.find(s=>s.key===k);return st?<span key={k} style={{fontSize:9,background:v>0?"#2ed57318":"#ff6b6b18",color:v>0?"#2ed573":"#ff6b6b",padding:"1px 6px",borderRadius:4,fontWeight:700}}>{v>0?"+":""}{v}{st.mode!=="flat"?"%":""} {st.name}</span>:null})}</div>}{aug.scaling&&<div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>{aug.scaling.map((sc,i)=>{const src=STATS.find(s=>s.key===sc.source);const tgt=STATS.find(s=>s.key===sc.target);return <span key={i} style={{fontSize:9,background:"#a55eea18",color:"#a55eea",padding:"1px 6px",borderRadius:4,fontWeight:700}}>{src?.icon} {(sc.ratio*100).toFixed(0)}% {src?.name} → {tgt?.icon} {tgt?.name}</span>})}</div>}</div>)})}</div></div>)})}
+function AugmentsTab({selectedAugments:sa,setSelectedAugments:setSA,augBonus,setAugBonus}){
+  const[f,setF]=useState("ALL");
+  const[expanded,setExpanded]=useState(new Set());
+  const fl=f==="ALL"?AUGMENTS:AUGMENTS.filter(a=>a.tier===f);
+  const gr={};TIER_ORDER.forEach(t=>{gr[t]=fl.filter(a=>a.tier===t)});
+  const tog=a=>setSA(p=>p.find(x=>x.id===a.id)?p.filter(x=>x.id!==a.id):[...p,a]);
+  const togExp=(id,e)=>{e.stopPropagation();setExpanded(p=>{const n=new Set(p);n.has(id)?n.delete(id):n.add(id);return n;});};
+  return(<div>
+    <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
+      {["ALL",...TIER_ORDER].map(t=>(<button key={t} onClick={()=>setF(t)} style={{padding:"6px 14px",borderRadius:"var(--radius-md)",border:"2px solid "+(f===t?(TIER_COLORS[t]||"#f5a623"):"var(--brd)"),background:f===t?(TIER_COLORS[t]||"#f5a623")+"12":"var(--bg)",color:f===t?(TIER_COLORS[t]||"#f5a623"):"#444",fontWeight:700,fontSize:12,cursor:"pointer"}}>{t==="ALL"?"Tous":t}</button>))}
+      <span style={{marginLeft:"auto",fontSize:12,color:"#666"}}>{sa.length} sélectionnés</span>
+    </div>
+    {TIER_ORDER.map(tier=>{const augs=gr[tier];if(!augs?.length)return null;return(<div key={tier} style={{marginBottom:14}}>
+      <div style={{fontSize:11,fontWeight:800,color:TIER_COLORS[tier],marginBottom:6,textTransform:"uppercase",letterSpacing:1.5}}>{tier} ({augs.length})</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))",gap:6}}>
+        {augs.map(aug=>{const sel=sa.find(a=>a.id===aug.id);const isExp=expanded.has(aug.id);const tc=TIER_COLORS[aug.tier];
+        return(<div key={aug.id} style={{background:sel?tc+"0e":"var(--card)",border:"2px solid "+(sel?tc:"var(--brd)"),borderRadius:"var(--radius-md)",padding:"10px 12px",cursor:"pointer",transition:"border-color .15s"}} onClick={()=>tog(aug)}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+            <span style={{fontSize:12,fontWeight:700,color:sel?tc:"#bbb",flex:1}}>{aug.name}</span>
+            <div style={{display:"flex",gap:4,alignItems:"center"}}>
+              {aug.dpsImpact&&<span title="Impacte le DPS Meter" style={{fontSize:8,background:"#f5a62318",color:"#f5a623",padding:"1px 5px",borderRadius:4,fontWeight:700}}>⚡ DPS</span>}
+              <span style={{fontSize:9,color:tc,background:tc+"15",padding:"2px 6px",borderRadius:5}}>{aug.tier}</span>
+            </div>
+          </div>
+          <div style={{fontSize:10,color:"#666",marginTop:3,lineHeight:1.4}}>{aug.desc}</div>
+          {(aug.bonuses||aug.scaling)&&<div style={{display:"flex",gap:4,marginTop:5,flexWrap:"wrap"}}>
+            {aug.bonuses&&Object.entries(aug.bonuses).map(([k,v])=>{const st=STATS.find(s=>s.key===k);return st?<span key={k} style={{fontSize:9,background:v>0?"#2ed57318":"#ff6b6b18",color:v>0?"#2ed573":"#ff6b6b",padding:"1px 6px",borderRadius:4,fontWeight:700}}>{v>0?"+":""}{v}{st.mode!=="flat"?"%":""} {st.name}</span>:null;})}
+            {aug.scaling&&aug.scaling.map((sc,i)=>{const src=STATS.find(s=>s.key===sc.source);const tgt=STATS.find(s=>s.key===sc.target);return <span key={i} style={{fontSize:9,background:"#a55eea18",color:"#a55eea",padding:"1px 6px",borderRadius:4,fontWeight:700}}>{src?.icon}{(sc.ratio*100).toFixed(0)}% {src?.name}→{tgt?.icon}{tgt?.name}</span>;})}
+          </div>}
+          {aug.sections&&<div>
+            <button onClick={e=>togExp(aug.id,e)} style={{marginTop:6,background:"transparent",border:"none",color:"#555",fontSize:10,cursor:"pointer",padding:"2px 0",display:"flex",alignItems:"center",gap:3,fontWeight:600}}>
+              {isExp?"▲ Masquer":"▼ Détails"}
+            </button>
+            {isExp&&<div style={{marginTop:6,display:"flex",flexDirection:"column",gap:4}} onClick={e=>e.stopPropagation()}>
+              {aug.sections.map((sec,i)=>(
+                <div key={i} style={{background:(sec.color||"#8adf9e")+"10",border:"1px solid "+(sec.color||"#8adf9e")+"25",borderLeft:"3px solid "+(sec.color||"#8adf9e"),borderRadius:"0 6px 6px 0",padding:"5px 8px"}}>
+                  {sec.title&&<div style={{fontSize:9,fontWeight:800,color:sec.color||"#8adf9e",textTransform:"uppercase",letterSpacing:0.8,marginBottom:2}}>{sec.title}</div>}
+                  <div style={{fontSize:10,color:"#ccc",lineHeight:1.5,whiteSpace:"pre-line"}}>{sec.body}</div>
+                </div>
+              ))}
+              {aug.dpsImpact?.note&&<div style={{fontSize:9,color:"#f5a623",fontStyle:"italic",marginTop:2}}>⚠ {aug.dpsImpact.note}</div>}
+            </div>}
+          </div>}
+        </div>);})}
+      </div>
+    </div>);})}
+
 {/* Augment stat bonuses input */}
 <div style={{marginTop:16,background:"var(--card)",borderRadius:8,padding:16,border:"1px solid var(--brd)"}}>
 <div style={{fontSize:14,fontWeight:800,color:"#f5a623",marginBottom:4,fontFamily:"var(--fd)"}}>📊 Bonus manuels</div>
@@ -119,11 +165,11 @@ function AugmentsTab({selectedAugments:sa,setSelectedAugments:setSA,augBonus,set
 // ═══════════════════════════════════════════
 // TAB: SUMMARY
 // ═══════════════════════════════════════════
-function SummaryTab({state:s,onPublishToCommunity}){const{selectedRace:race0,selectedEvo:sEvo,primaryClass:c1,secondaryClass:c2,primaryTier:t1,secondaryTier:t2,level,prestige,skillPoints:sp,selectedAugments:sa,augBonus:manualAug}=s;const race=getActiveRace(race0,sEvo||race0?.id);const totalSP=12+(level-1)*5;const usedSP=Object.values(sp).reduce((a,b)=>a+b,0);const inn=computeInnates(race,c1,t1,c2,t2,level);const flatAug=computeAugBonuses(sa,manualAug);const baseStats={};STATS.forEach(s=>{baseStats[s.key]=computeStat(s,race,inn,sp,flatAug).total});const augBonus=computeAugBonuses(sa,manualAug,baseStats);const baseStats2={};STATS.forEach(s=>{baseStats2[s.key]=computeStat(s,race,inn,sp,augBonus).total});const postBonus=computeClassPassiveScaling(c1,c2,baseStats2);const[copied,setCopied]=useState(false);const code=encodeBuild(s);return(<div><div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}><button onClick={()=>{navigator.clipboard?.writeText(code);setCopied(true);setTimeout(()=>setCopied(false),2000)}} style={{padding:"8px 16px",borderRadius:"var(--radius-md)",border:"2px solid #f5a62340",background:"#f5a62310",color:"#f5a623",fontWeight:700,fontSize:12,cursor:"pointer"}}>{copied?"✅ Copié !":"📋 Copier le code"}</button>{onPublishToCommunity&&<button onClick={()=>onPublishToCommunity(code)} style={{padding:"8px 16px",borderRadius:"var(--radius-md)",border:"2px solid #3dd8c540",background:"#3dd8c510",color:"#3dd8c5",fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>📤 Publier dans la Communauté</button>}<div style={{flex:1,background:"var(--card)",borderRadius:8,padding:"6px 10px",fontSize:10,color:"#444",fontFamily:"monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",border:"1px solid var(--brd)"}}>{code.slice(0,80)}...</div></div>
+function SummaryTab({state:s,onPublishToCommunity}){const{selectedRace:race0,selectedEvo:sEvo,primaryClass:c1,secondaryClass:c2,primaryTier:t1,secondaryTier:t2,level,prestige,skillPoints:sp,selectedAugments:sa,augBonus:manualAug}=s;const race=getActiveRace(race0,sEvo||race0?.id);const totalSP=12+(level-1)*5;const usedSP=Object.values(sp).reduce((a,b)=>a+b,0);const inn=computeInnates(race,c1,t1,c2,t2,level);const flatAug=computeAugBonuses(sa,manualAug);const baseStats={};STATS.forEach(s=>{baseStats[s.key]=computeStat(s,race,inn,sp,flatAug).total});const augBonus=computeAugBonuses(sa,manualAug,baseStats);const baseStats2={};STATS.forEach(s=>{baseStats2[s.key]=computeStat(s,race,inn,sp,augBonus).total});const postBonus=computeClassPassiveScaling(c1,c2,baseStats2);const{mult:augMult4,lock:augLock4}=computeAugMultipliers(sa);const finalStats4={};STATS.forEach(st=>{let v=computeStat(st,race,inn,sp,augBonus,postBonus).total;if(augMult4[st.key]!=null)v*=augMult4[st.key];if(augLock4[st.key]!=null)v=augLock4[st.key];finalStats4[st.key]=v;});const[copied,setCopied]=useState(false);const code=encodeBuild(s);return(<div><div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}><button onClick={()=>{navigator.clipboard?.writeText(code);setCopied(true);setTimeout(()=>setCopied(false),2000)}} style={{padding:"8px 16px",borderRadius:"var(--radius-md)",border:"2px solid #f5a62340",background:"#f5a62310",color:"#f5a623",fontWeight:700,fontSize:12,cursor:"pointer"}}>{copied?"✅ Copié !":"📋 Copier le code"}</button>{onPublishToCommunity&&<button onClick={()=>onPublishToCommunity(code)} style={{padding:"8px 16px",borderRadius:"var(--radius-md)",border:"2px solid #3dd8c540",background:"#3dd8c510",color:"#3dd8c5",fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>📤 Publier dans la Communauté</button>}<div style={{flex:1,background:"var(--card)",borderRadius:8,padding:"6px 10px",fontSize:10,color:"#444",fontFamily:"monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",border:"1px solid var(--brd)"}}>{code.slice(0,80)}...</div></div>
 <div style={{background:"linear-gradient(135deg,#0e1828,#111d3a)",borderRadius:"var(--radius-md)",padding:18,border:"1px solid #1a2d4f",marginBottom:14}}><div style={{display:"flex",gap:20,flexWrap:"wrap"}}>{[{l:"PRESTIGE",v:prestige,c:prestige>0?"#e74c3c":"#fff"},{l:"LEVEL",v:level,c:"#fff"}].map(x=>(<div key={x.l} style={{flex:"1 1 80px"}}><div style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:2}}>{x.l}</div><div style={{fontSize:22,fontWeight:900,color:x.c}}>{x.v}</div></div>))}<div style={{flex:"1 1 120px"}}><div style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:2}}>RACE</div>{race?<div><div style={{fontSize:16,fontWeight:800,color:race.color}}>{race.emoji} {race.activeName||race.name}</div>{race.activeStage&&race.activeStage!=="base"&&<div style={{fontSize:10,color:SC[race.activeStage]}}>{SL[race.activeStage]}</div>}</div>:<div style={{color:"#444"}}>—</div>}</div>{[{l:"PRIMARY CLASS",o:c1,t:t1},{l:"SECONDARY CLASS",o:c2,t:t2}].map(x=>(<div key={x.l} style={{flex:"1 1 140px"}}><div style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:2}}>{x.l}</div>{x.o?<div><span style={{fontSize:14,fontWeight:800,color:x.o.color}}>{x.o.emoji} {x.o.name}</span><div style={{fontSize:10,color:CLASS_TIER_COLORS[x.t]}}>{CLASS_TIERS[x.t]}</div></div>:<div style={{color:"#444"}}>—</div>}</div>))}</div></div>
 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}><div style={{display:"flex",flexDirection:"column",gap:14}}>
 {/* Total Attributes */}
-<div style={{background:"var(--card)",borderRadius:8,padding:16,border:"1px solid var(--brd)"}}><div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:10,textTransform:"uppercase",letterSpacing:1.5,fontFamily:"var(--fd)"}}>Total Attributes</div>{STATS.map(stat=>{const comp=computeStat(stat,race,inn,sp,augBonus,postBonus);const pts=sp[stat.key]||0;const mx=stat.mode==="flat"?300:100;const pct=Math.min((Math.abs(comp.total)/mx)*100,100);return(<div key={stat.key} style={{marginBottom:5}}><div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:2}}><span style={{color:pts>0?stat.color:"#888"}}>{stat.icon} <span style={{fontWeight:pts>0?700:400}}>Niv. {pts}</span> {stat.name}</span><span style={{color:stat.color,fontWeight:800,fontSize:13}}>{fmt(comp.total,stat.mode)}</span></div><div style={{height:5,background:"#0e1828",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:"linear-gradient(90deg,"+stat.color+"44,"+stat.color+")",borderRadius:3}}/></div></div>)})}</div>
+<div style={{background:"var(--card)",borderRadius:8,padding:16,border:"1px solid var(--brd)"}}><div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:10,textTransform:"uppercase",letterSpacing:1.5,fontFamily:"var(--fd)"}}>Total Attributes</div>{STATS.map(stat=>{const raw4=computeStat(stat,race,inn,sp,augBonus,postBonus);const comp={...raw4,total:finalStats4[stat.key]??raw4.total};const pts=sp[stat.key]||0;const mx=stat.mode==="flat"?300:100;const pct=Math.min((Math.abs(comp.total)/mx)*100,100);return(<div key={stat.key} style={{marginBottom:5}}><div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:2}}><span style={{color:pts>0?stat.color:"#888"}}>{stat.icon} <span style={{fontWeight:pts>0?700:400}}>Niv. {pts}</span> {stat.name}</span><span style={{color:stat.color,fontWeight:800,fontSize:13}}>{fmt(comp.total,stat.mode)}</span></div><div style={{height:5,background:"#0e1828",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:"linear-gradient(90deg,"+stat.color+"44,"+stat.color+")",borderRadius:3}}/></div></div>)})}</div>
 {/* Innate */}
 <div style={{background:"var(--card)",borderRadius:8,padding:16,border:"1px solid var(--brd)"}}><div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:10,textTransform:"uppercase",letterSpacing:1.5,fontFamily:"var(--fd)"}}>Innate Bonuses</div>{STATS.filter(s=>inn[s.key].perLevel>0).map(stat=>{const i=inn[stat.key];return(<div key={stat.key} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid #ffffff08",fontSize:12}}><span style={{color:"#bbb"}}>{stat.icon} {stat.name}</span><span style={{color:stat.color,fontWeight:600}}>+{i.perLevel.toFixed(2)} par niveau <span style={{color:"#666"}}>(Total +{i.total.toFixed(1)} @ Niv {level})</span></span></div>)})}</div></div>
 <div style={{display:"flex",flexDirection:"column",gap:14}}>
@@ -141,12 +187,14 @@ function SummaryTab({state:s,onPublishToCommunity}){const{selectedRace:race0,sel
 // TAB: DPS METER
 // ═══════════════════════════════════════════
 
-function DpsTab({computedStats,selectedRace,primaryClass,selectedEvo}){
+function DpsTab({computedStats,selectedRace,primaryClass,selectedEvo,selectedAugments}){
+  const sa=selectedAugments||[];
   const[weaponIdx,setWeaponIdx]=useState(0);
   const[customDmg,setCustomDmg]=useState(10);
   const[customSpd,setCustomSpd]=useState(1.5);
   const[customType,setCustomType]=useState("physical");
   const[targetDef,setTargetDef]=useState(0);
+  const[showAugEffects,setShowAugEffects]=useState(true);
 
   const wp=WEAPON_PRESETS[weaponIdx];
   const isCustom=wp.name==="Custom";
@@ -154,11 +202,30 @@ function DpsTab({computedStats,selectedRace,primaryClass,selectedEvo}){
   const baseSpd=isCustom?customSpd:wp.speed;
   const dmgType=isCustom?customType:wp.type;
 
-  const str=computedStats?.strength||0;
-  const sor=computedStats?.sorcery||0;
-  const pre=computedStats?.precision||0;
-  const fer=computedStats?.ferocity||0;
-  const haste=computedStats?.haste||0;
+  let str=computedStats?.strength||0;
+  let sor=computedStats?.sorcery||0;
+  let pre=computedStats?.precision||0;
+  let fer=computedStats?.ferocity||0;
+  let haste=computedStats?.haste||0;
+
+  let globalDmgMult=1.0;
+  const augEffects=[];
+
+  sa.forEach(aug=>{
+    if(!aug.dpsImpact)return;
+    const d=aug.dpsImpact;
+    if(d.strMult){str*=d.strMult;augEffects.push({label:aug.name,effect:`Force ×${d.strMult}`,color:"#ff9f43"});}
+    if(d.sorMult){sor*=d.sorMult;augEffects.push({label:aug.name,effect:`Sorcellerie ×${d.sorMult}`,color:"#a55eea"});}
+    if(d.precLock){pre=0;augEffects.push({label:aug.name,effect:"Précision → 0 (no crit)",color:"#ff6b6b"});}
+    if(d.strPct){str+=str*d.strPct;augEffects.push({label:aug.name,effect:`+${Math.round(d.strPct*100)}% Force${d.note?" ("+d.note+")":""}`,color:"#ff9f43"});}
+    if(d.sorPct){sor+=sor*d.sorPct;augEffects.push({label:aug.name,effect:`+${Math.round(d.sorPct*100)}% Sorcellerie${d.sorPctNote?" ("+d.sorPctNote+")":d.note?" ("+d.note+")":""}`,color:"#a55eea"});}
+    if(d.hastePct){haste+=d.hastePct;augEffects.push({label:aug.name,effect:`+${d.hastePct}% Hâte${d.note?" ("+d.note+")":""}`,color:"#a29bfe"});}
+    if(d.ferPct){fer+=d.ferPct;augEffects.push({label:aug.name,effect:`+${d.ferPct}% Férocité${d.note?" ("+d.note+")":""}`,color:"#ff6348"});}
+    if(d.dmgMult){globalDmgMult+=d.dmgMult;augEffects.push({label:aug.name,effect:`+${Math.round(d.dmgMult*100)}% dégâts globaux`,color:"#2ed573"});}
+    if(d.dmgMultNote){augEffects.push({label:aug.name,effect:d.dmgMultNote,color:"#f5a623",conditional:true});}
+    if(d.sorWeaponConv){augEffects.push({label:aug.name,effect:`75% SOR → dégâts arme`,color:"#a55eea",conditional:true});}
+    if(d.note&&!d.strPct&&!d.sorPct&&!d.hastePct&&!d.ferPct&&!d.dmgMult&&!d.strMult&&!d.sorMult&&!d.precLock&&!d.procs){augEffects.push({label:aug.name,effect:d.note,color:"#888",conditional:true});}
+  });
 
   const dmgMod=dmgType==="magic"?sor:str;
   const modifiedDmg=baseDmg*(1+dmgMod/100);
@@ -168,11 +235,43 @@ function DpsTab({computedStats,selectedRace,primaryClass,selectedEvo}){
   const avgCritMult=1+critChance*(critMultiplier-1);
   const defReduction=Math.min(targetDef,80)/100;
 
-  const dmgPerHit=modifiedDmg*avgCritMult;
-  const dmgPerHitCrit=modifiedDmg*critMultiplier;
+  const dmgPerHit=modifiedDmg*avgCritMult*globalDmgMult;
+  const dmgPerHitCrit=modifiedDmg*critMultiplier*globalDmgMult;
   const rawDps=dmgPerHit*atkSpeed;
-  const effectiveDps=rawDps*(1-defReduction);
-  const burst5s=rawDps*5;
+
+  const procBreakdown=[];
+  let procDpsTotal=0;
+
+  sa.forEach(aug=>{
+    if(!aug.dpsImpact?.procs)return;
+    aug.dpsImpact.procs.forEach(proc=>{
+      if(proc.maxHpRatio||proc.targetHpPct||proc.targetMaxHpPct){
+        procBreakdown.push({label:proc.label,icon:proc.icon,dps:null,note:proc.note||"Dépend des PV"});
+        return;
+      }
+      if(proc.dmgMultOnProc){
+        const procDmg=dmgPerHit*proc.dmgMultOnProc;
+        const rate=1/proc.cd;
+        const dps=procDmg*rate;
+        procDpsTotal+=dps;
+        procBreakdown.push({label:proc.label,icon:proc.icon,dps,procDmg,trigger:`/${proc.cd}s`,canCrit:proc.canCrit,note:proc.note});
+        return;
+      }
+      let procDmg=(proc.flat||0)+(proc.sorRatio||0)*sor+(proc.strRatio||0)*str+(proc.preRatio||0)*pre+(proc.ferRatio||0)*fer;
+      if(proc.canCrit)procDmg*=avgCritMult;
+      let rate=0,triggerLabel="";
+      if(proc.trigger==="cd"){rate=1/(proc.cd||1);triggerLabel=`/${proc.cd}s`;}
+      else if(proc.trigger==="hits"){rate=atkSpeed/(proc.hitsReq||1);triggerLabel=`/${proc.hitsReq} hits`;}
+      else if(proc.trigger==="onhit"){rate=atkSpeed;triggerLabel="/ hit";}
+      const dps=procDmg*rate;
+      procDpsTotal+=dps;
+      procBreakdown.push({label:proc.label,icon:proc.icon,dps,procDmg,trigger:triggerLabel,canCrit:proc.canCrit,note:proc.note,isTrueDmg:proc.isTrueDmg});
+    });
+  });
+
+  const totalDps=rawDps+procDpsTotal;
+  const effectiveDps=(rawDps+procDpsTotal)*(1-defReduction);
+  const burst5s=totalDps*5;
 
   const fmtN=(v,d=1)=>v>=1000?(v/1000).toFixed(1)+"k":v.toFixed(d);
   const StatBox=({label,value,unit,color,sub})=>(
@@ -183,6 +282,8 @@ function DpsTab({computedStats,selectedRace,primaryClass,selectedEvo}){
     </div>
   );
 
+  const hasAugEffects=augEffects.length>0||procBreakdown.length>0;
+
   return(<div>
     <h3 style={{margin:"0 0 16px",fontSize:18,color:"#fff",fontFamily:"var(--fd)",letterSpacing:0.5}}>⚡ DPS Meter</h3>
 
@@ -190,79 +291,55 @@ function DpsTab({computedStats,selectedRace,primaryClass,selectedEvo}){
       <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:10,fontFamily:"var(--fd)"}}>🗡️ Arme</div>
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:isCustom?12:0}}>
         {WEAPON_PRESETS.map((w,i)=>{const sel=weaponIdx===i;return(
-          <button key={w.name} onClick={()=>setWeaponIdx(i)} style={{
-            padding:"8px 14px",borderRadius:"var(--radius-md)",border:"2px solid "+(sel?"#f5a623":"var(--brd)"),
-            background:sel?"#f5a62312":"var(--bg)",color:sel?"#f5a623":"#7c8db5",
-            fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontFamily:"var(--fb)",
-          }}>{w.icon} {w.name}</button>
+          <button key={w.name} onClick={()=>setWeaponIdx(i)} style={{padding:"8px 14px",borderRadius:"var(--radius-md)",border:"2px solid "+(sel?"#f5a623":"var(--brd)"),background:sel?"#f5a62312":"var(--bg)",color:sel?"#f5a623":"#7c8db5",fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontFamily:"var(--fb)"}}>{w.icon} {w.name}</button>
         )})}
       </div>
-      {isCustom&&(
-        <div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <label style={{fontSize:11,color:"#aaa",fontWeight:700}}>Dégâts</label>
-            <input type="number" step="0.5" value={customDmg} onChange={e=>setCustomDmg(parseFloat(e.target.value)||1)}
-              style={{width:64,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#f5a623",padding:"6px 8px",fontSize:13,fontWeight:700,textAlign:"center"}}/>
-          </div>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <label style={{fontSize:11,color:"#aaa",fontWeight:700}}>Vitesse</label>
-            <input type="number" step="0.1" value={customSpd} onChange={e=>setCustomSpd(parseFloat(e.target.value)||0.5)}
-              style={{width:56,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#a29bfe",padding:"6px 8px",fontSize:13,fontWeight:700,textAlign:"center"}}/>
-            <span style={{fontSize:10,color:"#555"}}>/s</span>
-          </div>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <label style={{fontSize:11,color:"#aaa",fontWeight:700}}>Type</label>
-            <select value={customType} onChange={e=>setCustomType(e.target.value)}
-              style={{background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#ccc",padding:"6px 10px",fontSize:12}}>
-              <option value="physical">⚔️ Physique</option>
-              <option value="magic">✨ Magique</option>
-            </select>
-          </div>
-        </div>
-      )}
+      {isCustom&&(<div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:6}}><label style={{fontSize:11,color:"#aaa",fontWeight:700}}>Dégâts</label><input type="number" step="0.5" value={customDmg} onChange={e=>setCustomDmg(parseFloat(e.target.value)||1)} style={{width:64,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#f5a623",padding:"6px 8px",fontSize:13,fontWeight:700,textAlign:"center"}}/></div>
+        <div style={{display:"flex",alignItems:"center",gap:6}}><label style={{fontSize:11,color:"#aaa",fontWeight:700}}>Vitesse</label><input type="number" step="0.1" value={customSpd} onChange={e=>setCustomSpd(parseFloat(e.target.value)||0.5)} style={{width:56,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#a29bfe",padding:"6px 8px",fontSize:13,fontWeight:700,textAlign:"center"}}/><span style={{fontSize:10,color:"#555"}}>/s</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:6}}><label style={{fontSize:11,color:"#aaa",fontWeight:700}}>Type</label><select value={customType} onChange={e=>setCustomType(e.target.value)} style={{background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#ccc",padding:"6px 10px",fontSize:12}}><option value="physical">⚔️ Physique</option><option value="magic">✨ Magique</option></select></div>
+      </div>)}
     </div>
 
     <div style={{background:"var(--card)",borderRadius:8,padding:16,border:"1px solid var(--brd)",marginBottom:16}}>
       <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
         <div style={{fontSize:13,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>🛡️ Défense cible</div>
-        <input type="number" min={0} max={80} value={targetDef} onChange={e=>setTargetDef(Math.max(0,Math.min(80,parseInt(e.target.value)||0)))}
-          style={{width:56,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#54a0ff",padding:"6px 8px",fontSize:14,fontWeight:700,textAlign:"center"}}/>
+        <input type="number" min={0} max={80} value={targetDef} onChange={e=>setTargetDef(Math.max(0,Math.min(80,parseInt(e.target.value)||0)))} style={{width:56,background:"#0a1220",border:"1px solid #1a2d4f",borderRadius:8,color:"#54a0ff",padding:"6px 8px",fontSize:14,fontWeight:700,textAlign:"center"}}/>
         <span style={{fontSize:11,color:"#555"}}>% réduction</span>
         <div style={{flex:1}}/>
         <div style={{display:"flex",gap:4}}>
           {[{l:"Mob",v:0},{l:"Joueur",v:20},{l:"Tank",v:50}].map(p=>(
-            <button key={p.l} onClick={()=>setTargetDef(p.v)} style={{
-              padding:"4px 10px",borderRadius:"var(--radius-md)",border:"1px solid "+(targetDef===p.v?"#54a0ff30":"var(--brd)"),
-              background:targetDef===p.v?"#54a0ff10":"transparent",color:targetDef===p.v?"#54a0ff":"#555",
-              fontSize:10,fontWeight:700,cursor:"pointer",
-            }}>{p.l}</button>
+            <button key={p.l} onClick={()=>setTargetDef(p.v)} style={{padding:"4px 10px",borderRadius:"var(--radius-md)",border:"1px solid "+(targetDef===p.v?"#54a0ff30":"var(--brd)"),background:targetDef===p.v?"#54a0ff10":"transparent",color:targetDef===p.v?"#54a0ff":"#555",fontSize:10,fontWeight:700,cursor:"pointer"}}>{p.l}</button>
           ))}
         </div>
       </div>
     </div>
 
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(155px, 1fr))",gap:10,marginBottom:16}}>
-      <StatBox label="DPS Brut" value={rawDps} unit="/s" color="#f5a623" sub={fmtN(dmgPerHit)+" × "+atkSpeed.toFixed(2)+"/s"}/>
-      <StatBox label="DPS Effectif" value={effectiveDps} unit="/s" color="#2ed573" sub={targetDef>0?"après "+targetDef+"% réduction":"aucune réduction"}/>
-      <StatBox label="Dmg/Hit" value={dmgPerHit} unit="" color="#ff9f43" sub={"base "+baseDmg+" × "+(1+dmgMod/100).toFixed(2)}/>
+      <StatBox label={procDpsTotal>0?"DPS Base":"DPS Brut"} value={rawDps} unit="/s" color="#f5a623" sub={fmtN(dmgPerHit)+" × "+atkSpeed.toFixed(2)+"/s"}/>
+      {procDpsTotal>0&&<StatBox label="DPS Procs" value={procDpsTotal} unit="/s" color="#e74c3c" sub={procBreakdown.filter(p=>p.dps).length+" proc(s)"}/>}
+      {procDpsTotal>0&&<StatBox label="DPS Total" value={totalDps} unit="/s" color="#2ed573" sub="Base + Procs"/>}
+      <StatBox label="DPS Effectif" value={effectiveDps} unit="/s" color={procDpsTotal>0?"#00cec9":"#2ed573"} sub={targetDef>0?"après "+targetDef+"% réduction":"aucune réduction"}/>
+      <StatBox label="Dmg/Hit" value={dmgPerHit} unit="" color="#ff9f43" sub={"base "+baseDmg+" × "+(1+dmgMod/100).toFixed(2)+(globalDmgMult>1?" × "+globalDmgMult.toFixed(2):"")}/>
       <StatBox label="Crit Dmg" value={dmgPerHitCrit} unit="" color="#e74c3c" sub={"×"+critMultiplier.toFixed(2)+" ("+(critChance*100).toFixed(1)+"%)"}/>
       <StatBox label="Burst 5s" value={burst5s} unit="" color="#a55eea" sub="dégâts en 5 secondes"/>
       <StatBox label="Atk Speed" value={atkSpeed} unit="/s" color="#a29bfe" sub={"base "+baseSpd+" + "+haste.toFixed(0)+"% hâte"}/>
     </div>
 
-    <div style={{background:"var(--card)",borderRadius:8,padding:16,border:"1px solid var(--brd)"}}>
+    <div style={{background:"var(--card)",borderRadius:8,padding:16,border:"1px solid var(--brd)",marginBottom:hasAugEffects?16:0}}>
       <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:12,fontFamily:"var(--fd)"}}>📊 Breakdown</div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))",gap:8}}>
         {[
           {label:"Dégâts arme base",value:baseDmg.toFixed(1),color:"#888",icon:wp.icon},
           {label:dmgType==="magic"?"Sorcellerie (mod)":"Force (mod)",value:"×"+(1+dmgMod/100).toFixed(3)+" (+"+dmgMod.toFixed(1)+"%)",color:dmgType==="magic"?"#a55eea":"#ff9f43",icon:dmgType==="magic"?"✨":"⚔️"},
           {label:"Dégâts modifiés",value:modifiedDmg.toFixed(1),color:"#fff",icon:"💥"},
+          globalDmgMult>1&&{label:"Mult. global (augments)",value:"×"+globalDmgMult.toFixed(2)+" (+"+Math.round((globalDmgMult-1)*100)+"%)",color:"#2ed573",icon:"📈"},
           {label:"Chance crit (Précision)",value:(critChance*100).toFixed(1)+"%",color:"#f368e0",icon:"🎯"},
           {label:"Mult. crit (Férocité)",value:"×"+critMultiplier.toFixed(2)+" (+"+fer.toFixed(0)+"%)",color:"#ff6348",icon:"🔥"},
           {label:"Mult. crit moyen",value:"×"+avgCritMult.toFixed(3),color:"#e74c3c",icon:"📈"},
           {label:"Vitesse d'attaque",value:atkSpeed.toFixed(2)+"/s",color:"#a29bfe",icon:"💨"},
           {label:"Défense cible",value:"-"+targetDef+"%",color:"#54a0ff",icon:"🛡️"},
-        ].map((r,i)=>(
+        ].filter(Boolean).map((r,i)=>(
           <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 12px",background:r.color+"08",borderRadius:"var(--radius-md)",border:"1px solid "+r.color+"12"}}>
             <span style={{fontSize:12,color:"#aaa",display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:14}}>{r.icon}</span>{r.label}</span>
             <span style={{fontSize:13,fontWeight:700,color:r.color}}>{r.value}</span>
@@ -271,18 +348,58 @@ function DpsTab({computedStats,selectedRace,primaryClass,selectedEvo}){
       </div>
     </div>
 
+    {hasAugEffects&&<div style={{background:"var(--card)",borderRadius:8,padding:16,border:"1px solid #f5a62330"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:showAugEffects?12:0}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#f5a623",fontFamily:"var(--fd)"}}>💠 Effets Augments actifs</div>
+        <button onClick={()=>setShowAugEffects(p=>!p)} style={{background:"transparent",border:"none",color:"#555",fontSize:11,cursor:"pointer"}}>{showAugEffects?"▲ Réduire":"▼ Afficher"}</button>
+      </div>
+      {showAugEffects&&<div style={{display:"flex",flexDirection:"column",gap:8}}>
+        {augEffects.length>0&&<div>
+          <div style={{fontSize:10,color:"#888",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:5}}>Modificateurs passifs (max stacks / best-case)</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))",gap:4}}>
+            {augEffects.map((e,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 10px",background:(e.color||"#888")+"08",borderRadius:"var(--radius-md)",border:"1px solid "+(e.color||"#888")+"15"}}>
+                <span style={{fontSize:10,color:"#888"}}>{e.label}</span>
+                <span style={{fontSize:10,fontWeight:700,color:e.conditional?"#777":e.color}}>{e.conditional?"⚠ ":""}{e.effect}</span>
+              </div>
+            ))}
+          </div>
+        </div>}
+        {procBreakdown.length>0&&<div>
+          <div style={{fontSize:10,color:"#888",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:5,marginTop:augEffects.length>0?4:0}}>Procs — DPS additionnel estimé</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))",gap:4}}>
+            {procBreakdown.map((p,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 10px",background:"#e74c3c08",borderRadius:"var(--radius-md)",border:"1px solid #e74c3c18"}}>
+                <div>
+                  <span style={{fontSize:11,color:"#ddd",fontWeight:600}}>{p.icon} {p.label}</span>
+                  {p.trigger&&<span style={{fontSize:9,color:"#555",marginLeft:6}}>{p.trigger}{p.canCrit?" · crit":""}  {p.isTrueDmg?" · VRAI DMG":""}</span>}
+                  {p.note&&<div style={{fontSize:9,color:"#666",marginTop:1}}>⚠ {p.note}</div>}
+                </div>
+                <span style={{fontSize:13,fontWeight:800,color:p.dps!=null?(p.isTrueDmg?"#ff6b6b":"#e74c3c"):"#444"}}>
+                  {p.dps!=null?fmtN(p.dps)+" /s":"N/A"}
+                </span>
+              </div>
+            ))}
+          </div>
+          {procBreakdown.some(p=>p.dps!=null)&&<div style={{marginTop:6,fontSize:10,color:"#888",textAlign:"right"}}>
+            Total procs calculables : <strong style={{color:"#e74c3c"}}>{fmtN(procDpsTotal)} /s</strong>
+          </div>}
+        </div>}
+      </div>}
+    </div>}
+
     {(!selectedRace&&!primaryClass)&&(
       <div style={{marginTop:16,padding:16,background:"#f5a6230a",borderRadius:12,border:"1px solid #f5a62318",textAlign:"center"}}>
         <div style={{fontSize:12,color:"#f5a623",fontWeight:700}}>Configure ta race, classe et stats pour un calcul DPS précis</div>
         <div style={{fontSize:11,color:"#666",marginTop:4}}>Les modificateurs FOR/SOR, Précision, Férocité et Hâte viendront de ton build</div>
       </div>
     )}
-
     <div style={{marginTop:12,fontSize:10,color:"#3a5068",lineHeight:1.5}}>
-      Formules (JAR v6.7) : DPS = (baseArme × (1 + FOR ou SOR / 100) × avgCritMult) × atkSpeed. CritMult = 1 + critChance × (férocité/100). AtkSpeed = baseSpeed × (1 + hâte/100).
+      Formules (JAR v7.0.6) : DPS = (baseArme × (1+FOR ou SOR/100) × avgCritMult × multAugs) × atkSpeed + ΣDPS_procs. Procs estimés @ max stacks / best-case. N/A = dépend des PV (non auto-calculable).
     </div>
   </div>);
 }
+
 
 // ═══════════════════════════════════════════
 // IMPORT DIALOG
@@ -543,6 +660,7 @@ function ShareCard({ state, onClose }) {
   const augB = computeAugBonuses(sa, manualAug, bs1);
   const bs2 = {}; STATS.forEach(s => { bs2[s.key] = computeStat(s, race, inn, sp, augB).total; });
   const post = computeClassPassiveScaling(c1, c2, bs2);
+  const { mult: cMult, lock: cLock } = computeAugMultipliers(sa);
 
   const [downloading, setDownloading] = useState(false);
   const canvasRef = useRef(null);
@@ -594,7 +712,12 @@ function ShareCard({ state, onClose }) {
     ctx.fillText("TOTAL ATTRIBUTES", 24, sy); sy += 16;
 
     STATS.forEach((stat, i) => {
-      const comp = computeStat(stat, race, inn, sp, augB, post);
+      // apply pass 4 multipliers
+      const applyP4 = (v) => { let r=v; if(cMult[stat.key]!=null)r*=cMult[stat.key]; if(cLock[stat.key]!=null)r=cLock[stat.key]; return r; };
+      const compRaw = computeStat(stat, race, inn, sp, augB, post);
+      let compTotal = compRaw.total;
+      compTotal = applyP4(compTotal);
+      const comp = { ...compRaw, total: compTotal };
       const pts = sp[stat.key] || 0;
       const col = i < 5 ? 0 : 1;
       const row = i < 5 ? i : i - 5;
@@ -970,6 +1093,12 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
   const postBonus = computeClassPassiveScaling(primaryClass, secondaryClass, baseStats2);
   const finalComputedStats = {};
   STATS.forEach(s => { finalComputedStats[s.key] = computeStat(s, activeRace, inn, skillPoints, totalAugBonus, postBonus).total; });
+  // Pass 4: augment multipliers (ex: Brute Force ×2.5 FOR/SOR, PRÉ→0)
+  const { mult: augMult, lock: augLock } = computeAugMultipliers(selectedAugments);
+  STATS.forEach(s => {
+    if (augMult[s.key] != null) finalComputedStats[s.key] = finalComputedStats[s.key] * augMult[s.key];
+    if (augLock[s.key] != null) finalComputedStats[s.key] = augLock[s.key];
+  });
   const evoName = selectedEvo && EVOLUTIONS[selectedEvo] ? EVOLUTIONS[selectedEvo].name : null;
 return(<div style={{"--bg":"#0b1120","--card":"#111d33","--brd":"#1a2d4f","--fd":"var(--fd)","--fb":"var(--fb)",background:"var(--bg)",color:"#d0d0e0",fontFamily:"var(--fb)"}}>
 {/* BUILD CREATOR HEADER */}
@@ -998,7 +1127,7 @@ return(<div style={{"--bg":"#0b1120","--card":"#111d33","--brd":"#1a2d4f","--fd"
     {done&&<span style={{width:6,height:6,borderRadius:2,background:"#3dd8c5",boxShadow:"0 0 8px #3dd8c560",flexShrink:0}}/>}
     </button>)})}
   </div>
-</div><div className="build-content" style={{padding:"16px 20px",maxWidth:1200,margin:"0 auto"}}>{tab==="race"&&<RaceTab selectedRace={selectedRace} setSelectedRace={setSelectedRace} selectedEvo={selectedEvo} setSelectedEvo={setSelectedEvo}/>}{tab==="class"&&<ClassTab primaryClass={primaryClass} setPrimaryClass={setPrimaryClass} secondaryClass={secondaryClass} setSecondaryClass={setSecondaryClass} primaryTier={primaryTier} setPrimaryTier={setPrimaryTier} secondaryTier={secondaryTier} setSecondaryTier={setSecondaryTier}/>}{tab==="stats"&&<StatsTab level={level} setLevel={setLevel} prestige={prestige} setPrestige={setPrestige} skillPoints={skillPoints} setSkillPoints={setSkillPoints} totalSP={totalSP} usedSP={usedSP} selectedRace={selectedRace} primaryClass={primaryClass} primaryTier={primaryTier} secondaryClass={secondaryClass} secondaryTier={secondaryTier} augBonus={totalAugBonus} postBonus={postBonus} selectedEvo={selectedEvo}/>}{tab==="augments"&&<AugmentsTab selectedAugments={selectedAugments} setSelectedAugments={setSelectedAugments} augBonus={augBonus} setAugBonus={setAugBonus}/>}{tab==="dps"&&<DpsTab computedStats={finalComputedStats} selectedRace={selectedRace} primaryClass={primaryClass} selectedEvo={selectedEvo}/>}{tab==="guide"&&<GuideTab onImportBuild={handleImport}/>}{tab==="summary"&&<SummaryTab state={state} onPublishToCommunity={onPublishToCommunity}/>}{tab==="builds"&&<BuildsManagerTab savedBuilds={savedBuilds} onLoad={handleLoadBuild} onDelete={handleDeleteBuild} currentState={state} onSave={handleSaveBuild}/>}{tab==="compare"&&<CompareTab savedBuilds={savedBuilds} currentState={state}/>}</div>  {showImport && <ImportDialog onImport={handleImport} onClose={() => setShowImport(false)} />}
+</div><div className="build-content" style={{padding:"16px 20px",maxWidth:1200,margin:"0 auto"}}>{tab==="race"&&<RaceTab selectedRace={selectedRace} setSelectedRace={setSelectedRace} selectedEvo={selectedEvo} setSelectedEvo={setSelectedEvo}/>}{tab==="class"&&<ClassTab primaryClass={primaryClass} setPrimaryClass={setPrimaryClass} secondaryClass={secondaryClass} setSecondaryClass={setSecondaryClass} primaryTier={primaryTier} setPrimaryTier={setPrimaryTier} secondaryTier={secondaryTier} setSecondaryTier={setSecondaryTier}/>}{tab==="stats"&&<StatsTab level={level} setLevel={setLevel} prestige={prestige} setPrestige={setPrestige} skillPoints={skillPoints} setSkillPoints={setSkillPoints} totalSP={totalSP} usedSP={usedSP} selectedRace={selectedRace} primaryClass={primaryClass} primaryTier={primaryTier} secondaryClass={secondaryClass} secondaryTier={secondaryTier} augBonus={totalAugBonus} postBonus={postBonus} augMult={augMult} augLock={augLock} selectedEvo={selectedEvo}/>}{tab==="augments"&&<AugmentsTab selectedAugments={selectedAugments} setSelectedAugments={setSelectedAugments} augBonus={augBonus} setAugBonus={setAugBonus}/>}{tab==="dps"&&<DpsTab computedStats={finalComputedStats} selectedRace={selectedRace} primaryClass={primaryClass} selectedEvo={selectedEvo} selectedAugments={selectedAugments}/>}{tab==="guide"&&<GuideTab onImportBuild={handleImport}/>}{tab==="summary"&&<SummaryTab state={state} onPublishToCommunity={onPublishToCommunity}/>}{tab==="builds"&&<BuildsManagerTab savedBuilds={savedBuilds} onLoad={handleLoadBuild} onDelete={handleDeleteBuild} currentState={state} onSave={handleSaveBuild}/>}{tab==="compare"&&<CompareTab savedBuilds={savedBuilds} currentState={state}/>}</div>  {showImport && <ImportDialog onImport={handleImport} onClose={() => setShowImport(false)} />}
   {showShareCard && <ShareCard state={state} onClose={() => setShowShareCard(false)} />}
 
   {/* Mobile bottom nav */}
