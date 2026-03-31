@@ -101,6 +101,21 @@ function computeClassPassiveScaling(c1, c2, baseStats) {
   return post;
 }
 
+// Pass 4: augment stat multipliers (ex: Brute Force ×2.5 FOR/SOR, PRÉ→0)
+// Applied AFTER all other passes on the final stat totals
+function computeAugMultipliers(selectedAugments) {
+  const mult = {}; // { stat_key: multiplier }
+  const lock = {}; // { stat_key: forced_value }
+  (selectedAugments || []).forEach(aug => {
+    if (!aug.dpsImpact) return;
+    const d = aug.dpsImpact;
+    if (d.strMult) mult.strength = (mult.strength || 1) * d.strMult;
+    if (d.sorMult) mult.sorcery  = (mult.sorcery  || 1) * d.sorMult;
+    if (d.precLock) lock.precision = 0;
+  });
+  return { mult, lock };
+}
+
 function fmt(val, mode) {
   if (mode === "mult" || mode === "add%" || mode === "haste") return val === 0 ? "0%" : (val > 0 ? "+" : "") + val.toFixed(1) + "%";
   return Math.round(val).toString();
@@ -127,6 +142,6 @@ async function saveBuildsList(builds) {
 
 export {
   getActiveRace, computeInnates, computeAugBonuses, computeStat,
-  computeClassPassiveScaling, fmt, encodeBuild, decodeBuild,
+  computeClassPassiveScaling, computeAugMultipliers, fmt, encodeBuild, decodeBuild,
   loadSavedBuilds, saveBuildsList,
 };
