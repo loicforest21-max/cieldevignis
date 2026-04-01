@@ -767,9 +767,9 @@ const BUILD_TAGS = [
 // DUNGEONS
 // ═══════════════════════════════════════════
 const DUNGEON_TIERS = [
-  {id:"beginner",label:"Débutant",color:"#51cf66",icon:"🌿",range:"Niv. 10-40"},
+  {id:"beginner",label:"Débutant",color:"#51cf66",icon:"🌿",range:"Niv. 5-40"},
   {id:"intermediate",label:"Intermédiaire",color:"#f5a623",icon:"⚔️",range:"Niv. 30-60"},
-  {id:"advanced",label:"Avancé",color:"#e8653a",icon:"🔥",range:"Niv. 45-75"},
+  {id:"advanced",label:"Avancé",color:"#e8653a",icon:"🔥",range:"Niv. 35-75"},
   {id:"endgame",label:"Endgame",color:"#e05252",icon:"💀",range:"Niv. 60-80+"},
 ];
 
@@ -790,6 +790,26 @@ const DUNGEONS = [
     boss:{name:"Frost Dragon",hp:1400,level:30,dmg:"27 Phys + 10 Ice",augments:["blood_surge"],scaling:{hp:{base:2.0,perLv:0.075},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
     loot:["Flocon Currency","Dragon Heart","Frost Gear"],
     emoji:"❄️",color:"#74b9ff",
+  },
+  {
+    id:"shivas_ice_cave",tier:"beginner",name:"Shiva's Ice Cave",
+    desc:"Une grotte glaciale gardée par deux boss : Hedera et Shiva. Squelettes de givre et golems de cristal patrouillent les salles gelées.",
+    source:"Shiva's Ice Cave",levels:"5-20",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:4.0,perLv:0.075},dmg:{base:1.35,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[
+      {name:"Skeleton Frost Knight",hp:200,type:"Undead"},
+      {name:"Skeleton Frost Ranger",hp:200,type:"Undead"},
+      {name:"Skeleton Frost Mage",hp:200,type:"Undead"},
+      {name:"Skeleton Burnt Alchemist",hp:200,type:"Undead"},
+      {name:"Golem Crystal Frost",hp:1500,type:"Elemental"},
+    ],
+    boss:{name:"Shiva",hp:6000,level:25,dmg:"Staff + AoE Ice",augments:["rebirth","frozen_domain"],scaling:{hp:{base:1.0,perLv:0.1},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    bosses:[
+      {name:"Hedera Boss",hp:2500,level:25,dmg:"Racines + AoE",augments:["rebirth","frozen_domain"],scaling:{hp:{base:2.0,perLv:0.1},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+      {name:"Shiva",hp:6000,level:25,dmg:"Staff + AoE Ice",augments:["rebirth","frozen_domain"],scaling:{hp:{base:1.0,perLv:0.1},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    ],
+    loot:["Staff of Shiva","Bamboo Staff","Mithril Armor","Mithril Weapons","Adamantite Weapons","Frost Bow"],
+    emoji:"🧊",color:"#74b9ff",
   },
   {
     id:"major_d01",tier:"beginner",name:"Major Dungeon I",
@@ -858,6 +878,16 @@ const DUNGEONS = [
     boss:{name:"Forbidden Hound Boss",hp:1500,type:"Undead"},
     loot:["Forbidden Hound Drop"],
     emoji:"🐺",color:"#e17055",
+  },
+  {
+    id:"tower_of_shiva",tier:"advanced",name:"Tower of Shiva",
+    desc:"La tour de Shiva, sanctuaire de glace où le boss invoque des pingouins d'invincibilité et déclenche des AoE dévastatrices. Nuit permanente.",
+    source:"Tower of Shiva",levels:"35-50",tiered:true,levelsPerTier:20,
+    scaling:{hp:{base:4.0,perLv:0.075},dmg:{base:1.35,perLv:0.065},def:{negMax:0.25,posMax:0.8,belowNeg:0,abovePos:0.9}},
+    mobs:[],
+    boss:{name:"Shiva",hp:3000,level:55,dmg:"20 Phys + 60 Ice (AoE) + 150 Ice (Ultimate)",augments:["rebirth","frozen_domain"],scaling:{hp:{base:2.0,perLv:0.1},dmg:{base:1.0,perLv:0.07},def:{negMax:0.35,posMax:0.9,belowNeg:0,abovePos:0.975}}},
+    loot:["Staff of Shiva (40%)","Mithril Armor","Repair Kit Iron","Ice Essence"],
+    emoji:"🏔️",color:"#a29bfe",
   },
   {
     id:"golem_void",tier:"advanced",name:"Golem Void",
