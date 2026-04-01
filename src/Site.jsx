@@ -273,7 +273,7 @@ function HomePage({ setPage }) {
             fontFamily: "var(--fb)", letterSpacing: 0.8,
           }}>
             <span style={{ display: "inline-block", width: 8, height: 8, background: G.teal, borderRadius: 2, animation: "glowPulse 2s ease infinite" }} />
-            Serveur Hytale PvE — EndlessLeveling v6.7
+            Serveur Hytale PvE — EndlessLeveling v7.0.6
           </div>
         </div>
 
@@ -435,7 +435,7 @@ function HomePage({ setPage }) {
             <div>
               <div style={{ fontSize: 12, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Contenu</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {[{v:"12",l:"Races",c:G.accent2},{v:"14",l:"Classes",c:G.teal},{v:"59",l:"Augments",c:G.purple},{v:"72",l:"Évolutions",c:G.blue},{v:"9",l:"Donjons",c:G.orange}].map(s=>(
+                {[{v:"12",l:"Races",c:G.accent2},{v:"14",l:"Classes",c:G.teal},{v:"59",l:"Augments",c:G.purple},{v:"72",l:"Évolutions",c:G.blue},{v:"11",l:"Donjons",c:G.orange}].map(s=>(
                   <div key={s.l} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: G.muted }}>
                     <span style={{ fontSize: 14, fontWeight: 800, color: s.c, minWidth: 24 }}>{s.v}</span>{s.l}
                   </div>
@@ -724,7 +724,7 @@ function DungeonsPage() {
         Donjons
       </h1>
       <p style={{ fontSize: 16, color: G.muted, margin: "0 0 24px" }}>
-        {DUNGEONS.length} donjons · 3 mods · Progression Niv. 10 → 80+
+        {DUNGEONS.length} donjons · 5 mods · Progression Niv. 5 → 80+
       </p>
 
       {/* Tier filter */}
@@ -801,7 +801,10 @@ function DungeonsPage() {
                       <div style={{ fontSize: 13, color: G.muted, marginTop: 4 }}>{dg.desc}</div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-                      {dg.boss && <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+                      {dg.bosses ? <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+                        <span style={{ fontSize: 11, color: "#e05252", fontWeight: 700 }}>👑 {dg.bosses.length} Boss</span>
+                        <span style={{ fontSize: 10, color: G.muted }}>{dg.bosses.map(b => b.name).join(" + ")}</span>
+                      </div> : dg.boss && <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
                         <span style={{ fontSize: 11, color: "#e05252", fontWeight: 700 }}>👑 {dg.boss.name}</span>
                         <span style={{ fontSize: 10, color: G.muted }}>{dg.boss.hp.toLocaleString()} PV{dg.boss.level ? " · Lv" + dg.boss.level : ""}</span>
                       </div>}
@@ -873,40 +876,44 @@ function DungeonsPage() {
                         </div>
 
                         {/* Boss detail */}
-                        {dg.boss && (
+                        {(dg.boss || dg.bosses) && (
                           <div>
                             <div style={{ fontSize: 11, fontWeight: 800, color: "#e05252", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
-                              👑 Boss
+                              👑 {dg.bosses ? `Boss (${dg.bosses.length})` : "Boss"}
                             </div>
-                            <div style={{
-                              background: "#e0525208", border: "1px solid #e0525220", borderRadius: 8, padding: 12,
-                            }}>
-                              <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", fontFamily: "var(--fd)", marginBottom: 6 }}>
-                                {dg.boss.name}
-                              </div>
-                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                                <div style={{ fontSize: 12, color: G.text }}>
-                                  ❤️ <span style={{ fontWeight: 700, color: "#ff6b6b" }}>{dg.boss.hp.toLocaleString()} PV</span>
-                                  {dg.boss.level && <span style={{ color: G.muted }}> · Niveau fixé {dg.boss.level}</span>}
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                              {(dg.bosses || [dg.boss]).map((b, bi) => (
+                                <div key={bi} style={{
+                                  background: "#e0525208", border: "1px solid #e0525220", borderRadius: 8, padding: 12,
+                                }}>
+                                  <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", fontFamily: "var(--fd)", marginBottom: 6 }}>
+                                    {b.name}
+                                  </div>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                    <div style={{ fontSize: 12, color: G.text }}>
+                                      ❤️ <span style={{ fontWeight: 700, color: "#ff6b6b" }}>{b.hp.toLocaleString()} PV</span>
+                                      {b.level && <span style={{ color: G.muted }}> · Niveau fixé {b.level}</span>}
+                                    </div>
+                                    {b.dmg && <div style={{ fontSize: 12, color: G.text }}>⚔️ {b.dmg}</div>}
+                                    {b.augments && b.augments.length > 0 && (
+                                      <div style={{ marginTop: 4 }}>
+                                        <span style={{ fontSize: 10, color: G.purple, fontWeight: 700 }}>Augments: </span>
+                                        {b.augments.map((a, i) => (
+                                          <span key={i} style={{
+                                            fontSize: 10, padding: "2px 6px", borderRadius: 4, marginLeft: 3,
+                                            background: G.purple + "15", color: G.purple, fontWeight: 600,
+                                          }}>{fmtAug(a)}</span>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {b.scaling && (
+                                      <div style={{ marginTop: 6, padding: "4px 8px", background: "#ff6b6b08", borderRadius: 4, border: "1px solid #ff6b6b15", fontSize: 10, color: G.muted }}>
+                                        Boss scaling: PV ×{b.scaling.hp.base} +{(b.scaling.hp.perLv * 100)}%/niv · Dmg ×{b.scaling.dmg.base} +{(b.scaling.dmg.perLv * 100)}%/niv · Def cap {(b.scaling.def.abovePos * 100).toFixed(1)}%
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                                {dg.boss.dmg && <div style={{ fontSize: 12, color: G.text }}>⚔️ {dg.boss.dmg}</div>}
-                                {dg.boss.augments && dg.boss.augments.length > 0 && (
-                                  <div style={{ marginTop: 4 }}>
-                                    <span style={{ fontSize: 10, color: G.purple, fontWeight: 700 }}>Augments: </span>
-                                    {dg.boss.augments.map((a, i) => (
-                                      <span key={i} style={{
-                                        fontSize: 10, padding: "2px 6px", borderRadius: 4, marginLeft: 3,
-                                        background: G.purple + "15", color: G.purple, fontWeight: 600,
-                                      }}>{fmtAug(a)}</span>
-                                    ))}
-                                  </div>
-                                )}
-                                {dg.boss.scaling && (
-                                  <div style={{ marginTop: 6, padding: "4px 8px", background: "#ff6b6b08", borderRadius: 4, border: "1px solid #ff6b6b15", fontSize: 10, color: G.muted }}>
-                                    Boss scaling: PV ×{dg.boss.scaling.hp.base} +{(dg.boss.scaling.hp.perLv * 100)}%/niv · Dmg ×{dg.boss.scaling.dmg.base} +{(dg.boss.scaling.dmg.perLv * 100)}%/niv · Def cap {(dg.boss.scaling.def.abovePos * 100).toFixed(1)}%
-                                  </div>
-                                )}
-                              </div>
+                              ))}
                             </div>
                           </div>
                         )}
