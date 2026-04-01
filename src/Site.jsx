@@ -109,23 +109,21 @@ function Navbar({ page, setPage }) {
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       background: scrolled || menuOpen ? `${G.bg}f0` : "transparent",
       backdropFilter: scrolled || menuOpen ? "blur(20px) saturate(1.4)" : "none",
-      borderBottom: scrolled ? `2px solid ${G.teal}18` : "none",
+      borderBottom: scrolled ? `1px solid ${G.gold || G.accent2}15` : "none",
       transition: "all 0.4s ease", padding: "0 20px",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
         <div onClick={() => { setPage("home"); setMenuOpen(false); }} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
-            width: 36, height: 36, borderRadius: "var(--radius-md)",
-            background: `linear-gradient(135deg, ${G.teal}, ${G.blue})`,
+            width: 36, height: 36, borderRadius: 8,
+            background: `linear-gradient(135deg, ${G.gold || G.accent2}, ${G.goldD || '#c8882a'})`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 15, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)",
-            boxShadow: `0 0 16px ${G.teal}30, inset 0 1px 0 rgba(255,255,255,0.2)`,
-            border: "2px solid rgba(255,255,255,0.1)",
+            fontSize: 15, fontWeight: 900, color: G.bg, fontFamily: "var(--fd)",
+            boxShadow: `0 0 16px ${G.gold || G.accent2}25`,
           }}>C</div>
           <span className="nav-title" style={{
             fontSize: 18, fontWeight: 800, fontFamily: "var(--fd)", letterSpacing: 1,
-            background: `linear-gradient(135deg, ${G.teal}, ${G.accent2})`,
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            color: "#f5f0e8",
           }}>CielDeVignis</span>
         </div>
         {/* Desktop links */}
@@ -252,10 +250,10 @@ function HomePage({ setPage }) {
         minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         textAlign: "center", padding: "120px 24px 80px", position: "relative", overflow: "hidden",
       }}>
-        {/* Atmospheric glow orbs — Hytale ambient style */}
-        <div style={{ position: "absolute", top: "10%", left: "5%", width: 400, height: 400, background: `radial-gradient(circle, ${G.teal}0a, transparent 70%)`, borderRadius: "50%", filter: "blur(80px)" }} />
-        <div style={{ position: "absolute", bottom: "15%", right: "10%", width: 350, height: 350, background: `radial-gradient(circle, ${G.purple}0a, transparent 70%)`, borderRadius: "50%", filter: "blur(80px)" }} />
-        <div style={{ position: "absolute", top: "50%", left: "50%", width: 500, height: 500, transform: "translate(-50%,-50%)", background: `radial-gradient(circle, ${G.accent2}06, transparent 60%)`, borderRadius: "50%", filter: "blur(100px)" }} />
+        {/* Atmospheric glow orbs — warm Hytale style */}
+        <div style={{ position: "absolute", top: "10%", left: "5%", width: 400, height: 400, background: `radial-gradient(circle, ${G.gold || G.accent2}0a, transparent 70%)`, borderRadius: "50%", filter: "blur(80px)" }} />
+        <div style={{ position: "absolute", bottom: "15%", right: "10%", width: 350, height: 350, background: `radial-gradient(circle, ${G.purple}08, transparent 70%)`, borderRadius: "50%", filter: "blur(80px)" }} />
+        <div style={{ position: "absolute", top: "50%", left: "50%", width: 500, height: 500, transform: "translate(-50%,-50%)", background: `radial-gradient(circle, ${G.gold || G.accent2}08, transparent 60%)`, borderRadius: "50%", filter: "blur(100px)", animation: "heroGlow 6s ease-in-out infinite" }} />
         
         {/* Decorative voxel blocks */}
         <div style={{ position: "absolute", top: "18%", left: "8%", width: 24, height: 24, background: G.teal, opacity: 0.08, transform: "rotate(15deg)", animation: "voxelFloat 6s ease infinite" }} />
@@ -266,13 +264,12 @@ function HomePage({ setPage }) {
 
         <div style={{ animation: "fadeSlideUp 0.8s ease both" }}>
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 22px", borderRadius: 4,
-            background: `${G.teal}10`, border: `1px solid ${G.teal}25`,
-            borderLeft: `3px solid ${G.teal}`,
-            fontSize: 13, fontWeight: 700, color: G.teal, marginBottom: 28,
-            fontFamily: "var(--fb)", letterSpacing: 0.8,
+            display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 22px", borderRadius: 8,
+            background: `${G.gold || G.accent2}0a`, border: `1px solid ${G.gold || G.accent2}18`,
+            fontSize: 13, fontWeight: 700, color: G.gold || G.accent2, marginBottom: 28,
+            fontFamily: "var(--fb)", letterSpacing: 1.2, textTransform: "uppercase",
           }}>
-            <span style={{ display: "inline-block", width: 8, height: 8, background: G.teal, borderRadius: 2, animation: "glowPulse 2s ease infinite" }} />
+            <span style={{ display: "inline-block", width: 6, height: 6, background: G.gold || G.accent2, borderRadius: "50%", animation: "glowPulse 2s ease infinite" }} />
             Serveur Hytale PvE — EndlessLeveling v7.0.6
           </div>
         </div>
@@ -280,7 +277,7 @@ function HomePage({ setPage }) {
         <h1 style={{
           fontSize: "clamp(52px, 9vw, 88px)", fontWeight: 900, lineHeight: 1.0, margin: "0 0 24px",
           fontFamily: "var(--fd)", letterSpacing: 2,
-          background: `linear-gradient(135deg, ${G.teal} 0%, #7cf5e6 20%, ${G.accent2} 50%, #ffd080 75%, ${G.teal} 100%)`,
+          background: `linear-gradient(135deg, ${G.goldL || '#f0c06a'} 0%, ${G.gold || '#e8a537'} 30%, #f5f0e8 50%, ${G.gold || '#e8a537'} 70%, ${G.goldD || '#c8882a'} 100%)`,
           backgroundSize: "200% auto",
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
           animation: "fadeSlideUp 0.8s ease 0.1s both, shimmer 5s linear infinite",
@@ -322,7 +319,7 @@ function HomePage({ setPage }) {
       {/* FEATURES */}
       <section style={{ padding: "40px 24px 80px", maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: `${G.teal}10`, border: `1px solid ${G.teal}20`, fontSize: 11, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Outils</div>
+          <div style={{ display: "inline-block", padding: "5px 16px", borderRadius: 6, background: `${G.gold || G.accent2}0c`, border: `1px solid ${G.gold || G.accent2}18`, fontSize: 11, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 14 }}>Outils</div>
           <h2 style={{ fontSize: 38, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)", margin: "8px 0 10px", letterSpacing: 1, animation: "fadeSlideUp 0.6s ease both" }}>
             Tout pour ton aventure
           </h2>
@@ -332,9 +329,9 @@ function HomePage({ setPage }) {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
           <FeatureCard icon="⚔️" title="Build Creator" desc="Crée et simule tes builds avec un calcul précis de toutes tes stats. Race, classes, SP, augments — tout y est." color={G.teal} delay={0.1} onClick={() => setPage("builds")} />
-          <FeatureCard icon="🏰" title="Donjons & Monstres" desc="Explore les donjons du serveur — niveaux, boss, scaling et loot pour chaque instance." color={G.accent2} delay={0.2} onClick={() => setPage("dungeons")} />
+          <FeatureCard icon="🏰" title="Donjons & Monstres" desc="Explore les 11 donjons du serveur — niveaux, boss, scaling et loot pour chaque instance." color={G.gold || G.accent2} delay={0.2} onClick={() => setPage("dungeons")} />
           <FeatureCard icon="🗡️" title="Armes & Armures" desc="Toutes les armes et armures du serveur avec leurs stats, bonus, et compatibilité de classe." color={G.orange} delay={0.3} onClick={() => setPage("wiki")} />
-          <FeatureCard icon="📊" title="Partage & Compare" desc="Sauvegarde tes builds, partage-les avec ta guilde, et compare les stats entre différentes configurations." color={G.purple} delay={0.4} />
+          <FeatureCard icon="📊" title="Communauté" desc="Partage tes builds, explore ceux de ta guilde, et compare les configurations." color={G.purple} delay={0.4} onClick={() => setPage("community")} />
         </div>
       </section>
 
@@ -385,13 +382,13 @@ function HomePage({ setPage }) {
       <section style={{ padding: "60px 24px 100px", textAlign: "center" }}>
         <div style={{
           maxWidth: 720, margin: "0 auto", padding: "52px 44px", borderRadius: "var(--radius-md)",
-          background: `linear-gradient(165deg, ${G.card}, ${G.teal}06)`,
-          border: `1px solid ${G.teal}20`, position: "relative", overflow: "hidden",
-          borderTop: `3px solid ${G.teal}50`,
+          background: `linear-gradient(165deg, ${G.card}, ${G.gold || G.accent2}06)`,
+          border: `1px solid ${G.gold || G.accent2}18`, position: "relative", overflow: "hidden",
+          borderTop: `2px solid ${G.gold || G.accent2}40`,
         }}>
           {/* Grid overlay */}
-          <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${G.teal}04 1px, transparent 1px), linear-gradient(90deg, ${G.teal}04 1px, transparent 1px)`, backgroundSize: "24px 24px", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, background: `radial-gradient(circle, ${G.teal}0c, transparent)`, borderRadius: "50%" }} />
+          <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${G.gold || G.accent2}03 1px, transparent 1px), linear-gradient(90deg, ${G.gold || G.accent2}03 1px, transparent 1px)`, backgroundSize: "24px 24px", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, background: `radial-gradient(circle, ${G.gold || G.accent2}0a, transparent)`, borderRadius: "50%" }} />
           <h2 style={{ fontSize: 34, fontWeight: 900, color: "#fff", margin: "0 0 14px", fontFamily: "var(--fd)", position: "relative", letterSpacing: 1 }}>
             Prêt à créer ton build ?
           </h2>
@@ -405,15 +402,15 @@ function HomePage({ setPage }) {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ borderTop: `2px solid ${G.teal}15`, background: `${G.card}90`, marginTop: 20, position: "relative", overflow: "hidden" }}>
+      <footer style={{ borderTop: `1px solid ${G.gold || G.accent2}12`, background: `${G.card}90`, marginTop: 20, position: "relative", overflow: "hidden" }}>
         {/* Grid overlay */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${G.teal}03 1px, transparent 1px), linear-gradient(90deg, ${G.teal}03 1px, transparent 1px)`, backgroundSize: "32px 32px", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${G.gold || G.accent2}02 1px, transparent 1px), linear-gradient(90deg, ${G.gold || G.accent2}02 1px, transparent 1px)`, backgroundSize: "40px 40px", pointerEvents: "none" }} />
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "48px 32px 24px", position: "relative" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 40, marginBottom: 36 }}>
             {/* Brand */}
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 4, background: `linear-gradient(135deg, ${G.teal}, ${G.blue})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)", boxShadow: `0 0 12px ${G.teal}25` }}>C</div>
+                <div style={{ width: 32, height: 32, borderRadius: 6, background: `linear-gradient(135deg, ${G.gold || G.accent2}, ${G.goldD || '#c8882a'})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 900, color: G.bg, fontFamily: "var(--fd)", boxShadow: `0 0 12px ${G.gold || G.accent2}20` }}>C</div>
                 <span style={{ fontSize: 17, fontWeight: 800, fontFamily: "var(--fd)", color: "#fff", letterSpacing: 0.5 }}>CielDeVignis</span>
               </div>
               <p style={{ fontSize: 13, color: G.muted, lineHeight: 1.6, margin: 0 }}>
@@ -423,7 +420,7 @@ function HomePage({ setPage }) {
             </div>
             {/* Outils */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Outils</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Outils</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {[{label:"Build Creator",icon:"⚔️",id:"builds"},{label:"Communauté",icon:"🌍",id:"community"},{label:"Donjons",icon:"🏰",id:"dungeons"},{label:"Wiki",icon:"📖",id:"wiki"}].map(l=>(
                   <span key={l.id} onClick={()=>setPage(l.id)} className="footer-link" style={{ fontSize: "var(--text-sm)", color: G.muted, display: "flex", alignItems: "center", gap: 6 }}
@@ -433,7 +430,7 @@ function HomePage({ setPage }) {
             </div>
             {/* Stats */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Contenu</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Contenu</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {[{v:"12",l:"Races",c:G.accent2},{v:"14",l:"Classes",c:G.teal},{v:"59",l:"Augments",c:G.purple},{v:"72",l:"Évolutions",c:G.blue},{v:"11",l:"Donjons",c:G.orange}].map(s=>(
                   <div key={s.l} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: G.muted }}>
@@ -444,7 +441,7 @@ function HomePage({ setPage }) {
             </div>
             {/* Communauté */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Communauté</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Communauté</div>
               <a href="https://discord.gg/7YmTATJcf" target="_blank" rel="noopener" className="discord-link" style={{
                 display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 20px",
                 borderRadius: "var(--radius-sm)", background: "#5865F210", border: "1px solid #5865F225",
@@ -456,7 +453,7 @@ function HomePage({ setPage }) {
             </div>
           </div>
           {/* Bottom bar */}
-          <div style={{ borderTop: `1px solid ${G.teal}10`, paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+          <div style={{ borderTop: `1px solid ${G.gold || G.accent2}0c`, paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
             <div style={{ fontSize: 12, color: "#3a5068" }}>© 2025 CielDeVignis — EndlessLeveling v7.0.6</div>
             <div style={{ fontSize: 11, color: "#3a5068" }}>Fait avec passion pour la communauté Hytale</div>
           </div>
