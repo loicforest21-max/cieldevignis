@@ -474,6 +474,10 @@ function WikiPage() {
   const [lvlMax, setLvlMax] = useState("");
   const [sort, setSort] = useState("name");
   const [showFilters, setShowFilters] = useState(false);
+  // Calculator state
+  const [calcItems, setCalcItems] = useState([]);
+  const [calcOpen, setCalcOpen] = useState(false);
+  const [calcSearch, setCalcSearch] = useState("");
   const fmtItem = (s) => s ? s.replace(/_/g, ' ') : '';
   const switchTab = (t) => { setWikiTab(t); setCat("ALL"); setSearch(""); setExpanded(null); setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); };
   const toggleQuality = (q) => setQualities(prev => prev.includes(q) ? prev.filter(x=>x!==q) : [...prev, q]);
@@ -522,6 +526,36 @@ function WikiPage() {
     });
     return results;
   };
+  // Calculator helpers
+  const addToCalc = (id) => {
+    setCalcItems(prev => {
+      const existing = prev.find(c => c.id === id);
+      if (existing) return prev.map(c => c.id === id ? {...c, qty: c.qty + 1} : c);
+      return [...prev, {id, qty: 1}];
+    });
+    if (!calcOpen) setCalcOpen(true);
+  };
+  const setCalcQty = (id, qty) => {
+    if (qty <= 0) return setCalcItems(prev => prev.filter(c => c.id !== id));
+    setCalcItems(prev => prev.map(c => c.id === id ? {...c, qty} : c));
+  };
+  const removeFromCalc = (id) => setCalcItems(prev => prev.filter(c => c.id !== id));
+  // Compute combined raw materials for all calc items
+  const calcTotalMats = useMemo(() => {
+    const combined = [];
+    calcItems.forEach(({id, qty}) => {
+      const mats = flattenRecipe(id, qty, new Set());
+      mats.forEach(m => {
+        const existing = combined.find(c => c.id === m.id);
+        if (existing) existing.qty += m.qty;
+        else combined.push({...m});
+      });
+    });
+    return combined.sort((a, b) => b.qty - a.qty);
+  }, [calcItems]);
+  const calcSearchResults = calcSearch.length >= 2 ? craftableItems.filter(r =>
+    r.id.toLowerCase().includes(calcSearch.toLowerCase()) && !calcItems.find(c => c.id === r.id)
+  ).slice(0, 8) : [];
   // Helper: compute total DPS for an item
   const itemDPS = (r) => r.dmg ? r.dmg.reduce((s,d)=>s+d.d, 0) : 0;
   // Helper: compute total resistance for an item
@@ -786,6 +820,66 @@ function WikiPage() {
 
       {/* CRAFT */}
       {wikiTab==="craft"&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
+        {/* Calculator toggle */}
+        <div style={{display:"flex",gap:8,marginBottom:8,alignItems:"center"}}>
+          <button onClick={()=>setCalcOpen(!calcOpen)} style={{padding:"10px 18px",borderRadius:"var(--radius-md)",border:"1px solid "+(calcOpen||calcItems.length>0?G.gold:G.border),background:calcOpen?G.gold+"15":"transparent",color:calcOpen||calcItems.length>0?G.gold:G.muted,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:8}}>
+            <span style={{fontSize:16}}>🧮</span> Calculateur{calcItems.length>0&&<span style={{fontSize:11,padding:"2px 8px",borderRadius:10,background:G.gold+"20",color:G.gold,fontWeight:800}}>{calcItems.length}</span>}
+          </button>
+          {calcItems.length>0&&!calcOpen&&<span style={{fontSize:11,color:G.muted}}>{calcTotalMats.length} matériaux · {calcItems.reduce((s,c)=>s+c.qty,0)} items</span>}
+        </div>
+        {/* Calculator panel */}
+        {calcOpen&&<div style={{background:G.card,border:"1px solid "+G.gold+"30",borderLeft:"3px solid "+G.gold,borderRadius:"var(--radius-md)",padding:16,marginBottom:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+            <div style={{fontSize:15,fontWeight:800,color:G.gold,fontFamily:"var(--fd)"}}>🧮 Calculateur de ressources</div>
+            {calcItems.length>0&&<button onClick={()=>setCalcItems([])} style={{padding:"4px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:"transparent",color:G.muted,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"var(--fb)"}}>✕ Vider</button>}
+          </div>
+          {/* Search to add items */}
+          <div style={{position:"relative",marginBottom:12}}>
+            <input value={calcSearch} onChange={e=>setCalcSearch(e.target.value)} placeholder="Ajouter un item à crafter..." style={{width:"100%",padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#fff",fontSize:13,fontFamily:"var(--fb)",outline:"none",boxSizing:"border-box"}}/>
+            {calcSearchResults.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:G.card,border:"1px solid "+G.border,borderRadius:"0 0 8px 8px",maxHeight:240,overflowY:"auto",boxShadow:"0 8px 24px rgba(0,0,0,0.4)"}}>
+              {calcSearchResults.map(r=>{const qc=QUALITY_COLORS[r.q]||G.muted;return(
+                <div key={r.id} onClick={()=>{addToCalc(r.id);setCalcSearch("");}} style={{padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,borderBottom:"1px solid "+G.border+"40",transition:"background 0.1s"}} onMouseEnter={e=>e.currentTarget.style.background=G.bg} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  <span style={{fontSize:12,color:G.text,flex:1}}>{fmtItem(r.id)}</span>
+                  {r.l>0&&<span style={{fontSize:10,color:G.muted}}>Niv.{r.l}</span>}
+                  {r.q&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
+                  <span style={{fontSize:12,color:G.teal,fontWeight:700}}>+ Ajouter</span>
+                </div>
+              )})}
+            </div>}
+          </div>
+          {/* Selected items */}
+          {calcItems.length===0&&<div style={{textAlign:"center",padding:"20px 0",color:G.muted,fontSize:13}}>Aucun item sélectionné. Recherche ci-dessus ou clique ＋ sur un item de la liste.</div>}
+          {calcItems.length>0&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:16}}>
+            <div>
+              <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>Items à crafter ({calcItems.length})</div>
+              <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                {calcItems.map(c=>{const item=ITEM_MAP[c.id];const qc=QUALITY_COLORS[item?.q]||G.muted;return(
+                  <div key={c.id} style={{background:G.bg+"80",border:"1px solid "+G.border,borderRadius:4,padding:"6px 10px",display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:12,color:G.text,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{fmtItem(c.id)}</span>
+                    {item?.q&&<span style={{fontSize:9,padding:"1px 5px",borderRadius:3,background:qc+"15",color:qc,fontWeight:700,flexShrink:0}}>{item.q}</span>}
+                    <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
+                      <button onClick={()=>setCalcQty(c.id,c.qty-1)} style={{width:22,height:22,borderRadius:4,border:"1px solid "+G.border,background:"transparent",color:G.muted,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>−</button>
+                      <span style={{fontSize:13,fontWeight:800,color:G.gold,minWidth:20,textAlign:"center"}}>{c.qty}</span>
+                      <button onClick={()=>setCalcQty(c.id,c.qty+1)} style={{width:22,height:22,borderRadius:4,border:"1px solid "+G.border,background:"transparent",color:G.muted,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>+</button>
+                    </div>
+                    <button onClick={()=>removeFromCalc(c.id)} style={{width:22,height:22,borderRadius:4,border:"1px solid "+G.border+"60",background:"transparent",color:"#ff6b6b",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,flexShrink:0}}>✕</button>
+                  </div>
+                )})}
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>📦 Total matériaux bruts ({calcTotalMats.length})</div>
+              <div style={{display:"flex",flexDirection:"column",gap:3,maxHeight:300,overflowY:"auto"}}>
+                {calcTotalMats.map(m=>(
+                  <div key={m.id} style={{background:"#f5a62308",border:"1px solid #f5a62318",borderRadius:4,padding:"5px 10px",display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}>
+                    <span style={{color:G.text}}>{fmtItem(m.id)}</span>
+                    <span style={{fontWeight:800,color:"#f5a623",flexShrink:0}}>×{m.qty}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>}
+        </div>}
         {filteredCraft.map(r=>{const isOpen=expanded===r.id;const qc=QUALITY_COLORS[r.q]||G.muted;const benchInfo=CRAFT_BENCHES.find(b=>b.id===r.b)||{icon:"📋",color:G.muted,label:r.b||"?"};
         // Build recipe tree for expanded view
         const renderTree = (itemId, qty, depth, seen) => {
@@ -826,6 +920,7 @@ function WikiPage() {
               <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
                 {r.q&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
                 <span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:benchInfo.color+"12",color:benchInfo.color,fontWeight:700}}>{benchInfo.label}</span>
+                <button onClick={e=>{e.stopPropagation();addToCalc(r.id);}} title="Ajouter au calculateur" style={{width:24,height:24,borderRadius:4,border:"1px solid "+(calcItems.find(c=>c.id===r.id)?G.gold:G.border),background:calcItems.find(c=>c.id===r.id)?G.gold+"18":"transparent",color:calcItems.find(c=>c.id===r.id)?G.gold:G.muted,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,flexShrink:0,lineHeight:1}}>+</button>
                 <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
