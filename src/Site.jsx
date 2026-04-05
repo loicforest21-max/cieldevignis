@@ -489,11 +489,16 @@ function WikiPage() {
   const toggleQuality = (q) => setQualities(prev => prev.includes(q) ? prev.filter(x=>x!==q) : [...prev, q]);
   const clearAdvanced = () => { setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); };
   const hasAdvanced = qualities.length > 0 || lvlMin !== "" || lvlMax !== "" || sort !== "name";
+  // Filter out debug/dev/template/test items globally
+  const HIDDEN_QUALITIES = new Set(["Debug","Developer","Template","Technical"]);
+  const wikiItems = useMemo(() => WIKI_ITEMS.filter(i => !HIDDEN_QUALITIES.has(i.q)), []);
+  const wikiMobs = useMemo(() => WIKI_MOBS.filter(m => m.c !== "_Core"), []);
+  const wikiRecipes = useMemo(() => WIKI_RECIPES.filter(r => { const item = WIKI_ITEMS.find(i=>i.id===r.id); return !item || !HIDDEN_QUALITIES.has(item.q); }), []);
   const tabs = [
-    {id:"items",label:"Objets",icon:"⚔️",count:WIKI_ITEMS.length},
-    {id:"mobs",label:"Créatures",icon:"🐉",count:WIKI_MOBS.length},
-    {id:"salvage",label:"Salvage",icon:"♻️",count:WIKI_RECIPES.length},
-    {id:"craft",label:"Craft",icon:"🔨",count:WIKI_ITEMS.filter(i=>i.r&&i.r.length>0).length},
+    {id:"items",label:"Objets",icon:"⚔️",count:wikiItems.length},
+    {id:"mobs",label:"Créatures",icon:"🐉",count:wikiMobs.length},
+    {id:"salvage",label:"Salvage",icon:"♻️",count:wikiRecipes.length},
+    {id:"craft",label:"Craft",icon:"🔨",count:wikiItems.filter(i=>i.r&&i.r.length>0).length},
   ];
   // Craft bench categories
   const CRAFT_BENCHES = [
@@ -513,7 +518,7 @@ function WikiPage() {
   const activeCats = wikiTab === "items" ? ITEM_CATS : wikiTab === "mobs" ? MOB_CATS : wikiTab === "craft" ? CRAFT_BENCHES : SALVAGE_CATS;
   // Craft helpers
   const ITEM_MAP = useMemo(() => Object.fromEntries(WIKI_ITEMS.map(i=>[i.id,i])), []);
-  const craftableItems = useMemo(() => WIKI_ITEMS.filter(i=>i.r&&i.r.length>0), []);
+  const craftableItems = useMemo(() => wikiItems.filter(i=>i.r&&i.r.length>0), [wikiItems]);
   // Build flat list of all raw materials needed
   const flattenRecipe = (id, qty, seen) => {
     if (!seen) seen = new Set();
@@ -601,7 +606,7 @@ function WikiPage() {
       default: return sorted;
     }
   };
-  const filteredItems = wikiTab==="items" ? sortItems(WIKI_ITEMS.filter(r => {
+  const filteredItems = wikiTab==="items" ? sortItems(wikiItems.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.id.toLowerCase().includes(search.toLowerCase())) return false;
     if (qualities.length>0&&!qualities.includes(r.q)) return false;
@@ -609,12 +614,12 @@ function WikiPage() {
     if (lvlMax!==""&&(r.l||0)>parseInt(lvlMax)) return false;
     return true;
   })) : [];
-  const filteredMobs = wikiTab==="mobs" ? sortMobs(WIKI_MOBS.filter(r => {
+  const filteredMobs = wikiTab==="mobs" ? sortMobs(wikiMobs.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.id.toLowerCase().includes(search.toLowerCase())&&!(r.app||'').toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   })) : [];
-  const filteredSalvage = wikiTab==="salvage" ? sortSalvage(WIKI_RECIPES.filter(r => {
+  const filteredSalvage = wikiTab==="salvage" ? sortSalvage(wikiRecipes.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.n.toLowerCase().includes(search.toLowerCase())&&!r.id.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
@@ -645,13 +650,13 @@ function WikiPage() {
     salvage: [{id:"name",label:"Nom (A-Z)"},{id:"time",label:"Temps ↑"},{id:"outputs",label:"Nb sorties ↓"}],
     craft: [{id:"name",label:"Nom (A-Z)"},{id:"level",label:"Niveau ↑"},{id:"level_desc",label:"Niveau ↓"},{id:"quality",label:"Qualité ↓"},{id:"ingredients",label:"Nb ingrédients ↓"}],
   };
-  const ALL_QUALITIES = ["Common","Uncommon","Rare","Epic","Legendary","Debug","Developer","Template"];
+  const ALL_QUALITIES = ["Common","Uncommon","Rare","Epic","Legendary"];
 
   return (
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
       <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.teal+"10",border:"1px solid "+G.teal+"20",fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Base de données</div>
       <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Wiki CielDeVignis</h1>
-      <p style={{ fontSize:16,color:G.muted,margin:"0 0 24px" }}>{WIKI_ITEMS.length} objets · {WIKI_MOBS.length} créatures · {WIKI_RECIPES.length} recettes salvage · {craftableItems.length} recettes craft</p>
+      <p style={{ fontSize:16,color:G.muted,margin:"0 0 24px" }}>{wikiItems.length} objets · {wikiMobs.length} créatures · {wikiRecipes.length} recettes salvage · {craftableItems.length} recettes craft</p>
       {/* Tabs */}
       <div style={{ display:"flex",gap:4,marginBottom:20,borderBottom:"2px solid "+G.border }}>
         {tabs.map(t=><button key={t.id} onClick={()=>switchTab(t.id)} style={{ padding:"10px 20px",borderRadius:"6px 6px 0 0",border:"none",cursor:"pointer",background:wikiTab===t.id?G.card:"transparent",color:wikiTab===t.id?G.teal:G.muted,borderBottom:wikiTab===t.id?"2px solid "+G.teal:"2px solid transparent",fontWeight:700,fontSize:14,fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:6 }}><span style={{fontSize:16}}>{t.icon}</span> {t.label} <span style={{fontSize:11,opacity:0.6}}>{t.count}</span></button>)}
