@@ -463,6 +463,12 @@ function HomePage({ setPage }) {
   );
 }
 
+function ItemImg({ id, size = 28, fallback = "📦", style = {} }) {
+  const [err, setErr] = useState(false);
+  if (err || !id) return <span style={{ fontSize: size * 0.65, width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, ...style }}>{fallback}</span>;
+  return <img src={`/images/items/${id}.png`} alt="" onError={() => setErr(true)} style={{ width: size, height: size, objectFit: "contain", imageRendering: "pixelated", flexShrink: 0, borderRadius: 3, ...style }} />;
+}
+
 function WikiPage() {
   const [wikiTab, setWikiTab] = useState("items");
   const [cat, setCat] = useState("ALL");
@@ -483,11 +489,16 @@ function WikiPage() {
   const toggleQuality = (q) => setQualities(prev => prev.includes(q) ? prev.filter(x=>x!==q) : [...prev, q]);
   const clearAdvanced = () => { setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); };
   const hasAdvanced = qualities.length > 0 || lvlMin !== "" || lvlMax !== "" || sort !== "name";
+  // Filter out debug/dev/template/test items globally
+  const HIDDEN_QUALITIES = new Set(["Debug","Developer","Template","Technical"]);
+  const wikiItems = useMemo(() => WIKI_ITEMS.filter(i => !HIDDEN_QUALITIES.has(i.q)), []);
+  const wikiMobs = useMemo(() => WIKI_MOBS.filter(m => m.c !== "_Core"), []);
+  const wikiRecipes = useMemo(() => WIKI_RECIPES.filter(r => { const item = WIKI_ITEMS.find(i=>i.id===r.id); return !item || !HIDDEN_QUALITIES.has(item.q); }), []);
   const tabs = [
-    {id:"items",label:"Objets",icon:"⚔️",count:WIKI_ITEMS.length},
-    {id:"mobs",label:"Créatures",icon:"🐉",count:WIKI_MOBS.length},
-    {id:"salvage",label:"Salvage",icon:"♻️",count:WIKI_RECIPES.length},
-    {id:"craft",label:"Craft",icon:"🔨",count:WIKI_ITEMS.filter(i=>i.r&&i.r.length>0).length},
+    {id:"items",label:"Objets",icon:"⚔️",count:wikiItems.length},
+    {id:"mobs",label:"Créatures",icon:"🐉",count:wikiMobs.length},
+    {id:"salvage",label:"Salvage",icon:"♻️",count:wikiRecipes.length},
+    {id:"craft",label:"Craft",icon:"🔨",count:wikiItems.filter(i=>i.r&&i.r.length>0).length},
   ];
   // Craft bench categories
   const CRAFT_BENCHES = [
@@ -502,12 +513,23 @@ function WikiPage() {
     {id:"Furnace",icon:"🔥",label:"Fourneau",color:"#e8653a"},
     {id:"Arcanebench",icon:"✨",label:"Arcane",color:"#845ef7"},
     {id:"Fieldcraft",icon:"🏕️",label:"Fieldcraft",color:"#3dd8c5"},
+    {id:"Gauntlet_Anvil_Bench",icon:"🥊",label:"Gantelets",color:"#e8653a"},
+    {id:"Runecrafter's Table",icon:"🔮",label:"Runecraft",color:"#845ef7"},
+    {id:"Endgame_Bench",icon:"⚡",label:"Endgame",color:"#f5a623"},
+    {id:"Necrobench",icon:"💀",label:"Nécro",color:"#845ef7"},
+    {id:"KebKatana_Bench",icon:"⚔️",label:"Katanas",color:"#e8653a"},
+    {id:"BenchMagicGearCraft",icon:"🪄",label:"Magie RPG",color:"#4ea8f0"},
+    {id:"BenchMagicGearCraftUpgrades",icon:"⬆️",label:"Magie RPG+",color:"#4ea8f0"},
+    {id:"EEG_Refinery",icon:"🔩",label:"Raffinerie",color:"#f5a623"},
+    {id:"Tannery",icon:"🧶",label:"Tannerie",color:"#f5a623"},
+    {id:"UMT_Loombench",icon:"🧵",label:"Métier à tisser",color:"#3dd8c5"},
+    {id:"Hedera_Autel",icon:"🌿",label:"Autel Hedera",color:"#51cf66"},
     {id:"TODO",icon:"📋",label:"Non assigné",color:"#7c8db5"},
   ];
   const activeCats = wikiTab === "items" ? ITEM_CATS : wikiTab === "mobs" ? MOB_CATS : wikiTab === "craft" ? CRAFT_BENCHES : SALVAGE_CATS;
   // Craft helpers
   const ITEM_MAP = useMemo(() => Object.fromEntries(WIKI_ITEMS.map(i=>[i.id,i])), []);
-  const craftableItems = useMemo(() => WIKI_ITEMS.filter(i=>i.r&&i.r.length>0), []);
+  const craftableItems = useMemo(() => wikiItems.filter(i=>i.r&&i.r.length>0), [wikiItems]);
   // Build flat list of all raw materials needed
   const flattenRecipe = (id, qty, seen) => {
     if (!seen) seen = new Set();
@@ -595,7 +617,7 @@ function WikiPage() {
       default: return sorted;
     }
   };
-  const filteredItems = wikiTab==="items" ? sortItems(WIKI_ITEMS.filter(r => {
+  const filteredItems = wikiTab==="items" ? sortItems(wikiItems.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.id.toLowerCase().includes(search.toLowerCase())) return false;
     if (qualities.length>0&&!qualities.includes(r.q)) return false;
@@ -603,12 +625,12 @@ function WikiPage() {
     if (lvlMax!==""&&(r.l||0)>parseInt(lvlMax)) return false;
     return true;
   })) : [];
-  const filteredMobs = wikiTab==="mobs" ? sortMobs(WIKI_MOBS.filter(r => {
+  const filteredMobs = wikiTab==="mobs" ? sortMobs(wikiMobs.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.id.toLowerCase().includes(search.toLowerCase())&&!(r.app||'').toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   })) : [];
-  const filteredSalvage = wikiTab==="salvage" ? sortSalvage(WIKI_RECIPES.filter(r => {
+  const filteredSalvage = wikiTab==="salvage" ? sortSalvage(wikiRecipes.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.n.toLowerCase().includes(search.toLowerCase())&&!r.id.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
@@ -639,13 +661,13 @@ function WikiPage() {
     salvage: [{id:"name",label:"Nom (A-Z)"},{id:"time",label:"Temps ↑"},{id:"outputs",label:"Nb sorties ↓"}],
     craft: [{id:"name",label:"Nom (A-Z)"},{id:"level",label:"Niveau ↑"},{id:"level_desc",label:"Niveau ↓"},{id:"quality",label:"Qualité ↓"},{id:"ingredients",label:"Nb ingrédients ↓"}],
   };
-  const ALL_QUALITIES = ["Common","Uncommon","Rare","Epic","Legendary","Debug","Developer","Template"];
+  const ALL_QUALITIES = ["Common","Uncommon","Rare","Epic","Legendary"];
 
   return (
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
       <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.teal+"10",border:"1px solid "+G.teal+"20",fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Base de données</div>
       <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Wiki CielDeVignis</h1>
-      <p style={{ fontSize:16,color:G.muted,margin:"0 0 24px" }}>{WIKI_ITEMS.length} objets · {WIKI_MOBS.length} créatures · {WIKI_RECIPES.length} recettes salvage · {craftableItems.length} recettes craft</p>
+      <p style={{ fontSize:16,color:G.muted,margin:"0 0 24px" }}>{wikiItems.length} objets · {wikiMobs.length} créatures · {wikiRecipes.length} recettes salvage · {craftableItems.length} recettes craft</p>
       {/* Tabs */}
       <div style={{ display:"flex",gap:4,marginBottom:20,borderBottom:"2px solid "+G.border }}>
         {tabs.map(t=><button key={t.id} onClick={()=>switchTab(t.id)} style={{ padding:"10px 20px",borderRadius:"6px 6px 0 0",border:"none",cursor:"pointer",background:wikiTab===t.id?G.card:"transparent",color:wikiTab===t.id?G.teal:G.muted,borderBottom:wikiTab===t.id?"2px solid "+G.teal:"2px solid transparent",fontWeight:700,fontSize:14,fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:6 }}><span style={{fontSize:16}}>{t.icon}</span> {t.label} <span style={{fontSize:11,opacity:0.6}}>{t.count}</span></button>)}
@@ -700,7 +722,7 @@ function WikiPage() {
         {filteredItems.map(r=>{const isOpen=expanded===r.id;const catInfo=ITEM_CATS.find(c=>c.id===r.c)||{color:G.muted,icon:"📦"};const qc=QUALITY_COLORS[r.q]||G.muted;return(
           <div key={r.id} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?qc+"30":G.border+"60"),borderLeft:"3px solid "+qc+(isOpen?"":"40"),borderRadius:"var(--radius-md)",cursor:"pointer",transition:"all 0.15s",overflow:"hidden"}}>
             <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px"}}>
-              <span style={{fontSize:18,flexShrink:0}}>{catInfo.icon}</span>
+              <ItemImg id={r.id} fallback={catInfo.icon} />
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.id)}</div>
                 <div style={{display:"flex",gap:6,fontSize:11,color:G.muted,marginTop:2}}>{r.sc&&<span>{r.sc}</span>}{r.l>0&&<span>Niv. {r.l}</span>}</div>
@@ -726,7 +748,7 @@ function WikiPage() {
                 </div>}
                 {r.r&&<div>
                   <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Recette</div>
-                  {r.r.map(([id,qty],i)=><div key={i} style={{background:G.teal+"08",border:"1px solid "+G.teal+"18",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{color:G.text}}>{fmtItem(id)}</span><span style={{fontWeight:800,color:G.teal}}>×{qty}</span></div>)}
+                  {r.r.map(([id,qty],i)=><div key={i} style={{background:G.teal+"08",border:"1px solid "+G.teal+"18",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",alignItems:"center",gap:6,fontSize:12}}><ItemImg id={id} size={18} fallback="" /><span style={{color:G.text,flex:1}}>{fmtItem(id)}</span><span style={{fontWeight:800,color:G.teal,flexShrink:0}}>×{qty}</span></div>)}
                   <div style={{fontSize:11,color:G.muted,marginTop:4}}>{r.b&&<span>🔨 {fmtItem(r.b)}</span>}{r.ct>0&&<span style={{marginLeft:10}}>⏱️ {r.ct}s</span>}{r.dur>0&&<span style={{marginLeft:10}}>🔧 {r.dur}</span>}</div>
                 </div>}
               </div>
@@ -799,7 +821,7 @@ function WikiPage() {
         {filteredSalvage.map(r=>{const isOpen=expanded===r.id;const catInfo=SALVAGE_CATS.find(c=>c.id===r.c)||{color:G.muted,icon:"📦"};return(
           <div key={r.id} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?catInfo.color+"30":G.border+"60"),borderLeft:"3px solid "+catInfo.color+(isOpen?"":"40"),borderRadius:"var(--radius-md)",cursor:"pointer",transition:"all 0.15s",overflow:"hidden"}}>
             <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px"}}>
-              <span style={{fontSize:18,flexShrink:0}}>{catInfo.icon}</span>
+              <ItemImg id={r.id} fallback={catInfo.icon} />
               <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{r.n}</div><div style={{fontSize:11,color:G.muted}}>{fmtItem(r.id)}</div></div>
               <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
                 <span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:catInfo.color+"12",color:catInfo.color,fontWeight:700}}>{r.c}</span>
@@ -809,9 +831,9 @@ function WikiPage() {
             </div>
             {isOpen&&<div style={{padding:"0 14px 14px",borderTop:"1px solid "+G.border}}>
               <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:16,alignItems:"flex-start",marginTop:12}}>
-                <div><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Entrée</div><div style={{background:"#ff6b6b08",border:"1px solid #ff6b6b18",borderRadius:"var(--radius-md)",padding:"8px 12px"}}><div style={{fontSize:13,fontWeight:700,color:"#ff6b6b"}}>1× {fmtItem(r.id)}</div></div></div>
+                <div><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Entrée</div><div style={{background:"#ff6b6b08",border:"1px solid #ff6b6b18",borderRadius:"var(--radius-md)",padding:"8px 12px",display:"flex",alignItems:"center",gap:8}}><ItemImg id={r.id} size={24} fallback="" /><div style={{fontSize:13,fontWeight:700,color:"#ff6b6b"}}>1× {fmtItem(r.id)}</div></div></div>
                 <div style={{paddingTop:28,fontSize:20,color:G.teal}}>→</div>
-                <div><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Sorties</div>{r.o.map(([item,qty],i)=><div key={i} style={{background:G.teal+"08",border:"1px solid "+G.teal+"18",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{color:G.text}}>{fmtItem(item)}</span><span style={{fontWeight:800,color:G.teal}}>×{qty}</span></div>)}</div>
+                <div><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Sorties</div>{r.o.map(([item,qty],i)=><div key={i} style={{background:G.teal+"08",border:"1px solid "+G.teal+"18",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",alignItems:"center",gap:6,fontSize:12}}><ItemImg id={item} size={18} fallback="" /><span style={{color:G.text,flex:1}}>{fmtItem(item)}</span><span style={{fontWeight:800,color:G.teal,flexShrink:0}}>×{qty}</span></div>)}</div>
               </div>
               <div style={{marginTop:8,fontSize:11,color:G.muted}}>🔨 {fmtItem(r.b)} · ⏱️ {r.t}s</div>
             </div>}
@@ -839,6 +861,7 @@ function WikiPage() {
             {calcSearchResults.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:G.card,border:"1px solid "+G.border,borderRadius:"0 0 8px 8px",maxHeight:240,overflowY:"auto",boxShadow:"0 8px 24px rgba(0,0,0,0.4)"}}>
               {calcSearchResults.map(r=>{const qc=QUALITY_COLORS[r.q]||G.muted;return(
                 <div key={r.id} onClick={()=>{addToCalc(r.id);setCalcSearch("");}} style={{padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,borderBottom:"1px solid "+G.border+"40",transition:"background 0.1s"}} onMouseEnter={e=>e.currentTarget.style.background=G.bg} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  <ItemImg id={r.id} size={22} fallback="📦" />
                   <span style={{fontSize:12,color:G.text,flex:1}}>{fmtItem(r.id)}</span>
                   {r.l>0&&<span style={{fontSize:10,color:G.muted}}>Niv.{r.l}</span>}
                   {r.q&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
@@ -855,6 +878,7 @@ function WikiPage() {
               <div style={{display:"flex",flexDirection:"column",gap:4}}>
                 {calcItems.map(c=>{const item=ITEM_MAP[c.id];const qc=QUALITY_COLORS[item?.q]||G.muted;return(
                   <div key={c.id} style={{background:G.bg+"80",border:"1px solid "+G.border,borderRadius:4,padding:"6px 10px",display:"flex",alignItems:"center",gap:8}}>
+                    <ItemImg id={c.id} size={22} fallback="📦" />
                     <span style={{fontSize:12,color:G.text,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{fmtItem(c.id)}</span>
                     {item?.q&&<span style={{fontSize:9,padding:"1px 5px",borderRadius:3,background:qc+"15",color:qc,fontWeight:700,flexShrink:0}}>{item.q}</span>}
                     <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
@@ -871,8 +895,9 @@ function WikiPage() {
               <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>📦 Total matériaux bruts ({calcTotalMats.length})</div>
               <div style={{display:"flex",flexDirection:"column",gap:3,maxHeight:300,overflowY:"auto"}}>
                 {calcTotalMats.map(m=>(
-                  <div key={m.id} style={{background:"#f5a62308",border:"1px solid #f5a62318",borderRadius:4,padding:"5px 10px",display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}>
-                    <span style={{color:G.text}}>{fmtItem(m.id)}</span>
+                  <div key={m.id} style={{background:"#f5a62308",border:"1px solid #f5a62318",borderRadius:4,padding:"5px 10px",display:"flex",alignItems:"center",gap:6,fontSize:12}}>
+                    <ItemImg id={m.id} size={20} fallback="" />
+                    <span style={{color:G.text,flex:1}}>{fmtItem(m.id)}</span>
                     <span style={{fontWeight:800,color:"#f5a623",flexShrink:0}}>×{m.qty}</span>
                   </div>
                 ))}
@@ -894,6 +919,7 @@ function WikiPage() {
                 {depth>0&&<span style={{color:G.border,fontSize:12,flexShrink:0}}>└─</span>}
                 <div style={{display:"flex",alignItems:"center",gap:6,padding:"4px 10px",borderRadius:4,background:isRaw?"#f5a62308":G.teal+"08",border:"1px solid "+(isRaw?"#f5a62318":G.teal+"18"),flex:1,minWidth:0}}>
                   <span style={{fontSize:12,fontWeight:800,color:isRaw?"#f5a623":G.teal,flexShrink:0}}>×{qty}</span>
+                  <ItemImg id={itemId} size={20} fallback="" />
                   <span style={{fontSize:12,color:G.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{fmtItem(itemId)}</span>
                   {isRaw&&<span style={{fontSize:9,padding:"1px 6px",borderRadius:3,background:"#f5a62315",color:"#f5a623",fontWeight:700,flexShrink:0}}>Matériau</span>}
                   {hasSub&&item.b&&<span style={{fontSize:9,padding:"1px 6px",borderRadius:3,background:G.teal+"15",color:G.teal,fontWeight:700,flexShrink:0}}>🔨 {fmtItem(item.b)}</span>}
@@ -908,7 +934,7 @@ function WikiPage() {
         return(
           <div key={r.id} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?benchInfo.color+"30":G.border+"60"),borderLeft:"3px solid "+benchInfo.color+(isOpen?"":"40"),borderRadius:"var(--radius-md)",cursor:"pointer",transition:"all 0.15s",overflow:"hidden"}}>
             <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px"}}>
-              <span style={{fontSize:18,flexShrink:0}}>{benchInfo.icon}</span>
+              <ItemImg id={r.id} fallback={benchInfo.icon} />
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.id)}</div>
                 <div style={{display:"flex",gap:6,fontSize:11,color:G.muted,marginTop:2}}>
@@ -939,9 +965,10 @@ function WikiPage() {
                   <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>📦 Matériaux bruts totaux</div>
                   <div style={{display:"flex",flexDirection:"column",gap:3}}>
                     {rawMats.sort((a,b)=>b.qty-a.qty).map(m=>(
-                      <div key={m.id} style={{background:"#f5a62308",border:"1px solid #f5a62318",borderRadius:4,padding:"4px 10px",display:"flex",justifyContent:"space-between",fontSize:12}}>
-                        <span style={{color:G.text}}>{fmtItem(m.id)}</span>
-                        <span style={{fontWeight:800,color:"#f5a623"}}>×{m.qty}</span>
+                      <div key={m.id} style={{background:"#f5a62308",border:"1px solid #f5a62318",borderRadius:4,padding:"4px 10px",display:"flex",alignItems:"center",gap:6,fontSize:12}}>
+                        <ItemImg id={m.id} size={20} fallback="" />
+                        <span style={{color:G.text,flex:1}}>{fmtItem(m.id)}</span>
+                        <span style={{fontWeight:800,color:"#f5a623",flexShrink:0}}>×{m.qty}</span>
                       </div>
                     ))}
                   </div>
