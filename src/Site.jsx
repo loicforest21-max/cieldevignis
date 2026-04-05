@@ -468,30 +468,88 @@ function WikiPage() {
   const [cat, setCat] = useState("ALL");
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState(null);
+  // Advanced filters
+  const [qualities, setQualities] = useState([]);
+  const [lvlMin, setLvlMin] = useState("");
+  const [lvlMax, setLvlMax] = useState("");
+  const [sort, setSort] = useState("name");
+  const [showFilters, setShowFilters] = useState(false);
   const fmtItem = (s) => s ? s.replace(/_/g, ' ') : '';
-  const switchTab = (t) => { setWikiTab(t); setCat("ALL"); setSearch(""); setExpanded(null); };
+  const switchTab = (t) => { setWikiTab(t); setCat("ALL"); setSearch(""); setExpanded(null); setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); };
+  const toggleQuality = (q) => setQualities(prev => prev.includes(q) ? prev.filter(x=>x!==q) : [...prev, q]);
+  const clearAdvanced = () => { setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); };
+  const hasAdvanced = qualities.length > 0 || lvlMin !== "" || lvlMax !== "" || sort !== "name";
   const tabs = [
     {id:"items",label:"Objets",icon:"⚔️",count:WIKI_ITEMS.length},
     {id:"mobs",label:"Créatures",icon:"🐉",count:WIKI_MOBS.length},
     {id:"salvage",label:"Salvage",icon:"♻️",count:WIKI_RECIPES.length},
   ];
   const activeCats = wikiTab === "items" ? ITEM_CATS : wikiTab === "mobs" ? MOB_CATS : SALVAGE_CATS;
-  const filteredItems = wikiTab==="items" ? WIKI_ITEMS.filter(r => {
+  // Helper: compute total DPS for an item
+  const itemDPS = (r) => r.dmg ? r.dmg.reduce((s,d)=>s+d.d, 0) : 0;
+  // Helper: compute total resistance for an item
+  const itemRes = (r) => r.res ? Object.values(r.res).reduce((s,v)=>s+v, 0) : 0;
+  // Helper: mob total damage
+  const mobDmg = (r) => r.dmg ? r.dmg.reduce((s,d)=>s+d.d, 0) : 0;
+  // Quality sort order for consistent ordering
+  const QUALITY_ORDER = {"Common":0,"Uncommon":1,"Rare":2,"Epic":3,"Legendary":4,"Debug":5,"Developer":6,"Template":7,"Technical":8};
+  // Sorting functions
+  const sortItems = (arr) => {
+    const sorted = [...arr];
+    switch(sort) {
+      case "level": return sorted.sort((a,b) => (a.l||0) - (b.l||0));
+      case "level_desc": return sorted.sort((a,b) => (b.l||0) - (a.l||0));
+      case "dps": return sorted.sort((a,b) => itemDPS(b) - itemDPS(a));
+      case "res": return sorted.sort((a,b) => itemRes(b) - itemRes(a));
+      case "dur": return sorted.sort((a,b) => (b.dur||0) - (a.dur||0));
+      case "quality": return sorted.sort((a,b) => (QUALITY_ORDER[b.q]||0) - (QUALITY_ORDER[a.q]||0));
+      default: return sorted;
+    }
+  };
+  const sortMobs = (arr) => {
+    const sorted = [...arr];
+    switch(sort) {
+      case "hp": return sorted.sort((a,b) => (b.hp||0) - (a.hp||0));
+      case "hp_asc": return sorted.sort((a,b) => (a.hp||0) - (b.hp||0));
+      case "dmg": return sorted.sort((a,b) => mobDmg(b) - mobDmg(a));
+      case "spd": return sorted.sort((a,b) => (b.spd||0) - (a.spd||0));
+      default: return sorted;
+    }
+  };
+  const sortSalvage = (arr) => {
+    const sorted = [...arr];
+    switch(sort) {
+      case "time": return sorted.sort((a,b) => (a.t||0) - (b.t||0));
+      case "outputs": return sorted.sort((a,b) => (b.o?b.o.length:0) - (a.o?a.o.length:0));
+      default: return sorted;
+    }
+  };
+  const filteredItems = wikiTab==="items" ? sortItems(WIKI_ITEMS.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.id.toLowerCase().includes(search.toLowerCase())) return false;
+    if (qualities.length>0&&!qualities.includes(r.q)) return false;
+    if (lvlMin!==""&&(r.l||0)<parseInt(lvlMin)) return false;
+    if (lvlMax!==""&&(r.l||0)>parseInt(lvlMax)) return false;
     return true;
-  }) : [];
-  const filteredMobs = wikiTab==="mobs" ? WIKI_MOBS.filter(r => {
+  })) : [];
+  const filteredMobs = wikiTab==="mobs" ? sortMobs(WIKI_MOBS.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.id.toLowerCase().includes(search.toLowerCase())&&!(r.app||'').toLowerCase().includes(search.toLowerCase())) return false;
     return true;
-  }) : [];
-  const filteredSalvage = wikiTab==="salvage" ? WIKI_RECIPES.filter(r => {
+  })) : [];
+  const filteredSalvage = wikiTab==="salvage" ? sortSalvage(WIKI_RECIPES.filter(r => {
     if (cat!=="ALL"&&r.c!==cat) return false;
     if (search&&!r.n.toLowerCase().includes(search.toLowerCase())&&!r.id.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
-  }) : [];
+  })) : [];
   const totalFiltered = wikiTab==="items"?filteredItems.length:wikiTab==="mobs"?filteredMobs.length:filteredSalvage.length;
+  // Sort options per tab
+  const SORT_OPTIONS = {
+    items: [{id:"name",label:"Nom (A-Z)"},{id:"level",label:"Niveau ↑"},{id:"level_desc",label:"Niveau ↓"},{id:"quality",label:"Qualité ↓"},{id:"dps",label:"Dégâts ↓"},{id:"res",label:"Résistance ↓"},{id:"dur",label:"Durabilité ↓"}],
+    mobs: [{id:"name",label:"Nom (A-Z)"},{id:"hp",label:"HP ↓"},{id:"hp_asc",label:"HP ↑"},{id:"dmg",label:"Dégâts ↓"},{id:"spd",label:"Vitesse ↓"}],
+    salvage: [{id:"name",label:"Nom (A-Z)"},{id:"time",label:"Temps ↑"},{id:"outputs",label:"Nb sorties ↓"}],
+  };
+  const ALL_QUALITIES = ["Common","Uncommon","Rare","Epic","Legendary","Debug","Developer","Template"];
 
   return (
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
@@ -507,8 +565,45 @@ function WikiPage() {
         <button onClick={()=>setCat("ALL")} style={{ padding:"6px 14px",borderRadius:"var(--radius-md)",border:"2px solid "+(cat==="ALL"?G.teal:G.border),background:cat==="ALL"?G.teal+"15":"transparent",color:cat==="ALL"?G.teal:G.muted,fontWeight:700,fontSize:12,cursor:"pointer" }}>Tous</button>
         {activeCats.map(c=><button key={c.id} onClick={()=>setCat(c.id)} style={{ padding:"6px 14px",borderRadius:"var(--radius-md)",border:"2px solid "+(cat===c.id?c.color:G.border),background:cat===c.id?c.color+"15":"transparent",color:cat===c.id?c.color:G.muted,fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5 }}><span style={{fontSize:13}}>{c.icon}</span> {c.label}</button>)}
       </div>
-      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..." style={{ width:"100%",maxWidth:500,padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:"#fff",fontSize:14,fontFamily:"var(--fb)",outline:"none",marginBottom:14 }}/>
-      <div style={{ fontSize:12,color:G.muted,marginBottom:14 }}>{totalFiltered} résultat{totalFiltered>1?"s":""}</div>
+      <div style={{ display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center" }}>
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..." style={{ flex:1,minWidth:200,maxWidth:500,padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:"#fff",fontSize:14,fontFamily:"var(--fb)",outline:"none" }}/>
+        <select value={sort} onChange={e=>setSort(e.target.value)} style={{ padding:"10px 14px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:sort!=="name"?G.teal:G.muted,fontSize:12,fontWeight:700,fontFamily:"var(--fb)",cursor:"pointer",outline:"none",appearance:"auto" }}>
+          {(SORT_OPTIONS[wikiTab]||[]).map(o=><option key={o.id} value={o.id}>{o.label}</option>)}
+        </select>
+        <button onClick={()=>setShowFilters(!showFilters)} style={{ padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+(showFilters||hasAdvanced?G.teal+60:G.border),background:showFilters||hasAdvanced?G.teal+"12":"transparent",color:showFilters||hasAdvanced?G.teal:G.muted,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:6 }}>
+          <span style={{fontSize:14}}>⚙️</span> Filtres{hasAdvanced?" ●":""}
+        </button>
+      </div>
+      {/* Advanced filters panel */}
+      {showFilters&&<div style={{ background:G.card,border:"1px solid "+G.border,borderRadius:"var(--radius-md)",padding:16,marginBottom:14 }}>
+        {wikiTab==="items"&&<>
+          <div style={{ marginBottom:12 }}>
+            <div style={{ fontSize:11,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8 }}>Qualité</div>
+            <div style={{ display:"flex",gap:5,flexWrap:"wrap" }}>
+              {ALL_QUALITIES.map(q=>{const qc=QUALITY_COLORS[q]||G.muted;const active=qualities.includes(q);return(
+                <button key={q} onClick={()=>toggleQuality(q)} style={{ padding:"4px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+(active?qc:G.border),background:active?qc+"18":"transparent",color:active?qc:G.muted,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"var(--fb)" }}>{q}</button>
+              )})}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize:11,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8 }}>Niveau</div>
+            <div style={{ display:"flex",gap:8,alignItems:"center" }}>
+              <input type="number" value={lvlMin} onChange={e=>setLvlMin(e.target.value)} placeholder="Min" min={1} max={75} style={{ width:80,padding:"8px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#fff",fontSize:13,fontFamily:"var(--fb)",outline:"none",textAlign:"center" }}/>
+              <span style={{ color:G.muted,fontSize:13 }}>—</span>
+              <input type="number" value={lvlMax} onChange={e=>setLvlMax(e.target.value)} placeholder="Max" min={1} max={75} style={{ width:80,padding:"8px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#fff",fontSize:13,fontFamily:"var(--fb)",outline:"none",textAlign:"center" }}/>
+              <span style={{ fontSize:11,color:G.muted }}>(1 – 75)</span>
+            </div>
+          </div>
+        </>}
+        {wikiTab!=="items"&&<div style={{ fontSize:13,color:G.muted }}>Utilisez le tri ci-dessus pour ordonner les résultats.</div>}
+        {hasAdvanced&&<button onClick={clearAdvanced} style={{ marginTop:12,padding:"6px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:"transparent",color:G.muted,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"var(--fb)" }}>✕ Réinitialiser les filtres</button>}
+      </div>}
+      <div style={{ fontSize:12,color:G.muted,marginBottom:14,display:"flex",gap:8,alignItems:"center",flexWrap:"wrap" }}>
+        <span>{totalFiltered} résultat{totalFiltered>1?"s":""}</span>
+        {sort!=="name"&&<span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:G.teal+"12",color:G.teal}}>Trié : {(SORT_OPTIONS[wikiTab]||[]).find(o=>o.id===sort)?.label}</span>}
+        {qualities.length>0&&<span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:G.purple+"12",color:G.purple}}>{qualities.length} qualité{qualities.length>1?"s":""}</span>}
+        {(lvlMin||lvlMax)&&<span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:G.blue+"12",color:G.blue}}>Niv. {lvlMin||"1"}–{lvlMax||"75"}</span>}
+      </div>
 
       {/* ITEMS */}
       {wikiTab==="items"&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
@@ -521,6 +616,9 @@ function WikiPage() {
                 <div style={{display:"flex",gap:6,fontSize:11,color:G.muted,marginTop:2}}>{r.sc&&<span>{r.sc}</span>}{r.l>0&&<span>Niv. {r.l}</span>}</div>
               </div>
               <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
+                {sort==="dps"&&itemDPS(r)>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#e8653a15",color:"#e8653a",fontWeight:700}}>{itemDPS(r)} DMG</span>}
+                {sort==="res"&&itemRes(r)>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#4ea8f015",color:"#4ea8f0",fontWeight:700}}>{(itemRes(r)*100).toFixed(0)}% RES</span>}
+                {sort==="dur"&&r.dur>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#51cf6615",color:"#51cf66",fontWeight:700}}>{r.dur} DUR</span>}
                 {r.q&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
                 <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
               </div>
@@ -553,7 +651,7 @@ function WikiPage() {
           const catInfo=MOB_CATS.find(c=>c.id===r.c)||{color:G.muted,icon:"❓"};
           const firstLetter=(r.app||r.id||"").charAt(0).toUpperCase();
           const prevLetter=idx>0?(filteredMobs[idx-1].app||filteredMobs[idx-1].id||"").charAt(0).toUpperCase():"";
-          const showHeader=firstLetter!==prevLetter;
+          const showHeader=sort==="name"&&firstLetter!==prevLetter;
           return(<div key={r.id}>
           {showHeader&&<div style={{
             padding:"var(--sp-1) var(--sp-2)",
@@ -584,6 +682,8 @@ function WikiPage() {
                     fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"
                   }}>Hostile</span>
                 )}
+                {sort==="dmg"&&mobDmg(r)>0&&<span style={{padding:"2px 8px",borderRadius:"var(--radius-sm)",background:"#e8653a18",color:"#e8653a",fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"}}>⚔️ {mobDmg(r)}</span>}
+                {sort==="spd"&&r.spd>0&&<span style={{padding:"2px 8px",borderRadius:"var(--radius-sm)",background:"#3dd8c518",color:"#3dd8c5",fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"}}>💨 {r.spd}</span>}
                 {r.drop&&(
                   <span style={{fontSize:"var(--text-xs)",color:"var(--c-muted)"}}>
                     🎁 {fmtItem(r.drop)}
