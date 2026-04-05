@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════
 // SITE — Landing page, navigation, wiki, map, dungeons, community
 // ═══════════════════════════════════════════════════
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   STATS, RACES, CLASSES, AUGMENTS, RACE_PREVIEWS, CLASS_PREVIEWS,
   WIKI_ITEMS, WIKI_MOBS, WIKI_RECIPES, ITEM_CATS, QUALITY_COLORS, MOB_CATS, SALVAGE_CATS,
@@ -483,8 +483,45 @@ function WikiPage() {
     {id:"items",label:"Objets",icon:"⚔️",count:WIKI_ITEMS.length},
     {id:"mobs",label:"Créatures",icon:"🐉",count:WIKI_MOBS.length},
     {id:"salvage",label:"Salvage",icon:"♻️",count:WIKI_RECIPES.length},
+    {id:"craft",label:"Craft",icon:"🔨",count:WIKI_ITEMS.filter(i=>i.r&&i.r.length>0).length},
   ];
-  const activeCats = wikiTab === "items" ? ITEM_CATS : wikiTab === "mobs" ? MOB_CATS : SALVAGE_CATS;
+  // Craft bench categories
+  const CRAFT_BENCHES = [
+    {id:"Weapon_Bench",icon:"⚔️",label:"Armes",color:"#e8653a"},
+    {id:"Armor_Bench",icon:"🛡️",label:"Armures",color:"#4ea8f0"},
+    {id:"Armory",icon:"🏰",label:"Armurerie",color:"#845ef7"},
+    {id:"Alchemybench",icon:"⚗️",label:"Alchimie",color:"#845ef7"},
+    {id:"Cookingbench",icon:"🍳",label:"Cuisine",color:"#51cf66"},
+    {id:"Campfire",icon:"🔥",label:"Feu de camp",color:"#e8653a"},
+    {id:"Workbench",icon:"🔧",label:"Établi",color:"#f5a623"},
+    {id:"Farmingbench",icon:"🌾",label:"Agriculture",color:"#51cf66"},
+    {id:"Furnace",icon:"🔥",label:"Fourneau",color:"#e8653a"},
+    {id:"Arcanebench",icon:"✨",label:"Arcane",color:"#845ef7"},
+    {id:"Fieldcraft",icon:"🏕️",label:"Fieldcraft",color:"#3dd8c5"},
+    {id:"TODO",icon:"📋",label:"Non assigné",color:"#7c8db5"},
+  ];
+  const activeCats = wikiTab === "items" ? ITEM_CATS : wikiTab === "mobs" ? MOB_CATS : wikiTab === "craft" ? CRAFT_BENCHES : SALVAGE_CATS;
+  // Craft helpers
+  const ITEM_MAP = useMemo(() => Object.fromEntries(WIKI_ITEMS.map(i=>[i.id,i])), []);
+  const craftableItems = useMemo(() => WIKI_ITEMS.filter(i=>i.r&&i.r.length>0), []);
+  // Build flat list of all raw materials needed
+  const flattenRecipe = (id, qty, seen) => {
+    if (!seen) seen = new Set();
+    if (seen.has(id)) return [{id, qty, raw:true}];
+    const item = ITEM_MAP[id];
+    if (!item || !item.r || item.r.length===0) return [{id, qty, raw:true}];
+    seen.add(id);
+    const results = [];
+    item.r.forEach(([ingId, ingQty]) => {
+      const sub = flattenRecipe(ingId, ingQty * qty, new Set(seen));
+      sub.forEach(s => {
+        const existing = results.find(r=>r.id===s.id);
+        if (existing) existing.qty += s.qty;
+        else results.push({...s});
+      });
+    });
+    return results;
+  };
   // Helper: compute total DPS for an item
   const itemDPS = (r) => r.dmg ? r.dmg.reduce((s,d)=>s+d.d, 0) : 0;
   // Helper: compute total resistance for an item
@@ -542,12 +579,31 @@ function WikiPage() {
     if (search&&!r.n.toLowerCase().includes(search.toLowerCase())&&!r.id.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   })) : [];
-  const totalFiltered = wikiTab==="items"?filteredItems.length:wikiTab==="mobs"?filteredMobs.length:filteredSalvage.length;
+  const sortCraft = (arr) => {
+    const sorted = [...arr];
+    switch(sort) {
+      case "level": return sorted.sort((a,b) => (a.l||0) - (b.l||0));
+      case "level_desc": return sorted.sort((a,b) => (b.l||0) - (a.l||0));
+      case "quality": return sorted.sort((a,b) => (QUALITY_ORDER[b.q]||0) - (QUALITY_ORDER[a.q]||0));
+      case "ingredients": return sorted.sort((a,b) => (b.r?b.r.length:0) - (a.r?a.r.length:0));
+      default: return sorted;
+    }
+  };
+  const filteredCraft = wikiTab==="craft" ? sortCraft(craftableItems.filter(r => {
+    if (cat!=="ALL"&&r.b!==cat) return false;
+    if (search&&!r.id.toLowerCase().includes(search.toLowerCase())) return false;
+    if (qualities.length>0&&!qualities.includes(r.q)) return false;
+    if (lvlMin!==""&&(r.l||0)<parseInt(lvlMin)) return false;
+    if (lvlMax!==""&&(r.l||0)>parseInt(lvlMax)) return false;
+    return true;
+  })) : [];
+  const totalFiltered = wikiTab==="items"?filteredItems.length:wikiTab==="mobs"?filteredMobs.length:wikiTab==="craft"?filteredCraft.length:filteredSalvage.length;
   // Sort options per tab
   const SORT_OPTIONS = {
     items: [{id:"name",label:"Nom (A-Z)"},{id:"level",label:"Niveau ↑"},{id:"level_desc",label:"Niveau ↓"},{id:"quality",label:"Qualité ↓"},{id:"dps",label:"Dégâts ↓"},{id:"res",label:"Résistance ↓"},{id:"dur",label:"Durabilité ↓"}],
     mobs: [{id:"name",label:"Nom (A-Z)"},{id:"hp",label:"HP ↓"},{id:"hp_asc",label:"HP ↑"},{id:"dmg",label:"Dégâts ↓"},{id:"spd",label:"Vitesse ↓"}],
     salvage: [{id:"name",label:"Nom (A-Z)"},{id:"time",label:"Temps ↑"},{id:"outputs",label:"Nb sorties ↓"}],
+    craft: [{id:"name",label:"Nom (A-Z)"},{id:"level",label:"Niveau ↑"},{id:"level_desc",label:"Niveau ↓"},{id:"quality",label:"Qualité ↓"},{id:"ingredients",label:"Nb ingrédients ↓"}],
   };
   const ALL_QUALITIES = ["Common","Uncommon","Rare","Epic","Legendary","Debug","Developer","Template"];
 
@@ -555,7 +611,7 @@ function WikiPage() {
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
       <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.teal+"10",border:"1px solid "+G.teal+"20",fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Base de données</div>
       <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Wiki CielDeVignis</h1>
-      <p style={{ fontSize:16,color:G.muted,margin:"0 0 24px" }}>{WIKI_ITEMS.length} objets · {WIKI_MOBS.length} créatures · {WIKI_RECIPES.length} recettes de salvage</p>
+      <p style={{ fontSize:16,color:G.muted,margin:"0 0 24px" }}>{WIKI_ITEMS.length} objets · {WIKI_MOBS.length} créatures · {WIKI_RECIPES.length} recettes salvage · {craftableItems.length} recettes craft</p>
       {/* Tabs */}
       <div style={{ display:"flex",gap:4,marginBottom:20,borderBottom:"2px solid "+G.border }}>
         {tabs.map(t=><button key={t.id} onClick={()=>switchTab(t.id)} style={{ padding:"10px 20px",borderRadius:"6px 6px 0 0",border:"none",cursor:"pointer",background:wikiTab===t.id?G.card:"transparent",color:wikiTab===t.id?G.teal:G.muted,borderBottom:wikiTab===t.id?"2px solid "+G.teal:"2px solid transparent",fontWeight:700,fontSize:14,fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:6 }}><span style={{fontSize:16}}>{t.icon}</span> {t.label} <span style={{fontSize:11,opacity:0.6}}>{t.count}</span></button>)}
@@ -576,7 +632,7 @@ function WikiPage() {
       </div>
       {/* Advanced filters panel */}
       {showFilters&&<div style={{ background:G.card,border:"1px solid "+G.border,borderRadius:"var(--radius-md)",padding:16,marginBottom:14 }}>
-        {wikiTab==="items"&&<>
+        {(wikiTab==="items"||wikiTab==="craft")&&<>
           <div style={{ marginBottom:12 }}>
             <div style={{ fontSize:11,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8 }}>Qualité</div>
             <div style={{ display:"flex",gap:5,flexWrap:"wrap" }}>
@@ -595,7 +651,7 @@ function WikiPage() {
             </div>
           </div>
         </>}
-        {wikiTab!=="items"&&<div style={{ fontSize:13,color:G.muted }}>Utilisez le tri ci-dessus pour ordonner les résultats.</div>}
+        {wikiTab!=="items"&&wikiTab!=="craft"&&<div style={{ fontSize:13,color:G.muted }}>Utilisez le tri ci-dessus pour ordonner les résultats.</div>}
         {hasAdvanced&&<button onClick={clearAdvanced} style={{ marginTop:12,padding:"6px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:"transparent",color:G.muted,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"var(--fb)" }}>✕ Réinitialiser les filtres</button>}
       </div>}
       <div style={{ fontSize:12,color:G.muted,marginBottom:14,display:"flex",gap:8,alignItems:"center",flexWrap:"wrap" }}>
@@ -726,6 +782,79 @@ function WikiPage() {
               <div style={{marginTop:8,fontSize:11,color:G.muted}}>🔨 {fmtItem(r.b)} · ⏱️ {r.t}s</div>
             </div>}
           </div>)})}
+      </div>}
+
+      {/* CRAFT */}
+      {wikiTab==="craft"&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
+        {filteredCraft.map(r=>{const isOpen=expanded===r.id;const qc=QUALITY_COLORS[r.q]||G.muted;const benchInfo=CRAFT_BENCHES.find(b=>b.id===r.b)||{icon:"📋",color:G.muted,label:r.b||"?"};
+        // Build recipe tree for expanded view
+        const renderTree = (itemId, qty, depth, seen) => {
+          if (!seen) seen = new Set();
+          const item = ITEM_MAP[itemId];
+          const hasSub = item && item.r && item.r.length>0 && !seen.has(itemId);
+          const isRaw = !hasSub;
+          if (hasSub) seen.add(itemId);
+          return (
+            <div key={itemId+"-"+depth} style={{marginLeft:depth*20,marginTop:depth>0?4:0}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                {depth>0&&<span style={{color:G.border,fontSize:12,flexShrink:0}}>└─</span>}
+                <div style={{display:"flex",alignItems:"center",gap:6,padding:"4px 10px",borderRadius:4,background:isRaw?"#f5a62308":G.teal+"08",border:"1px solid "+(isRaw?"#f5a62318":G.teal+"18"),flex:1,minWidth:0}}>
+                  <span style={{fontSize:12,fontWeight:800,color:isRaw?"#f5a623":G.teal,flexShrink:0}}>×{qty}</span>
+                  <span style={{fontSize:12,color:G.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{fmtItem(itemId)}</span>
+                  {isRaw&&<span style={{fontSize:9,padding:"1px 6px",borderRadius:3,background:"#f5a62315",color:"#f5a623",fontWeight:700,flexShrink:0}}>Matériau</span>}
+                  {hasSub&&item.b&&<span style={{fontSize:9,padding:"1px 6px",borderRadius:3,background:G.teal+"15",color:G.teal,fontWeight:700,flexShrink:0}}>🔨 {fmtItem(item.b)}</span>}
+                </div>
+              </div>
+              {hasSub&&item.r.map(([subId,subQty])=>renderTree(subId,subQty,depth+1,new Set(seen)))}
+            </div>
+          );
+        };
+        // Compute flat raw materials
+        const rawMats = isOpen ? flattenRecipe(r.id, 1, new Set()) : [];
+        return(
+          <div key={r.id} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?benchInfo.color+"30":G.border+"60"),borderLeft:"3px solid "+benchInfo.color+(isOpen?"":"40"),borderRadius:"var(--radius-md)",cursor:"pointer",transition:"all 0.15s",overflow:"hidden"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px"}}>
+              <span style={{fontSize:18,flexShrink:0}}>{benchInfo.icon}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.id)}</div>
+                <div style={{display:"flex",gap:6,fontSize:11,color:G.muted,marginTop:2}}>
+                  {r.l>0&&<span>Niv. {r.l}</span>}
+                  <span>{r.r.length} ingrédient{r.r.length>1?"s":""}</span>
+                  {r.ct>0&&<span>⏱️ {r.ct}s</span>}
+                </div>
+              </div>
+              <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
+                {r.q&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
+                <span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:benchInfo.color+"12",color:benchInfo.color,fontWeight:700}}>{benchInfo.label}</span>
+                <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
+              </div>
+            </div>
+            {isOpen&&<div onClick={e=>e.stopPropagation()} style={{padding:"0 14px 14px",borderTop:"1px solid "+G.border}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:16,marginTop:12}}>
+                {/* Left: Recipe tree */}
+                <div>
+                  <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>🌳 Arbre de craft</div>
+                  <div style={{background:G.bg+"80",border:"1px solid "+G.border,borderRadius:"var(--radius-md)",padding:10}}>
+                    {r.r.map(([ingId,ingQty])=>renderTree(ingId,ingQty,0,new Set([r.id])))}
+                  </div>
+                  <div style={{marginTop:8,fontSize:11,color:G.muted}}>🔨 {fmtItem(r.b)}{r.ct>0&&<span> · ⏱️ {r.ct}s</span>}{r.dur>0&&<span> · 🔧 {r.dur}</span>}</div>
+                </div>
+                {/* Right: Total raw materials */}
+                <div>
+                  <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>📦 Matériaux bruts totaux</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:3}}>
+                    {rawMats.sort((a,b)=>b.qty-a.qty).map(m=>(
+                      <div key={m.id} style={{background:"#f5a62308",border:"1px solid #f5a62318",borderRadius:4,padding:"4px 10px",display:"flex",justifyContent:"space-between",fontSize:12}}>
+                        <span style={{color:G.text}}>{fmtItem(m.id)}</span>
+                        <span style={{fontWeight:800,color:"#f5a623"}}>×{m.qty}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>}
+          </div>
+        )})}
       </div>}
 
       {totalFiltered===0&&<div style={{textAlign:"center",padding:40,color:G.muted,fontSize:14}}>Aucun résultat.</div>}
