@@ -565,6 +565,9 @@ function WikiPage() {
     {id:"Salvagebench",icon:"♻️",label:"Recyclage",color:"#7c8db5"},
     {id:"Tritale_Cadence_Shovel",icon:"⛏️",label:"Pelle Cadence",color:"#f5a623"},
     {id:"Furniture_Misc",icon:"🪑",label:"Mobilier Divers",color:"#c8882a"},
+    {id:"Architectsbench",icon:"📐",label:"Architecte",color:"#f5a623"},
+    {id:"ArmorBench",icon:"🛡️",label:"Armures (alt)",color:"#4ea8f0"},
+    {id:"Loombench",icon:"🧵",label:"Métier à tisser",color:"#3dd8c5"},
     {id:"TODO",icon:"📋",label:"Non assigné",color:"#7c8db5"},
   ];
   const activeCats = wikiTab === "items" ? ITEM_CATS : wikiTab === "mobs" ? MOB_CATS : wikiTab === "craft" ? CRAFT_BENCHES : SALVAGE_CATS;
