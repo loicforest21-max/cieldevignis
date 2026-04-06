@@ -619,6 +619,28 @@ function WikiPage() {
     });
     return combined.sort((a, b) => b.qty - a.qty);
   }, [calcItems]);
+  const calcIntermediates = useMemo(() => {
+    const inter = [];
+    const collect = (id, qty, seen) => {
+      if (!seen) seen = new Set();
+      if (seen.has(id)) return;
+      const item = ITEM_MAP[id];
+      if (!item || !item.r || item.r.length===0) return;
+      seen.add(id);
+      item.r.forEach(([ingId, ingQty]) => {
+        const sub = ITEM_MAP[ingId];
+        if (sub && sub.r && sub.r.length>0) {
+          const totalQty = ingQty * qty;
+          const existing = inter.find(c => c.id === ingId);
+          if (existing) existing.qty += totalQty;
+          else inter.push({id: ingId, qty: totalQty, bench: sub.b});
+          collect(ingId, totalQty, new Set(seen));
+        }
+      });
+    };
+    calcItems.forEach(({id, qty}) => collect(id, qty, new Set()));
+    return inter.sort((a, b) => b.qty - a.qty);
+  }, [calcItems]);
   const calcSearchResults = calcSearch.length >= 2 ? craftableItems.filter(r =>
     r.id.toLowerCase().includes(calcSearch.toLowerCase()) && !calcItems.find(c => c.id === r.id)
   ).slice(0, 8) : [];
@@ -936,6 +958,19 @@ function WikiPage() {
               </div>
             </div>
             <div>
+              {calcIntermediates.length>0&&<>
+              <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>🔨 Crafts intermédiaires ({calcIntermediates.length})</div>
+              <div style={{display:"flex",flexDirection:"column",gap:3,maxHeight:200,overflowY:"auto",marginBottom:14}}>
+                {calcIntermediates.map(m=>(
+                  <div key={m.id} style={{background:G.teal+"08",border:"1px solid "+G.teal+"18",borderRadius:4,padding:"5px 10px",display:"flex",alignItems:"center",gap:6,fontSize:12}}>
+                    <ItemImg id={m.id} size={20} fallback="" />
+                    <span style={{color:G.text,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{fmtItem(m.id)}</span>
+                    {m.bench&&<span style={{fontSize:9,padding:"1px 5px",borderRadius:3,background:G.teal+"15",color:G.teal,fontWeight:700,flexShrink:0}}>🔨 {fmtItem(m.bench)}</span>}
+                    <span style={{fontWeight:800,color:G.teal,flexShrink:0}}>×{m.qty}</span>
+                  </div>
+                ))}
+              </div>
+              </>}
               <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>📦 Total matériaux bruts ({calcTotalMats.length})</div>
               <div style={{display:"flex",flexDirection:"column",gap:3,maxHeight:300,overflowY:"auto"}}>
                 {calcTotalMats.map(m=>(
