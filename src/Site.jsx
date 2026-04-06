@@ -969,7 +969,7 @@ function WikiPage() {
                   {hasSub&&item.b&&<span style={{fontSize:9,padding:"1px 6px",borderRadius:3,background:G.teal+"15",color:G.teal,fontWeight:700,flexShrink:0}}>🔨 {fmtItem(item.b)}</span>}
                 </div>
               </div>
-              {hasSub&&item.r.map(([subId,subQty])=>renderTree(subId,subQty,depth+1,new Set(seen)))}
+              {hasSub&&item.r.map(([subId,subQty])=>renderTree(subId,subQty*qty,depth+1,new Set(seen)))}
             </div>
           );
         };
