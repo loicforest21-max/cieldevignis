@@ -484,11 +484,13 @@ function WikiPage() {
   const [calcItems, setCalcItems] = useState([]);
   const [calcOpen, setCalcOpen] = useState(false);
   const [calcSearch, setCalcSearch] = useState("");
+  const [displayCount, setDisplayCount] = useState(50);
   const fmtItem = (s) => s ? s.replace(/_/g, ' ') : '';
-  const switchTab = (t) => { setWikiTab(t); setCat("ALL"); setSearch(""); setExpanded(null); setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); };
+  const switchTab = (t) => { setWikiTab(t); setCat("ALL"); setSearch(""); setExpanded(null); setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); setDisplayCount(50); };
   const toggleQuality = (q) => setQualities(prev => prev.includes(q) ? prev.filter(x=>x!==q) : [...prev, q]);
   const clearAdvanced = () => { setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); };
   const hasAdvanced = qualities.length > 0 || lvlMin !== "" || lvlMax !== "" || sort !== "name";
+  useEffect(() => { setDisplayCount(50); }, [cat, search, sort]);
   // Filter out debug/dev/template/test items globally
   const HIDDEN_QUALITIES = new Set(["Debug","Developer","Template","Technical"]);
   const wikiItems = useMemo(() => WIKI_ITEMS.filter(i => !HIDDEN_QUALITIES.has(i.q)), []);
@@ -733,17 +735,28 @@ function WikiPage() {
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
       <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.teal+"10",border:"1px solid "+G.teal+"20",fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Base de données</div>
       <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Wiki CielDeVignis</h1>
-      <p style={{ fontSize:16,color:G.muted,margin:"0 0 24px" }}>{wikiItems.length} objets · {wikiMobs.length} créatures · {wikiRecipes.length} recettes salvage · {craftableItems.length} recettes craft</p>
+      <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{wikiItems.length} objets · {wikiMobs.length} créatures · {wikiRecipes.length} recettes salvage · {craftableItems.length} recettes craft</p>
       {/* Tabs */}
-      <div style={{ display:"flex",gap:4,marginBottom:20,borderBottom:"2px solid "+G.border }}>
-        {tabs.map(t=><button key={t.id} onClick={()=>switchTab(t.id)} style={{ padding:"10px 20px",borderRadius:"6px 6px 0 0",border:"none",cursor:"pointer",background:wikiTab===t.id?G.card:"transparent",color:wikiTab===t.id?G.teal:G.muted,borderBottom:wikiTab===t.id?"2px solid "+G.teal:"2px solid transparent",fontWeight:700,fontSize:14,fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:6 }}><span style={{fontSize:16}}>{t.icon}</span> {t.label} <span style={{fontSize:11,opacity:0.6}}>{t.count}</span></button>)}
+      <div style={{ display:"flex",gap:4,marginBottom:24,borderBottom:"2px solid "+G.border }}>
+        {tabs.map(t=><button key={t.id} onClick={()=>switchTab(t.id)} style={{ padding:"12px 24px",borderRadius:"8px 8px 0 0",border:"none",cursor:"pointer",background:wikiTab===t.id?G.card:"transparent",color:wikiTab===t.id?G.teal:G.muted,borderBottom:wikiTab===t.id?"2px solid "+G.teal:"2px solid transparent",fontWeight:700,fontSize:14,fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:8,transition:"color 0.15s" }}><span style={{fontSize:18}}>{t.icon}</span> {t.label} <span style={{fontSize:11,opacity:0.6,background:wikiTab===t.id?G.teal+"12":"transparent",padding:"2px 8px",borderRadius:10}}>{t.count}</span></button>)}
       </div>
       {/* Filters */}
-      <div style={{ display:"flex",gap:6,marginBottom:14,flexWrap:"wrap" }}>
-        <button onClick={()=>setCat("ALL")} style={{ padding:"6px 14px",borderRadius:"var(--radius-md)",border:"2px solid "+(cat==="ALL"?G.teal:G.border),background:cat==="ALL"?G.teal+"15":"transparent",color:cat==="ALL"?G.teal:G.muted,fontWeight:700,fontSize:12,cursor:"pointer" }}>Tous</button>
-        {activeCats.map(c=><button key={c.id} onClick={()=>setCat(c.id)} style={{ padding:"6px 14px",borderRadius:"var(--radius-md)",border:"2px solid "+(cat===c.id?c.color:G.border),background:cat===c.id?c.color+"15":"transparent",color:cat===c.id?c.color:G.muted,fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5 }}><span style={{fontSize:13}}>{c.icon}</span> {c.label}</button>)}
-      </div>
-      <div style={{ display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center" }}>
+      {/* Category filters */}
+      {wikiTab==="craft"?
+        <div style={{ display:"flex",gap:10,marginBottom:18,flexWrap:"wrap",alignItems:"center" }}>
+          <select value={cat} onChange={e=>{setCat(e.target.value);setDisplayCount(50);}} className="wiki-bench-select" style={{ padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+(cat!=="ALL"?G.gold+"60":G.border),background:cat!=="ALL"?G.gold+"08":G.card,color:cat!=="ALL"?G.gold:G.muted,fontSize:13,fontWeight:700,fontFamily:"var(--fb)",cursor:"pointer",outline:"none",minWidth:220 }}>
+            <option value="ALL">🔨 Tous les ateliers ({craftableItems.length})</option>
+            {CRAFT_BENCHES.map(c=>{const cnt=craftableItems.filter(i=>i.b===c.id).length;return cnt>0?<option key={c.id} value={c.id}>{c.icon} {c.label} ({cnt})</option>:null;})}
+          </select>
+          {cat!=="ALL"&&<button onClick={()=>{setCat("ALL");setDisplayCount(50);}} style={{padding:"6px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:"transparent",color:G.muted,fontSize:11,fontWeight:700,cursor:"pointer"}}>✕ Réinitialiser</button>}
+        </div>
+      :
+        <div style={{ display:"flex",gap:6,marginBottom:18,flexWrap:"wrap" }}>
+          <button onClick={()=>{setCat("ALL");setDisplayCount(50);}} style={{ padding:"7px 16px",borderRadius:20,border:"1px solid "+(cat==="ALL"?G.teal:G.border),background:cat==="ALL"?G.teal+"15":"transparent",color:cat==="ALL"?G.teal:G.muted,fontWeight:700,fontSize:12,cursor:"pointer",transition:"all 0.15s" }}>Tous</button>
+          {activeCats.map(c=><button key={c.id} onClick={()=>{setCat(c.id);setDisplayCount(50);}} style={{ padding:"7px 16px",borderRadius:20,border:"1px solid "+(cat===c.id?c.color:G.border),background:cat===c.id?c.color+"15":"transparent",color:cat===c.id?c.color:G.muted,fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5,transition:"all 0.15s" }}><span style={{fontSize:13}}>{c.icon}</span> {c.label}</button>)}
+        </div>
+      }
+      <div style={{ display:"flex",gap:10,marginBottom:18,flexWrap:"wrap",alignItems:"center" }}>
         <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..." style={{ flex:1,minWidth:200,maxWidth:500,padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:"#fff",fontSize:14,fontFamily:"var(--fb)",outline:"none" }}/>
         <select value={sort} onChange={e=>setSort(e.target.value)} style={{ padding:"10px 14px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:sort!=="name"?G.teal:G.muted,fontSize:12,fontWeight:700,fontFamily:"var(--fb)",cursor:"pointer",outline:"none",appearance:"auto" }}>
           {(SORT_OPTIONS[wikiTab]||[]).map(o=><option key={o.id} value={o.id}>{o.label}</option>)}
@@ -776,7 +789,7 @@ function WikiPage() {
         {wikiTab!=="items"&&wikiTab!=="craft"&&<div style={{ fontSize:13,color:G.muted }}>Utilisez le tri ci-dessus pour ordonner les résultats.</div>}
         {hasAdvanced&&<button onClick={clearAdvanced} style={{ marginTop:12,padding:"6px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:"transparent",color:G.muted,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"var(--fb)" }}>✕ Réinitialiser les filtres</button>}
       </div>}
-      <div style={{ fontSize:12,color:G.muted,marginBottom:14,display:"flex",gap:8,alignItems:"center",flexWrap:"wrap" }}>
+      <div style={{ fontSize:12,color:G.muted,marginBottom:18,display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",padding:"8px 14px",background:G.card+"60",borderRadius:"var(--radius-md)",border:"1px solid "+G.border+"40" }}>
         <span>{totalFiltered} résultat{totalFiltered>1?"s":""}</span>
         {sort!=="name"&&<span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:G.teal+"12",color:G.teal}}>Trié : {(SORT_OPTIONS[wikiTab]||[]).find(o=>o.id===sort)?.label}</span>}
         {qualities.length>0&&<span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:G.purple+"12",color:G.purple}}>{qualities.length} qualité{qualities.length>1?"s":""}</span>}
@@ -784,14 +797,14 @@ function WikiPage() {
       </div>
 
       {/* ITEMS */}
-      {wikiTab==="items"&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
-        {filteredItems.map(r=>{const isOpen=expanded===r.id;const catInfo=ITEM_CATS.find(c=>c.id===r.c)||{color:G.muted,icon:"📦"};const qc=QUALITY_COLORS[r.q]||G.muted;return(
-          <div key={r.id} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?qc+"30":G.border+"60"),borderLeft:"3px solid "+qc+(isOpen?"":"40"),borderRadius:"var(--radius-md)",cursor:"pointer",transition:"all 0.15s",overflow:"hidden"}}>
-            <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px"}}>
+      {wikiTab==="items"&&<div style={{display:"flex",flexDirection:"column",gap:4}}>
+        {filteredItems.slice(0,displayCount).map(r=>{const isOpen=expanded===r.id;const catInfo=ITEM_CATS.find(c=>c.id===r.c)||{color:G.muted,icon:"📦"};const qc=QUALITY_COLORS[r.q]||G.muted;return(
+          <div key={r.id} className={`wiki-row${isOpen?" wiki-row-open":""}`} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?qc+"40":G.border+"40"),borderLeft:"3px solid "+qc+(isOpen?"":"30"),borderRadius:"var(--radius-md)",cursor:"pointer",overflow:"hidden"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,padding:"11px 16px"}}>
               <ItemImg id={r.id} fallback={catInfo.icon} />
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.id)}</div>
-                <div style={{display:"flex",gap:6,fontSize:11,color:G.muted,marginTop:2}}>{r.sc&&<span>{r.sc}</span>}{r.l>0&&<span>Niv. {r.l}</span>}</div>
+                <div style={{display:"flex",gap:8,fontSize:11,color:G.muted,marginTop:3}}>{r.sc&&<span style={{padding:"1px 6px",borderRadius:3,background:catInfo.color+"10",color:catInfo.color,fontSize:10,fontWeight:600}}>{r.sc}</span>}{r.l>0&&<span>Niv. {r.l}</span>}</div>
               </div>
               <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
                 {sort==="dps"&&itemDPS(r)>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#e8653a15",color:"#e8653a",fontWeight:700}}>{itemDPS(r)} DMG</span>}
@@ -801,30 +814,31 @@ function WikiPage() {
                 <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
-            {isOpen&&<div style={{padding:"0 14px 14px",borderTop:"1px solid "+G.border}}>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))",gap:12,marginTop:12}}>
+            {isOpen&&<div className="wiki-expanded" style={{padding:"16px 18px 18px",borderTop:"1px solid "+G.border+"60",background:G.bg+"40"}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))",gap:16}}>
                 {r.dmg&&r.dmg.length>0&&<div>
-                  <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Dégâts</div>
-                  {r.dmg.map((d,i)=><div key={i} style={{background:"#e8653a08",border:"1px solid #e8653a18",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{color:G.text}}>{d.a}</span><span style={{fontWeight:800,color:"#e8653a"}}>{d.d} {d.t}</span></div>)}
+                  <div style={{fontSize:11,fontWeight:800,color:"#e8653a",textTransform:"uppercase",letterSpacing:1.5,marginBottom:8,display:"flex",alignItems:"center",gap:6}}>⚔️ Dégâts <span style={{fontSize:10,fontWeight:600,color:G.muted,textTransform:"none",letterSpacing:0}}>({itemDPS(r)} total)</span></div>
+                  {r.dmg.map((d,i)=><div key={i} className="wiki-stat-card" style={{background:"#e8653a06",border:"1px solid #e8653a15",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}><span style={{color:G.text}}>{d.a}</span><span style={{fontWeight:800,color:"#e8653a"}}>{d.d} <span style={{fontSize:10,fontWeight:600,opacity:0.7}}>{d.t}</span></span></div>)}
                 </div>}
                 {r.res&&<div>
-                  <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Résistance {r.sl&&`(${r.sl})`}</div>
-                  {Object.entries(r.res).map(([k,v])=><div key={k} style={{background:"#4ea8f008",border:"1px solid #4ea8f018",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{color:G.text}}>{k}</span><span style={{fontWeight:800,color:"#4ea8f0"}}>{(v*100).toFixed(0)}%</span></div>)}
-                  {r.sm&&Object.entries(r.sm).map(([k,v])=><div key={k} style={{background:"#51cf6608",border:"1px solid #51cf6618",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{color:G.text}}>{k}</span><span style={{fontWeight:800,color:"#51cf66"}}>+{v}</span></div>)}
+                  <div style={{fontSize:11,fontWeight:800,color:"#4ea8f0",textTransform:"uppercase",letterSpacing:1.5,marginBottom:8,display:"flex",alignItems:"center",gap:6}}>🛡️ Résistance {r.sl&&<span style={{fontSize:10,fontWeight:600,color:G.muted,textTransform:"none",letterSpacing:0}}>({r.sl})</span>}</div>
+                  {Object.entries(r.res).map(([k,v])=><div key={k} className="wiki-stat-card" style={{background:"#4ea8f006",border:"1px solid #4ea8f015",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}><span style={{color:G.text}}>{k}</span><span style={{fontWeight:800,color:"#4ea8f0"}}>{(v*100).toFixed(0)}%</span></div>)}
+                  {r.sm&&Object.entries(r.sm).map(([k,v])=><div key={k} className="wiki-stat-card" style={{background:"#51cf6606",border:"1px solid #51cf6615",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}><span style={{color:G.text}}>{k}</span><span style={{fontWeight:800,color:"#51cf66"}}>+{v}</span></div>)}
                 </div>}
                 {r.r&&<div>
-                  <div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Recette</div>
-                  {r.r.map(([id,qty],i)=><div key={i} style={{background:G.teal+"08",border:"1px solid "+G.teal+"18",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",alignItems:"center",gap:6,fontSize:12}}><ItemImg id={id} size={18} fallback="" /><span style={{color:G.text,flex:1}}>{fmtItem(id)}</span><span style={{fontWeight:800,color:G.teal,flexShrink:0}}>×{qty}</span></div>)}
-                  <div style={{fontSize:11,color:G.muted,marginTop:4}}>{r.b&&<span>🔨 {fmtItem(r.b)}</span>}{r.ct>0&&<span style={{marginLeft:10}}>⏱️ {r.ct}s</span>}{r.dur>0&&<span style={{marginLeft:10}}>🔧 {r.dur}</span>}</div>
+                  <div style={{fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8,display:"flex",alignItems:"center",gap:6}}>🔨 Recette</div>
+                  {r.r.map(([id,qty],i)=><div key={i} className="wiki-stat-card" style={{background:G.teal+"06",border:"1px solid "+G.teal+"15",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",alignItems:"center",gap:8,fontSize:12}}><ItemImg id={id} size={20} fallback="" /><span style={{color:G.text,flex:1}}>{fmtItem(id)}</span><span style={{fontWeight:800,color:G.teal,flexShrink:0}}>×{qty}</span></div>)}
+                  <div style={{fontSize:11,color:G.muted,marginTop:6,display:"flex",gap:12}}>{r.b&&<span>🔨 {fmtItem(r.b)}</span>}{r.ct>0&&<span>⏱️ {r.ct}s</span>}{r.dur>0&&<span>🔧 {r.dur}</span>}</div>
                 </div>}
               </div>
             </div>}
           </div>)})}
+        {filteredItems.length>displayCount&&<button onClick={()=>setDisplayCount(c=>c+50)} style={{margin:"16px auto",padding:"12px 32px",borderRadius:20,border:"1px solid "+G.teal+"40",background:G.teal+"08",color:G.teal,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:8}}>Charger plus <span style={{fontSize:11,opacity:0.7}}>({displayCount}/{filteredItems.length})</span></button>}
       </div>}
 
       {/* MOBS */}
-      {wikiTab==="mobs"&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
-        {filteredMobs.map((r,idx)=>{
+      {wikiTab==="mobs"&&<div style={{display:"flex",flexDirection:"column",gap:4}}>
+        {filteredMobs.slice(0,displayCount).map((r,idx)=>{
           const isOpen=expanded===r.id;
           const catInfo=MOB_CATS.find(c=>c.id===r.c)||{color:G.muted,icon:"❓"};
           const firstLetter=(r.app||r.id||"").charAt(0).toUpperCase();
@@ -843,25 +857,25 @@ function WikiPage() {
             marginBottom:"var(--sp-1)",
             marginTop:idx>0?"var(--sp-2)":"0",
           }}>{firstLetter}</div>}
-          <div key={r.id} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?catInfo.color+"30":G.border+"60"),borderLeft:"3px solid "+catInfo.color+(isOpen?"":"40"),borderRadius:"var(--radius-md)",cursor:"pointer",transition:"all 0.15s",overflow:"hidden"}}>
-            <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px"}}>
+          <div className={`wiki-row${isOpen?" wiki-row-open":""}`} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?catInfo.color+"40":G.border+"40"),borderLeft:"3px solid "+catInfo.color+(isOpen?"":"30"),borderRadius:"var(--radius-md)",cursor:"pointer",overflow:"hidden"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,padding:"11px 16px"}}>
               <span style={{fontSize:18,flexShrink:0}}>{catInfo.icon}</span>
-              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.app||r.id)}</div><div style={{fontSize:11,color:G.muted}}>{r.c}{r.hostile?" · Hostile":""}</div></div>
+              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.app||r.id)}</div><div style={{fontSize:11,color:G.muted,marginTop:2}}>{r.c}{r.hostile?" · Hostile":""}</div></div>
               <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
                 <span style={{
-                  padding:"2px 8px",borderRadius:"var(--radius-sm)",
-                  background:"#ff6b6b18",color:"#ff6b6b",
+                  padding:"3px 8px",borderRadius:"var(--radius-sm)",
+                  background:"#ff6b6b15",color:"#ff6b6b",
                   fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"
                 }}>❤️ {r.hp}</span>
                 {r.hostile&&(
                   <span style={{
-                    padding:"2px 8px",borderRadius:"var(--radius-sm)",
-                    background:"#f5a62318",color:"#f5a623",
+                    padding:"3px 8px",borderRadius:"var(--radius-sm)",
+                    background:"#f5a62315",color:"#f5a623",
                     fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"
                   }}>Hostile</span>
                 )}
-                {sort==="dmg"&&mobDmg(r)>0&&<span style={{padding:"2px 8px",borderRadius:"var(--radius-sm)",background:"#e8653a18",color:"#e8653a",fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"}}>⚔️ {mobDmg(r)}</span>}
-                {sort==="spd"&&r.spd>0&&<span style={{padding:"2px 8px",borderRadius:"var(--radius-sm)",background:"#3dd8c518",color:"#3dd8c5",fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"}}>💨 {r.spd}</span>}
+                {sort==="dmg"&&mobDmg(r)>0&&<span style={{padding:"3px 8px",borderRadius:"var(--radius-sm)",background:"#e8653a15",color:"#e8653a",fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"}}>⚔️ {mobDmg(r)}</span>}
+                {sort==="spd"&&r.spd>0&&<span style={{padding:"3px 8px",borderRadius:"var(--radius-sm)",background:"#3dd8c515",color:"#3dd8c5",fontSize:"var(--text-xs)",fontWeight:"var(--fw-bold)"}}>💨 {r.spd}</span>}
                 {r.drop&&(
                   <span style={{fontSize:"var(--text-xs)",color:"var(--c-muted)"}}>
                     🎁 {fmtItem(r.drop)}
@@ -870,40 +884,42 @@ function WikiPage() {
                 <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
-            {isOpen&&<div style={{padding:"0 14px 14px",borderTop:"1px solid "+G.border}}>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(140px, 1fr))",gap:8,marginTop:10}}>
-                <div style={{background:"#ff6b6b08",border:"1px solid #ff6b6b18",borderRadius:"var(--radius-sm)",padding:"8px 12px"}}><div style={{fontSize:"var(--text-xs)",color:G.muted,textTransform:"uppercase",letterSpacing:1}}>Vie</div><div style={{fontSize:"var(--text-lg)",fontWeight:"var(--fw-black)",color:"#ff6b6b"}}>{r.hp}</div></div>
-                {r.spd>0&&<div style={{background:"#3dd8c508",border:"1px solid #3dd8c518",borderRadius:"var(--radius-sm)",padding:"8px 12px"}}><div style={{fontSize:"var(--text-xs)",color:G.muted,textTransform:"uppercase",letterSpacing:1}}>Vitesse</div><div style={{fontSize:"var(--text-lg)",fontWeight:"var(--fw-black)",color:"#3dd8c5"}}>{r.spd}</div></div>}
-                {r.view>0&&<div style={{background:"#f5a62308",border:"1px solid #f5a62318",borderRadius:"var(--radius-sm)",padding:"8px 12px"}}><div style={{fontSize:"var(--text-xs)",color:G.muted,textTransform:"uppercase",letterSpacing:1}}>Vue</div><div style={{fontSize:"var(--text-lg)",fontWeight:"var(--fw-black)",color:"#f5a623"}}>{r.view}</div></div>}
+            {isOpen&&<div className="wiki-expanded" style={{padding:"16px 18px 18px",borderTop:"1px solid "+G.border+"60",background:G.bg+"40"}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))",gap:10,marginBottom:r.dmg&&r.dmg.length>0?12:0}}>
+                <div className="wiki-stat-card" style={{background:"#ff6b6b06",border:"1px solid #ff6b6b15",borderRadius:6,padding:"10px 14px"}}><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Vie</div><div style={{fontSize:"var(--text-lg)",fontWeight:"var(--fw-black)",color:"#ff6b6b"}}>{r.hp}</div></div>
+                {r.spd>0&&<div className="wiki-stat-card" style={{background:"#3dd8c506",border:"1px solid #3dd8c515",borderRadius:6,padding:"10px 14px"}}><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Vitesse</div><div style={{fontSize:"var(--text-lg)",fontWeight:"var(--fw-black)",color:"#3dd8c5"}}>{r.spd}</div></div>}
+                {r.view>0&&<div className="wiki-stat-card" style={{background:"#f5a62306",border:"1px solid #f5a62315",borderRadius:6,padding:"10px 14px"}}><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Vue</div><div style={{fontSize:"var(--text-lg)",fontWeight:"var(--fw-black)",color:"#f5a623"}}>{r.view}</div></div>}
               </div>
-              {r.dmg&&r.dmg.length>0&&<div style={{marginTop:8}}><div style={{fontSize:"var(--text-xs)",fontWeight:"var(--fw-black)",color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>Dégâts</div>{r.dmg.map((d,i)=><div key={i} style={{background:"#e8653a08",border:"1px solid #e8653a18",borderRadius:"var(--radius-sm)",padding:"4px 10px",marginBottom:3,display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{color:G.text}}>{d.t}</span><span style={{fontWeight:800,color:"#e8653a"}}>{d.d}</span></div>)}</div>}
-              {r.drop&&<div style={{fontSize:"var(--text-xs)",color:G.muted,marginTop:6}}>🎁 Drop: <span style={{color:G.teal,fontWeight:"var(--fw-bold)"}}>{fmtItem(r.drop)}</span></div>}
+              {r.dmg&&r.dmg.length>0&&<div><div style={{fontSize:11,fontWeight:800,color:"#e8653a",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6,display:"flex",alignItems:"center",gap:6}}>⚔️ Dégâts <span style={{fontSize:10,fontWeight:600,color:G.muted,textTransform:"none",letterSpacing:0}}>({mobDmg(r)} total)</span></div>{r.dmg.map((d,i)=><div key={i} className="wiki-stat-card" style={{background:"#e8653a06",border:"1px solid #e8653a15",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}><span style={{color:G.text}}>{d.t}</span><span style={{fontWeight:800,color:"#e8653a"}}>{d.d}</span></div>)}</div>}
+              {r.drop&&<div style={{fontSize:12,color:G.muted,marginTop:8}}>🎁 Drop: <span style={{color:G.teal,fontWeight:"var(--fw-bold)"}}>{fmtItem(r.drop)}</span></div>}
             </div>}
           </div></div>)})}
+        {filteredMobs.length>displayCount&&<button onClick={()=>setDisplayCount(c=>c+50)} style={{margin:"16px auto",padding:"12px 32px",borderRadius:20,border:"1px solid "+G.teal+"40",background:G.teal+"08",color:G.teal,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:8}}>Charger plus <span style={{fontSize:11,opacity:0.7}}>({displayCount}/{filteredMobs.length})</span></button>}
       </div>}
 
       {/* SALVAGE */}
-      {wikiTab==="salvage"&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
-        {filteredSalvage.map(r=>{const isOpen=expanded===r.id;const catInfo=SALVAGE_CATS.find(c=>c.id===r.c)||{color:G.muted,icon:"📦"};return(
-          <div key={r.id} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?catInfo.color+"30":G.border+"60"),borderLeft:"3px solid "+catInfo.color+(isOpen?"":"40"),borderRadius:"var(--radius-md)",cursor:"pointer",transition:"all 0.15s",overflow:"hidden"}}>
-            <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px"}}>
+      {wikiTab==="salvage"&&<div style={{display:"flex",flexDirection:"column",gap:4}}>
+        {filteredSalvage.slice(0,displayCount).map(r=>{const isOpen=expanded===r.id;const catInfo=SALVAGE_CATS.find(c=>c.id===r.c)||{color:G.muted,icon:"📦"};return(
+          <div key={r.id} className={`wiki-row${isOpen?" wiki-row-open":""}`} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?catInfo.color+"40":G.border+"40"),borderLeft:"3px solid "+catInfo.color+(isOpen?"":"30"),borderRadius:"var(--radius-md)",cursor:"pointer",overflow:"hidden"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,padding:"11px 16px"}}>
               <ItemImg id={r.id} fallback={catInfo.icon} />
-              <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{r.n}</div><div style={{fontSize:11,color:G.muted}}>{fmtItem(r.id)}</div></div>
+              <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{r.n}</div><div style={{fontSize:11,color:G.muted,marginTop:2}}>{fmtItem(r.id)}</div></div>
               <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
                 <span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:catInfo.color+"12",color:catInfo.color,fontWeight:700}}>{r.c}</span>
                 <span style={{fontSize:10,color:G.muted}}>{r.t}s</span>
                 <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
-            {isOpen&&<div style={{padding:"0 14px 14px",borderTop:"1px solid "+G.border}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:16,alignItems:"flex-start",marginTop:12}}>
-                <div><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Entrée</div><div style={{background:"#ff6b6b08",border:"1px solid #ff6b6b18",borderRadius:"var(--radius-md)",padding:"8px 12px",display:"flex",alignItems:"center",gap:8}}><ItemImg id={r.id} size={24} fallback="" /><div style={{fontSize:13,fontWeight:700,color:"#ff6b6b"}}>1× {fmtItem(r.id)}</div></div></div>
-                <div style={{paddingTop:28,fontSize:20,color:G.teal}}>→</div>
-                <div><div style={{fontSize:10,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Sorties</div>{r.o.map(([item,qty],i)=><div key={i} style={{background:G.teal+"08",border:"1px solid "+G.teal+"18",borderRadius:4,padding:"4px 10px",marginBottom:3,display:"flex",alignItems:"center",gap:6,fontSize:12}}><ItemImg id={item} size={18} fallback="" /><span style={{color:G.text,flex:1}}>{fmtItem(item)}</span><span style={{fontWeight:800,color:G.teal,flexShrink:0}}>×{qty}</span></div>)}</div>
+            {isOpen&&<div className="wiki-expanded" style={{padding:"16px 18px 18px",borderTop:"1px solid "+G.border+"60",background:G.bg+"40"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:20,alignItems:"flex-start"}}>
+                <div><div style={{fontSize:11,fontWeight:800,color:"#ff6b6b",textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>Entrée</div><div className="wiki-stat-card" style={{background:"#ff6b6b06",border:"1px solid #ff6b6b15",borderRadius:6,padding:"10px 14px",display:"flex",alignItems:"center",gap:8}}><ItemImg id={r.id} size={24} fallback="" /><div style={{fontSize:13,fontWeight:700,color:"#ff6b6b"}}>1× {fmtItem(r.id)}</div></div></div>
+                <div style={{paddingTop:36,fontSize:22,color:G.teal}}>→</div>
+                <div><div style={{fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>Sorties</div>{r.o.map(([item,qty],i)=><div key={i} className="wiki-stat-card" style={{background:G.teal+"06",border:"1px solid "+G.teal+"15",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",alignItems:"center",gap:8,fontSize:12}}><ItemImg id={item} size={20} fallback="" /><span style={{color:G.text,flex:1}}>{fmtItem(item)}</span><span style={{fontWeight:800,color:G.teal,flexShrink:0}}>×{qty}</span></div>)}</div>
               </div>
-              <div style={{marginTop:8,fontSize:11,color:G.muted}}>🔨 {fmtItem(r.b)} · ⏱️ {r.t}s</div>
+              <div style={{marginTop:10,fontSize:11,color:G.muted,display:"flex",gap:12}}>🔨 {fmtItem(r.b)} <span>⏱️ {r.t}s</span></div>
             </div>}
           </div>)})}
+        {filteredSalvage.length>displayCount&&<button onClick={()=>setDisplayCount(c=>c+50)} style={{margin:"16px auto",padding:"12px 32px",borderRadius:20,border:"1px solid "+G.teal+"40",background:G.teal+"08",color:G.teal,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:8}}>Charger plus <span style={{fontSize:11,opacity:0.7}}>({displayCount}/{filteredSalvage.length})</span></button>}
       </div>}
 
       {/* CRAFT */}
@@ -984,7 +1000,7 @@ function WikiPage() {
             </div>
           </div>}
         </div>}
-        {filteredCraft.map(r=>{const isOpen=expanded===r.id;const qc=QUALITY_COLORS[r.q]||G.muted;const benchInfo=CRAFT_BENCHES.find(b=>b.id===r.b)||{icon:"📋",color:G.muted,label:r.b||"?"};
+        {filteredCraft.slice(0,displayCount).map(r=>{const isOpen=expanded===r.id;const qc=QUALITY_COLORS[r.q]||G.muted;const benchInfo=CRAFT_BENCHES.find(b=>b.id===r.b)||{icon:"📋",color:G.muted,label:r.b||"?"};
         // Build recipe tree for expanded view
         const renderTree = (itemId, qty, depth, seen) => {
           if (!seen) seen = new Set();
@@ -1011,8 +1027,8 @@ function WikiPage() {
         // Compute flat raw materials
         const rawMats = isOpen ? flattenRecipe(r.id, 1, new Set()) : [];
         return(
-          <div key={r.id} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?benchInfo.color+"30":G.border+"60"),borderLeft:"3px solid "+benchInfo.color+(isOpen?"":"40"),borderRadius:"var(--radius-md)",cursor:"pointer",transition:"all 0.15s",overflow:"hidden"}}>
-            <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px"}}>
+          <div key={r.id} className={`wiki-row${isOpen?" wiki-row-open":""}`} onClick={()=>setExpanded(isOpen?null:r.id)} style={{background:isOpen?G.card:"transparent",border:"1px solid "+(isOpen?benchInfo.color+"40":G.border+"40"),borderLeft:"3px solid "+benchInfo.color+(isOpen?"":"30"),borderRadius:"var(--radius-md)",cursor:"pointer",overflow:"hidden"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,padding:"11px 16px"}}>
               <ItemImg id={r.id} fallback={benchInfo.icon} />
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.id)}</div>
@@ -1029,7 +1045,7 @@ function WikiPage() {
                 <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
-            {isOpen&&<div onClick={e=>e.stopPropagation()} style={{padding:"0 14px 14px",borderTop:"1px solid "+G.border}}>
+            {isOpen&&<div className="wiki-expanded" onClick={e=>e.stopPropagation()} style={{padding:"16px 18px 18px",borderTop:"1px solid "+G.border+"60",background:G.bg+"40"}}>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:16,marginTop:12}}>
                 {/* Left: Recipe tree */}
                 <div>
@@ -1056,6 +1072,7 @@ function WikiPage() {
             </div>}
           </div>
         )})}
+        {filteredCraft.length>displayCount&&<button onClick={()=>setDisplayCount(c=>c+50)} style={{margin:"16px auto",padding:"12px 32px",borderRadius:20,border:"1px solid "+G.teal+"40",background:G.teal+"08",color:G.teal,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:8}}>Charger plus <span style={{fontSize:11,opacity:0.7}}>({displayCount}/{filteredCraft.length})</span></button>}
       </div>}
 
       {totalFiltered===0&&<div style={{textAlign:"center",padding:40,color:G.muted,fontSize:14}}>Aucun résultat.</div>}

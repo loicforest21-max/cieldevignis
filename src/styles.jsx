@@ -71,6 +71,17 @@ function GlobalStyles() {
       select { font-family: var(--fb); }
       button { font-family: var(--fb); }
 
+      /* ═══ WIKI LIST ═══ */
+      .wiki-row { transition: background 0.12s, border-color 0.12s; }
+      .wiki-row:hover:not(.wiki-row-open) { background: #121a2b60 !important; border-color: #1c2d4590 !important; }
+      .wiki-row:nth-child(even):not(.wiki-row-open) { background: #0d132008; }
+      .wiki-row-open { box-shadow: 0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03); }
+      .wiki-expanded { animation: wikiExpand 0.2s ease-out; }
+      @keyframes wikiExpand { from { opacity:0; max-height:0; } to { opacity:1; max-height:800px; } }
+      .wiki-stat-card { backdrop-filter: blur(4px); transition: transform 0.15s; }
+      .wiki-stat-card:hover { transform: translateY(-1px); }
+      .wiki-bench-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px !important; }
+
       /* ═══ BUTTON SYSTEM ═══ */
       .btn-primary {
         background: linear-gradient(135deg, #e8a537, #c8882a);
