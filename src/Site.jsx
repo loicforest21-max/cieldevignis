@@ -554,6 +554,17 @@ function WikiPage() {
     {id:"NoCube_Aging_Cask",icon:"🪵",label:"Fût vieilliss.",color:"#c8882a"},
     {id:"SOL_Beehive",icon:"🐝",label:"Ruche",color:"#f5a623"},
     {id:"Potions",icon:"🧪",label:"Potions Sig",color:"#845ef7"},
+    {id:"Bench_Violet_Clothing",icon:"👗",label:"Vêtements Violet",color:"#e060a0"},
+    {id:"Bench_Violet_Plushie",icon:"🧸",label:"Peluches Violet",color:"#e060a0"},
+    {id:"YmmersiveCarpentry",icon:"🪚",label:"Menuiserie Ymm.",color:"#c8882a"},
+    {id:"YmmersiveMasonry",icon:"🧱",label:"Maçonnerie Ymm.",color:"#7c8db5"},
+    {id:"DarkCoinShop",icon:"🪙",label:"Boutique Sombre",color:"#845ef7"},
+    {id:"Bench_Writing_Desk",icon:"📝",label:"Bureau d'écriture",color:"#4ea8f0"},
+    {id:"Bench_Palantir",icon:"🔮",label:"Palantír",color:"#845ef7"},
+    {id:"Galadriel_Mirror",icon:"🪞",label:"Miroir Galadriel",color:"#3dd8c5"},
+    {id:"Salvagebench",icon:"♻️",label:"Recyclage",color:"#7c8db5"},
+    {id:"Tritale_Cadence_Shovel",icon:"⛏️",label:"Pelle Cadence",color:"#f5a623"},
+    {id:"Furniture_Misc",icon:"🪑",label:"Mobilier Divers",color:"#c8882a"},
     {id:"TODO",icon:"📋",label:"Non assigné",color:"#7c8db5"},
   ];
   const activeCats = wikiTab === "items" ? ITEM_CATS : wikiTab === "mobs" ? MOB_CATS : wikiTab === "craft" ? CRAFT_BENCHES : SALVAGE_CATS;
