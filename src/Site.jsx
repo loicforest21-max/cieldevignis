@@ -485,6 +485,12 @@ function WikiPage() {
   const [calcOpen, setCalcOpen] = useState(false);
   const [calcSearch, setCalcSearch] = useState("");
   const [displayCount, setDisplayCount] = useState(50);
+  // Comparator state
+  const [compareIds, setCompareIds] = useState([]);
+  const [compareOpen, setCompareOpen] = useState(false);
+  const toggleCompare = (id) => setCompareIds(prev => prev.includes(id) ? prev.filter(x=>x!==id) : prev.length<3 ? [...prev, id] : prev);
+  const compareItems2 = compareIds.map(id => WIKI_ITEMS.find(i=>i.id===id)).filter(Boolean);
+  const canCompare = (r) => r.c==="Weapon"||r.c==="Armor";
   const fmtItem = (s) => s ? s.replace(/_/g, ' ') : '';
   const switchTab = (t) => { setWikiTab(t); setCat("ALL"); setSearch(""); setExpanded(null); setQualities([]); setLvlMin(""); setLvlMax(""); setSort("name"); setDisplayCount(50); };
   const toggleQuality = (q) => setQualities(prev => prev.includes(q) ? prev.filter(x=>x!==q) : [...prev, q]);
@@ -811,6 +817,7 @@ function WikiPage() {
                 {sort==="res"&&itemRes(r)>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#4ea8f015",color:"#4ea8f0",fontWeight:700}}>{(itemRes(r)*100).toFixed(0)}% RES</span>}
                 {sort==="dur"&&r.dur>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#51cf6615",color:"#51cf66",fontWeight:700}}>{r.dur} DUR</span>}
                 {r.q&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
+                {canCompare(r)&&<button onClick={e=>{e.stopPropagation();toggleCompare(r.id);}} title={compareIds.includes(r.id)?"Retirer du comparateur":"Ajouter au comparateur (max 3)"} style={{width:26,height:26,borderRadius:6,border:"1px solid "+(compareIds.includes(r.id)?G.gold:G.border),background:compareIds.includes(r.id)?G.gold+"18":"transparent",color:compareIds.includes(r.id)?G.gold:G.muted,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all 0.15s"}}>⚖️</button>}
                 <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
@@ -1076,6 +1083,113 @@ function WikiPage() {
       </div>}
 
       {totalFiltered===0&&<div style={{textAlign:"center",padding:40,color:G.muted,fontSize:14}}>Aucun résultat.</div>}
+
+      {/* COMPARATOR — sticky bar */}
+      {compareIds.length>0&&!compareOpen&&<div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:50,background:"linear-gradient(180deg,transparent,"+G.bg+" 20%)",padding:"20px 24px 16px",display:"flex",justifyContent:"center"}}>
+        <div style={{background:G.card,border:"1px solid "+G.gold+"40",borderRadius:14,padding:"12px 20px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 -4px 30px rgba(0,0,0,0.5)",maxWidth:800,width:"100%"}}>
+          <span style={{fontSize:14}}>⚖️</span>
+          <div style={{display:"flex",gap:8,flex:1,overflow:"auto"}}>
+            {compareItems2.map(r=>{const qc=QUALITY_COLORS[r.q]||G.muted;return(
+              <div key={r.id} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:8,background:qc+"10",border:"1px solid "+qc+"30",fontSize:12,fontWeight:600,color:G.text,flexShrink:0}}>
+                <ItemImg id={r.id} size={20} fallback={r.c==="Weapon"?"🗡️":"🛡️"} />
+                <span style={{maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{fmtItem(r.id)}</span>
+                <button onClick={()=>toggleCompare(r.id)} style={{width:18,height:18,borderRadius:4,border:"none",background:"transparent",color:"#ff6b6b",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>✕</button>
+              </div>
+            )})}
+          </div>
+          <span style={{fontSize:11,color:G.muted,flexShrink:0}}>{compareIds.length}/3</span>
+          <button onClick={()=>setCompareOpen(true)} disabled={compareIds.length<2} style={{padding:"8px 20px",borderRadius:8,border:"none",background:compareIds.length>=2?"linear-gradient(135deg,"+G.gold+","+G.goldD+")":G.border,color:compareIds.length>=2?G.bg:G.muted,fontWeight:800,fontSize:13,cursor:compareIds.length>=2?"pointer":"not-allowed",fontFamily:"var(--fb)",flexShrink:0}}>Comparer</button>
+          <button onClick={()=>setCompareIds([])} style={{padding:"8px 12px",borderRadius:8,border:"1px solid "+G.border,background:"transparent",color:G.muted,fontSize:11,cursor:"pointer",fontWeight:700,fontFamily:"var(--fb)",flexShrink:0}}>Vider</button>
+        </div>
+      </div>}
+
+      {/* COMPARATOR — full panel overlay */}
+      {compareOpen&&compareItems2.length>=2&&<div style={{position:"fixed",inset:0,zIndex:100,background:G.bg+"f0",backdropFilter:"blur(8px)",overflowY:"auto"}} onClick={()=>setCompareOpen(false)}>
+        <div style={{maxWidth:1000,margin:"80px auto 40px",padding:"0 24px"}} onClick={e=>e.stopPropagation()}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
+            <div>
+              <div style={{fontSize:11,fontWeight:800,color:G.gold,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Comparateur</div>
+              <h2 style={{fontSize:28,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:0}}>{compareItems2[0].c==="Weapon"?"Armes":"Armures"}</h2>
+            </div>
+            <button onClick={()=>setCompareOpen(false)} style={{width:40,height:40,borderRadius:10,border:"1px solid "+G.border,background:G.card,color:G.muted,fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+          </div>
+
+          {/* Compare table */}
+          {(()=>{
+            const items = compareItems2;
+            const isWeapon = items[0].c==="Weapon";
+            // Collect all stat keys
+            const allResKeys = [...new Set(items.flatMap(i=>i.res?Object.keys(i.res):[]))];
+            const allSmKeys = [...new Set(items.flatMap(i=>i.sm?Object.keys(i.sm):[]))];
+            const allDmgActions = [...new Set(items.flatMap(i=>i.dmg?i.dmg.map(d=>d.a):[]))];
+
+            const bestOf = (vals, higher=true) => {
+              const nums = vals.map(v=>typeof v==="number"?v:0);
+              const best = higher ? Math.max(...nums) : Math.min(...nums);
+              return nums.map(n=>n===best&&n>0);
+            };
+
+            const Row = ({label,vals,color,fmt,higher=true,icon}) => {
+              const bests = bestOf(vals,higher);
+              return <div style={{display:"grid",gridTemplateColumns:"200px repeat("+items.length+", 1fr)",gap:1,background:G.border+"30"}}>
+                <div style={{background:G.card,padding:"8px 14px",fontSize:12,color:G.muted,display:"flex",alignItems:"center",gap:6}}>{icon&&<span style={{fontSize:12}}>{icon}</span>}{label}</div>
+                {vals.map((v,i)=><div key={i} style={{background:G.card,padding:"8px 14px",textAlign:"center",fontSize:13,fontWeight:bests[i]?800:500,color:bests[i]?color||G.teal:v?G.text:G.muted+"60"}}>{v?(fmt?fmt(v):v):"—"}</div>)}
+              </div>;
+            };
+
+            return <div style={{borderRadius:12,overflow:"hidden",border:"1px solid "+G.border,background:G.border+"30"}}>
+              {/* Header row */}
+              <div style={{display:"grid",gridTemplateColumns:"200px repeat("+items.length+", 1fr)",gap:1,background:G.border+"30"}}>
+                <div style={{background:G.bg,padding:"14px"}}></div>
+                {items.map(r=>{const qc=QUALITY_COLORS[r.q]||G.muted;return(
+                  <div key={r.id} style={{background:G.bg,padding:"14px",textAlign:"center"}}>
+                    <div style={{display:"flex",justifyContent:"center",marginBottom:8}}><ItemImg id={r.id} size={32} fallback={isWeapon?"🗡️":"🛡️"} /></div>
+                    <div style={{fontSize:13,fontWeight:800,color:"#fff",fontFamily:"var(--fd)",marginBottom:4}}>{fmtItem(r.id)}</div>
+                    <div style={{display:"flex",gap:4,justifyContent:"center",flexWrap:"wrap"}}>
+                      {r.q&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
+                      {r.sc&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:G.border,color:G.muted,fontWeight:600}}>{r.sc}</span>}
+                    </div>
+                  </div>
+                )})}
+              </div>
+
+              {/* General stats */}
+              <Row label="Niveau" vals={items.map(i=>i.l||0)} color={G.blue} icon="📊" />
+              <Row label="Durabilité" vals={items.map(i=>i.dur||0)} color="#51cf66" icon="🔧" />
+              {!isWeapon&&<Row label="Slot" vals={items.map(i=>i.sl||"—")} color={G.muted} icon="👕" />}
+
+              {/* Weapon: DPS */}
+              {isWeapon&&<>
+                <div style={{display:"grid",gridTemplateColumns:"200px repeat("+items.length+", 1fr)",gap:1,background:G.border+"30"}}>
+                  <div style={{background:G.bg2,padding:"8px 14px",fontSize:11,fontWeight:800,color:"#e8653a",textTransform:"uppercase",letterSpacing:1.5}}>⚔️ Dégâts</div>
+                  {items.map(r=><div key={r.id} style={{background:G.bg2,padding:"8px 14px"}}></div>)}
+                </div>
+                <Row label="DPS Total" vals={items.map(i=>itemDPS(i))} color="#e8653a" icon="💥" fmt={v=>""+v} />
+                {allDmgActions.map(action=><Row key={action} label={action} vals={items.map(i=>{const d=i.dmg?.find(x=>x.a===action);return d?d.d:0;})} color="#e8653a" />)}
+              </>}
+
+              {/* Armor: Resistances */}
+              {allResKeys.length>0&&<>
+                <div style={{display:"grid",gridTemplateColumns:"200px repeat("+items.length+", 1fr)",gap:1,background:G.border+"30"}}>
+                  <div style={{background:G.bg2,padding:"8px 14px",fontSize:11,fontWeight:800,color:"#4ea8f0",textTransform:"uppercase",letterSpacing:1.5}}>🛡️ Résistances</div>
+                  {items.map(r=><div key={r.id} style={{background:G.bg2,padding:"8px 14px"}}></div>)}
+                </div>
+                {!isWeapon&&<Row label="Rés. Totale" vals={items.map(i=>itemRes(i))} color="#4ea8f0" icon="🛡️" fmt={v=>(v*100).toFixed(1)+"%"} />}
+                {allResKeys.map(k=><Row key={k} label={k} vals={items.map(i=>i.res?.[k]||0)} color="#4ea8f0" fmt={v=>(v*100).toFixed(1)+"%"} />)}
+              </>}
+
+              {/* Stat modifiers */}
+              {allSmKeys.length>0&&<>
+                <div style={{display:"grid",gridTemplateColumns:"200px repeat("+items.length+", 1fr)",gap:1,background:G.border+"30"}}>
+                  <div style={{background:G.bg2,padding:"8px 14px",fontSize:11,fontWeight:800,color:"#51cf66",textTransform:"uppercase",letterSpacing:1.5}}>📈 Bonus Stats</div>
+                  {items.map(r=><div key={r.id} style={{background:G.bg2,padding:"8px 14px"}}></div>)}
+                </div>
+                {allSmKeys.map(k=><Row key={k} label={k} vals={items.map(i=>i.sm?.[k]||0)} color="#51cf66" fmt={v=>"+"+v} />)}
+              </>}
+            </div>;
+          })()}
+        </div>
+      </div>}
     </div>
   );
 }
