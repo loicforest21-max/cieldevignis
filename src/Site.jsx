@@ -1833,6 +1833,122 @@ const MODS_DATA = [
       ]},
     ],
   },
+  {
+    id:"endlessleveling",
+    name:"Endless Leveling",
+    version:"7.3.5",
+    authors:["Lewai"],
+    category:"combat",
+    description:"Système RPG complet : niveaux, attributs, races, classes, augments, prestige et portails (EndlessGate). Le cœur de la progression sur le serveur.",
+    color:"#845ef7",
+    links:[
+      {label:"CurseForge",url:"https://www.curseforge.com/hytale/mods/endless-leveling",icon:"🔗"},
+    ],
+    highlights:[
+      {label:"Races",value:"12",color:"#3dd8c5"},
+      {label:"Classes",value:"14",color:"#e8653a"},
+      {label:"Augments",value:"57",color:"#f5a623"},
+      {label:"Portails",value:"∞",color:"#c56cf0"},
+    ],
+    intro:{
+      title:"Le système RPG du serveur",
+      paragraphs:[
+        "Endless Leveling est le moteur RPG qui structure toute la progression de Ciel de Vignis. Le mod ajoute un système de niveaux (cap 100), 10 attributs de compétence qui évoluent à chaque niveau, et un système de prestige infini qui repousse sans cesse les limites.",
+        "Chaque joueur choisit une race parmi 12 disponibles et une classe parmi 14, chacune avec son propre arbre d'évolutions (jusqu'à 5 stades par race, 5 par classe). Les augments — 57 au total répartis en 4 tiers (Common, Elite, Legendary, Mythic) — se débloquent progressivement et ajoutent des effets passifs puissants aux combats.",
+        "Le mod gère aussi le niveau des mobs dans le monde : un système hybride distance + niveau du joueur adapte la difficulté en permanence. Les donjons ont leurs propres configurations de tiers avec scaling de HP, dégâts et défense, ce qui garantit un challenge constant quelle que soit votre progression.",
+        "Endless Leveling dispose également de l'addon EndlessGate, qui ajoute un système de portails instanciés. Ces portails génèrent des donjons avec des boss uniques — Azaroth, Katherina, Baron, le Construct Ancient Dark Titan — chacun équipé d'augments spécifiques et d'un scaling adaptatif. Les portails offrent un contenu rejouable à l'infini, parfait pour farmer l'XP et tester ses builds en conditions extrêmes.",
+      ],
+    },
+    progression:[
+      {id:"leveling",icon:"⭐",label:"Leveling (Niv. 1-100)",color:"#f5a623",sublabel:"Progression de base",
+        requires:"Tuer des mobs pour gagner de l'XP",
+        rewards:"5 skill points/niveau · 10 attributs à monter · Passifs débloqués progressivement",
+        optional:"Party XP : 60% partagés dans un rayon de 40 blocs",
+      },
+      {id:"builds",icon:"🧬",label:"Race + Classe",color:"#3dd8c5",sublabel:"Personnalisation",
+        requires:"Race au Niv. 1 · Classe au Niv. 1 · 1 changement autorisé",
+        rewards:"12 races × 6 évolutions · 14 classes × 5 évolutions · Classe secondaire disponible",
+        optional:null,
+      },
+      {id:"prestige",icon:"🔥",label:"Prestige (∞)",color:"#845ef7",sublabel:"Endgame infini",
+        requires:"Atteindre le level cap (100 + 10/prestige)",
+        rewards:"Nouveaux slots d'augments · Rerolls de tier · +20% XP de base/prestige",
+        optional:null,
+      },
+    ],
+    sections:[
+      {id:"attributes",label:"Attributs",icon:"📊",color:"#845ef7",items:[
+        {name:"Life Force",quality:"—",level:"Par niveau : +2.5",stats:"Santé",desc:"Points de vie supplémentaires par niveau. L'attribut le plus vital pour la survie."},
+        {name:"Strength",quality:"—",level:"Par niveau : +0.5",stats:"Dégâts physiques",desc:"Bonus de dégâts physiques appliqué à chaque attaque de mêlée et à distance."},
+        {name:"Defense",quality:"—",level:"Par niveau : +0.5",stats:"Réduction de dégâts",desc:"Réduction de dégâts subis. Capée selon la catégorie de classe (40% Mage → 80% Vanguard/Juggernaut)."},
+        {name:"Haste",quality:"—",level:"Par niveau : +0.75",stats:"Vitesse de déplacement",desc:"Augmente la vitesse de déplacement du joueur."},
+        {name:"Precision",quality:"—",level:"Par niveau : +0.8",stats:"Chance de critique",desc:"Probabilité d'infliger un coup critique lors d'une attaque."},
+        {name:"Ferocity",quality:"—",level:"Par niveau : +1.2",stats:"Dégâts critiques",desc:"Multiplicateur de dégâts sur les coups critiques."},
+        {name:"Stamina",quality:"—",level:"Par niveau : +0.2",stats:"Endurance",desc:"Stamina pour les actions comme le sprint, le dodge et le glider."},
+        {name:"Sorcery",quality:"—",level:"Par niveau : +0.75",stats:"Dégâts magiques (staves)",desc:"Bonus de dégâts magiques, applicable uniquement aux staves."},
+        {name:"Flow",quality:"—",level:"Par niveau : +0.5",stats:"Mana",desc:"Ressource pour les sorts et capacités spéciales."},
+        {name:"Discipline",quality:"—",level:"Par niveau : +0.75",stats:"Bonus d'XP (%)",desc:"Pourcentage de bonus d'expérience gagné par niveau."},
+      ]},
+      {id:"passives",label:"Passifs",icon:"🛡️",color:"#3dd8c5",items:[
+        {name:"Stamina Gain Bonus",quality:"Common",level:"Débloqué Niv. 5",stats:"Base +20% · +20%/tier · Max 10 tiers · Intervalle : 5 niv.",desc:"Augmente le gain de stamina. Premier passif accessible, progression rapide."},
+        {name:"Mana Regeneration",quality:"Common",level:"Débloqué Niv. 10",stats:"Base +1.0 · +0.5/tier · Max 10 tiers · Intervalle : 6 niv.",desc:"Régénération passive de mana au fil du temps."},
+        {name:"Signature Gain",quality:"Rare",level:"Débloqué Niv. 15",stats:"Base +40 · +40/tier · Max 10 tiers · Intervalle : 7 niv.",desc:"Accélère le gain d'énergie Signature pour votre arme."},
+        {name:"Regeneration",quality:"Rare",level:"Débloqué Niv. 20",stats:"Base +3.0 · +1.5/tier · Max 10 tiers · Intervalle : 8 niv.",desc:"Régénération passive de points de vie. Indispensable en solo."},
+        {name:"Luck",quality:"Epic",level:"Débloqué Niv. 20",stats:"Base +2.5% · +2.5%/tier · Max 40 tiers · Intervalle : 5 niv.",desc:"Augmente les chances de loot rare. Le passif avec le plus de tiers disponibles (40)."},
+      ]},
+      {id:"races",label:"Races",icon:"🧬",color:"#e8653a",items:[
+        {name:"Human",quality:"Common",level:"Base",stats:"Polyvalent · Equilibré",desc:"Race par défaut. Évolue en Explorer ou Raider, puis Voyager/Conqueror/Emperor."},
+        {name:"Dragonborn",quality:"Epic",level:"Base",stats:"Offensif · Tank",desc:"Descendants des dragons. Évolutions : Guardian, Marauder, Sentinel, Alpha, Tyrant."},
+        {name:"Iceborn",quality:"Epic",level:"Base",stats:"Défensif · Givre",desc:"Nés du froid éternel. Évolutions : Guardian, Berzerker, Titan, Frostlord, Ragnarok."},
+        {name:"Vastaya",quality:"Rare",level:"Base",stats:"Agile · Nature",desc:"Créatures mi-animales. Évolutions : Hunter, Mystic, Beastlord, Apex, Spiritbinder."},
+        {name:"Celestial",quality:"Legendary",level:"Base",stats:"Magique · Support",desc:"Êtres célestes. Évolutions : Adept, Catalyst, Arcanum, Overlord, Supreme."},
+        {name:"Darkin",quality:"Legendary",level:"Base",stats:"Offensif · Vampirique",desc:"Corrompus par le Void. Évolutions : Blade, Warlord, Bloodweaver, Bloodlord, Unbound."},
+        {name:"Voidborn",quality:"Epic",level:"Base",stats:"Chaos · Offensif",desc:"Nés du néant. Évolutions : Prowler, Protector, Reaver, Juggernaut, Oblivion."},
+        {name:"Wraith",quality:"Rare",level:"Base",stats:"Furtif · Assassin",desc:"Spectres entre les mondes. Évolutions : Whisper, Fang, Spectral, Reaver, Phantom King."},
+        {name:"+ 4 autres races",quality:"—",level:"—",stats:"Ascended · Golem · Watcher · Yordle",desc:"Chaque race a 6 stades d'évolution avec des attributs et passifs uniques."},
+      ]},
+      {id:"classes",label:"Classes",icon:"⚔️",color:"#f5a623",items:[
+        {name:"Assassin",quality:"Epic",level:"Melee",stats:"Dagger/Sword/Bow · Focused Strike · Reset on Kill",desc:"Maître de l'ouverture. Dégâts physiques en burst avec un cooldown reset au kill."},
+        {name:"Battlemage",quality:"Epic",level:"Hybrid",stats:"Staff/Sword · Dégâts hybrides",desc:"Mêle magie et mêlée. Defense cap : 65%."},
+        {name:"Vanguard",quality:"Legendary",level:"Tank",stats:"Sword/Mace · Defense cap 80%",desc:"Le tank ultime avec la plus haute réduction de dégâts."},
+        {name:"Marksman",quality:"Rare",level:"Ranged",stats:"Bow · Dégâts à distance · Defense cap 40%",desc:"Spécialiste du combat à distance avec des bonus de précision."},
+        {name:"Mage",quality:"Rare",level:"Ranged",stats:"Staff · Sorcery · Defense cap 40%",desc:"Dégâts magiques purs via les staves. Glass cannon."},
+        {name:"Necromancer",quality:"Legendary",level:"Hybrid",stats:"Staff/Dagger · Dark magic",desc:"Magie noire et invocations. Mélange offense et survie."},
+        {name:"Slayer",quality:"Epic",level:"Melee",stats:"Sword/Axe · Burst damage",desc:"Spécialiste du burst offensif en mêlée."},
+        {name:"+ 7 autres classes",quality:"—",level:"—",stats:"Adventurer · Arcanist · Brawler · Duelist · Juggernaut · Magistrate · Priest",desc:"Chaque classe a 5 évolutions (Elite, Master, Exalted, Legendary) avec des passifs uniques. Classe secondaire disponible (-40% dégâts hors catégorie d'arme)."},
+      ]},
+      {id:"augments",label:"Augments",icon:"💎",color:"#c56cf0",items:[
+        {name:"Tier Common (débloqué Niv. 5+)",quality:"Common",level:"Niv. 5, 10, 15, 35, 45 + */10",stats:"Passifs de base",desc:"Augments fondamentaux : Burn, Drain, Fleet Footwork, Overheal, Vampirism, Wither..."},
+        {name:"Tier Elite (débloqué Niv. 15)",quality:"Rare",level:"Niv. 15 · Prestige 1, 4, 7, 10",stats:"Passifs avancés",desc:"Blood Frenzy, Conqueror, Executioner, First Strike, Phase Rush, Predator, Reckoning..."},
+        {name:"Tier Legendary (débloqué Niv. 30)",quality:"Epic",level:"Niv. 30 · Prestige 10",stats:"Passifs puissants",desc:"Arcane Mastery, Blood Surge, Giant Slayer, Glass Cannon, Goliath, Rebirth, Undying Rage..."},
+        {name:"Tier Mythic (débloqué Niv. 50)",quality:"Legendary",level:"Niv. 50 · Prestige 15",stats:"Passifs ultimes",desc:"Les augments les plus rares. Débloqués au prestige 15, ils transforment radicalement votre build."},
+      ]},
+      {id:"mobleveling",label:"Mob Leveling",icon:"🎯",color:"#4ea8f0",items:[
+        {name:"Mode Overworld (MIXED)",quality:"—",level:"Monde ouvert",stats:"30% joueur + 70% distance · 40 blocs/niveau depuis le spawn",desc:"Les mobs s'adaptent : plus vous êtes loin du spawn, plus ils sont forts. Votre niveau influence aussi (30%). Range d'XP : ±15 niveaux de différence."},
+        {name:"Mode Donjon (TIERED)",quality:"—",level:"Instances",stats:"Tiers adaptatifs · 20 niveaux/tier · Scaling HP/DMG/DEF",desc:"Chaque donjon a un niveau de base fixe et des tiers infinis. Le scaling monte les HP (×3.0 base), les dégâts (×1.25 base) et la défense des mobs progressivement."},
+        {name:"Nameplates",quality:"—",level:"Visuel",stats:"Niveau + Nom + HP affichés",desc:"Chaque mob affiche son niveau, son nom et sa barre de vie. Mise à jour en temps réel (1 tick)."},
+        {name:"XP Scaling",quality:"—",level:"Récompenses",stats:"Linéaire · ×0.8 global · Min 50 XP",desc:"L'XP scale linéairement. Bonus ×3 au max level. Mobs trop faibles ou trop forts : seulement 5% de l'XP. Minimum garanti : 50 XP."},
+      ]},
+      {id:"endlessgate",label:"EndlessGate",icon:"🌀",color:"#c56cf0",items:[
+        {name:"Portails instanciés",quality:"—",level:"Addon",stats:"Donjons générés · Rejouable à l'infini",
+          desc:"EndlessGate est l'addon officiel d'Endless Leveling qui ajoute un système de portails. Chaque portail ouvre une instance de donjon avec des mobs et boss configurés spécifiquement. Le scaling suit le même système de tiers adaptatif qu'Endless Leveling : HP (×3.0 base), dégâts (×1.25 base) et défense progressifs."},
+        {name:"Azaroth",quality:"Legendary",level:"Boss",stats:"Augments : Rebirth · Frozen Domain",
+          desc:"Boss majeur des portails. Combinaison mortelle de résurrection (Rebirth) et de contrôle de zone glacé (Frozen Domain). Niveau = max du range +10.",
+          boss:{name:"Azaroth",type:"Boss de portail",mechanics:"Rebirth · Frozen Domain · Random augments",drops:"XP endgame · Loot de portail"}},
+        {name:"Katherina",quality:"Legendary",level:"Boss",stats:"Augments : Bloodthirster · Vampirism",
+          desc:"Boss vampirique qui se soigne en infligeant des dégâts. Bloodthirster et Vampirism la rendent extrêmement résiliente — il faut un burst massif pour la finir.",
+          boss:{name:"Katherina",type:"Boss de portail",mechanics:"Bloodthirster · Vampirism · Random augments",drops:"XP endgame · Loot de portail"}},
+        {name:"Baron",quality:"Legendary",level:"Boss",stats:"Augments : Blood Surge · Bloodthirster",
+          desc:"Boss offensif avec Blood Surge (dégâts augmentés) et Bloodthirster (vol de vie). Un adversaire agressif qui punit les builds trop défensifs.",
+          boss:{name:"Baron",type:"Boss de portail",mechanics:"Blood Surge · Bloodthirster · Random augments",drops:"XP endgame · Loot de portail"}},
+        {name:"Construct Ancient Dark Titan",quality:"Epic",level:"Boss",stats:"Scaling défensif réduit",
+          desc:"Titan mécanique ancien. Moins de defense scaling que les autres boss mais toujours redoutable par son pool de HP et ses dégâts bruts.",
+          boss:{name:"Construct Ancient Dark Titan",type:"Boss de portail",mechanics:"Tank massif · Dégâts bruts",drops:"XP endgame · Loot de portail"}},
+        {name:"Cult Knights & Werewolves",quality:"Rare",level:"Mini-boss",stats:"Augments (mini-boss) : Blood Surge · Blood Frenzy · Vampirism",
+          desc:"Mobs élites des portails. Les versions mini-boss ont 3 augments simultanés et un scaling de dégâts renforcé. Apparaissent en groupes."},
+      ]},
+    ],
+  },
 ];
 
 function ModsPage() {
@@ -1846,7 +1962,7 @@ function ModsPage() {
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
       <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.gold+"10",border:"1px solid "+G.gold+"20",fontSize:11,fontWeight:800,color:G.gold,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Serveur</div>
       <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Mods installés</h1>
-      <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{MODS_DATA.length} mod{MODS_DATA.length>1?"s":""} · {MODS_DATA.reduce((s,m)=>s+(parseInt(m.highlights[0]?.value)||0),0)} items ajoutés</p>
+      <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{MODS_DATA.length} mod{MODS_DATA.length>1?"s":""} documenté{MODS_DATA.length>1?"s":""}</p>
 
       <div style={{ display:"flex",gap:6,marginBottom:28,flexWrap:"wrap" }}>
         {MOD_CATEGORIES.map(c=>(
