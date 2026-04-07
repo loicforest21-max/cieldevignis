@@ -1767,6 +1767,31 @@ const MODS_DATA = [
       {label:"Armures",value:"4 sets",color:"#4ea8f0"},
       {label:"Donjons",value:"3",color:"#845ef7"},
     ],
+    intro:{
+      title:"Le mod incontournable du serveur",
+      paragraphs:[
+        "Endgame & QoL est le pilier central de la progression sur Ciel de Vignis. Ce mod transforme l'expérience de jeu en ajoutant un véritable parcours endgame structuré autour de trois ères successives — Mithril, Onyxium et Prisma — chacune débloquée par la conquête d'un donjon et la défaite de son boss.",
+        "La progression est linéaire et exigeante : chaque donjon donne accès à de nouveaux matériaux, un tier supérieur de l'Endgame Bench, et l'équipement nécessaire pour affronter le défi suivant. Les niveaux minimums sont fixés par le mod Endless Leveling, qui assure que chaque étape demande un investissement réel.",
+        "Au-delà des donjons, le mod ajoute des staves pour chaque tier de minerai, des gliders, des sacs à dos, des accessoires légendaires et un système de défis Warden. Un contenu massif qui donne enfin un vrai objectif aux joueurs les plus investis.",
+      ],
+    },
+    progression:[
+      {id:"frozen",icon:"❄️",label:"Frozen Dungeon",color:"#4ea8f0",sublabel:"Ère Mithril",
+        requires:"Endgame's Bench Tier 2 · Craft Dungeon Key",
+        rewards:"Dragon Heart → Bench T3 · Shard of Frozen Summit → Mithril Ore",
+        optional:"Korvyn — marchand caché",
+      },
+      {id:"swamp",icon:"💎",label:"Swamp Dungeon",color:"#845ef7",sublabel:"Ère Onyxium",
+        requires:"2nd Dragon Heart → Bench T4 · Shard of Rotting Sanctum",
+        rewards:"Swamp Gem · Swamp Ingot · Hedera Bramble → accès Onyxium",
+        optional:null,
+      },
+      {id:"void",icon:"🟣",label:"Golem Void",color:"#c56cf0",sublabel:"Ère Prisma",
+        requires:"Hedera's Gem → Bench T5 · Shard of the Void",
+        rewards:"Prisma Ore · Void Amulet → Prisma Gear complet",
+        optional:null,
+      },
+    ],
     sections:[
       {id:"armors",label:"Armures",icon:"🛡️",color:"#4ea8f0",items:[
         {name:"Set Prisma",quality:"Legendary",level:"55-65",slots:"Head/Chest/Legs/Hands",stats:"28% Phys · 15% Fire · 15% Fall · +47 HP · +30 Mana · +10% Signature",desc:"Le meilleur set du jeu. Résistances élémentaires complètes et bonus dégâts Signature sur chaque pièce."},
@@ -1781,9 +1806,18 @@ const MODS_DATA = [
         {name:"Staves (7 tiers)",quality:"Uncommon→Epic",level:"10-55",stats:"Mana +15 à +60",desc:"Cuivre, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium. Chaque tier donne plus de Mana."},
       ]},
       {id:"dungeons",label:"Donjons",icon:"🏰",color:"#845ef7",items:[
-        {name:"Frozen Dungeon",quality:"Rare",level:"Débutant",stats:"Portail craftable",desc:"Donjon de glace avec mobs gelés. Premier donjon endgame accessible."},
-        {name:"Swamp Dungeon",quality:"Epic",level:"Intermédiaire",stats:"Portail craftable",desc:"Marais empoisonné avec boss et matériaux exclusifs (Swamp Gem, Swamp Ingot)."},
-        {name:"Golem Void",quality:"Legendary",level:"Avancé",stats:"Portail craftable",desc:"Affrontez le Golem du Void, l'un des boss les plus difficiles du serveur."},
+        {name:"Frozen Dungeon",quality:"Rare",level:"Niv. 10-25",slots:"Ère Mithril",stats:"Portail craftable · Boss : Dragon Frost (Niv. 30)",
+          desc:"Premier donjon endgame. Explorez un labyrinthe glacé peuplé de mobs gelés (Niv. 10-25) avant d'affronter le Dragon Frost au niveau 30 — un dragon de glace qui utilise des attaques de zone AoE et des projectiles de gel. Le donjon utilise un système de tiers adaptatif (Endless Leveling) qui ajuste la difficulté à votre progression.",
+          boss:{name:"Dragon Frost",type:"Dragon · Niv. 30",mechanics:"AoE givre · Projectiles de gel · Augment : Blood Surge",drops:"Dragon Heart · Shard of Frozen Summit · Frozen Sword"},
+        },
+        {name:"Swamp Dungeon",quality:"Epic",level:"Niv. 30-45",slots:"Ère Onyxium",stats:"Portail craftable · Boss : Hedera (Niv. 50)",
+          desc:"Donjon de difficulté intermédiaire dans un marais empoisonné. Des mobs toxiques (Niv. 30-45) protègent Hedera — une créature végétale ancienne au niveau 50 qui invoque des lianes piégeuses et crache du poison. Le système de tiers adaptatif ajuste la difficulté à votre niveau.",
+          boss:{name:"Hedera",type:"Créature végétale · Niv. 50",mechanics:"Lianes piégeuses · Poison AoE · Augment : Rebirth",drops:"Swamp Gem · Swamp Ingot · Hedera Bramble · Hedera's Gem"},
+        },
+        {name:"Golem Void",quality:"Legendary",level:"Niv. 50-65",slots:"Ère Prisma",stats:"Portail craftable · Boss : Golem du Void (Niv. 70)",
+          desc:"Le défi ultime du serveur. Un donjon situé dans le Void, peuplé de créatures corrompues (Niv. 50-65). Le Golem du Void au niveau 70 est le boss le plus difficile : attaques dévastatrices, phases multiples et mécaniques de zone. La victoire ouvre l'accès à l'ère Prisma et à l'équipement le plus puissant du jeu.",
+          boss:{name:"Golem du Void",type:"Golem corrompu · Niv. 70",mechanics:"Attaques multi-phases · Zones mortelles · Augment : Rebirth",drops:"Shard of the Void · Void Amulet · Prisma Ore"},
+        },
       ]},
       {id:"gear",label:"Équipement",icon:"🎒",color:"#f5a623",items:[
         {name:"Gliders (3 tiers)",quality:"Rare→Legendary",level:"3-10",stats:"Endgame Glider réduit conso Stamina",desc:"Standard, Advanced, Endgame. Planez à travers Orbis !"},
@@ -1829,7 +1863,7 @@ function ModsPage() {
         {filteredMods.map(mod=>{
           const isOpen = expandedMod === mod.id;
           const catInfo = MOD_CATEGORIES.find(c=>c.id===mod.category) || MOD_CATEGORIES[0];
-          const curSection = activeSection || (mod.sections[0]?.id);
+          const curSection = activeSection || (mod.intro ? "__intro" : mod.sections[0]?.id);
           const sectionData = mod.sections.find(s=>s.id===curSection) || mod.sections[0];
           return (
             <div key={mod.id} style={{
@@ -1869,8 +1903,15 @@ function ModsPage() {
 
               {/* Expanded */}
               {isOpen&&<div className="wiki-expanded" style={{borderTop:"1px solid "+G.border+"60"}}>
-                {/* Section tabs */}
+                {/* Section tabs — add Aperçu tab */}
                 <div style={{display:"flex",gap:0,borderBottom:"1px solid "+G.border+"40",background:G.bg+"80",overflowX:"auto"}}>
+                  {mod.intro&&<button onClick={()=>setActiveSection("__intro")} style={{
+                    padding:"12px 20px",border:"none",cursor:"pointer",fontFamily:"var(--fb)",
+                    background:curSection==="__intro"?G.card:"transparent",
+                    color:curSection==="__intro"?mod.color:G.muted,fontWeight:curSection==="__intro"?800:600,fontSize:13,
+                    borderBottom:curSection==="__intro"?"2px solid "+mod.color:"2px solid transparent",
+                    display:"flex",alignItems:"center",gap:6,whiteSpace:"nowrap",transition:"all 0.15s",
+                  }}><span style={{fontSize:15}}>📋</span> Aperçu</button>}
                   {mod.sections.map(s=>(
                     <button key={s.id} onClick={()=>setActiveSection(s.id)} style={{
                       padding:"12px 20px",border:"none",cursor:"pointer",fontFamily:"var(--fb)",
@@ -1882,8 +1923,78 @@ function ModsPage() {
                   ))}
                 </div>
 
-                {/* Section content */}
-                <div style={{padding:"20px 24px"}}>
+                {/* Intro / Aperçu section */}
+                {curSection==="__intro"&&mod.intro&&<div style={{padding:"28px 24px"}}>
+                  {/* Intro text */}
+                  <h3 style={{fontSize:22,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",marginBottom:16}}>{mod.intro.title}</h3>
+                  {mod.intro.paragraphs.map((p,i)=>(
+                    <p key={i} style={{fontSize:13,color:G.muted,lineHeight:1.8,marginBottom:i<mod.intro.paragraphs.length-1?14:0}}>{p}</p>
+                  ))}
+
+                  {/* Progression flowchart */}
+                  {mod.progression&&<>
+                    <div style={{marginTop:32,marginBottom:20,display:"flex",alignItems:"center",gap:12}}>
+                      <div style={{height:1,flex:1,background:`linear-gradient(90deg, transparent, ${G.border})`}}/>
+                      <span style={{fontSize:11,fontWeight:800,color:G.gold,textTransform:"uppercase",letterSpacing:2}}>Progression</span>
+                      <div style={{height:1,flex:1,background:`linear-gradient(90deg, ${G.border}, transparent)`}}/>
+                    </div>
+
+                    <div style={{position:"relative",display:"flex",flexDirection:"column",gap:0,paddingLeft:28}}>
+                      {/* Vertical line */}
+                      <div style={{position:"absolute",left:15,top:28,bottom:28,width:2,background:`linear-gradient(180deg, ${mod.progression[0].color}60, ${mod.progression[1]?.color||mod.progression[0].color}60, ${mod.progression[mod.progression.length-1].color}60)`,borderRadius:1}}/>
+                      
+                      {mod.progression.map((step,si)=>(
+                        <div key={step.id}>
+                          {/* Step node */}
+                          <div style={{display:"flex",gap:16,alignItems:"flex-start",position:"relative"}}>
+                            {/* Circle node on line */}
+                            <div style={{
+                              position:"absolute",left:-28,top:2,
+                              width:30,height:30,borderRadius:"50%",
+                              background:`radial-gradient(circle, ${step.color}30, ${step.color}08)`,
+                              border:`2px solid ${step.color}80`,
+                              display:"flex",alignItems:"center",justifyContent:"center",
+                              fontSize:14,zIndex:2,
+                              boxShadow:`0 0 12px ${step.color}20`,
+                            }}>{step.icon}</div>
+
+                            {/* Content card */}
+                            <div style={{
+                              flex:1,
+                              background:`linear-gradient(135deg, ${step.color}08, transparent)`,
+                              border:`1px solid ${step.color}20`,
+                              borderRadius:12,padding:"16px 20px",marginLeft:12,
+                            }}>
+                              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8,flexWrap:"wrap"}}>
+                                <span style={{fontSize:17,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{step.label}</span>
+                                <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:step.color+"18",color:step.color,fontWeight:700,border:`1px solid ${step.color}25`}}>{step.sublabel}</span>
+                              </div>
+                              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                                <div>
+                                  <div style={{fontSize:10,fontWeight:700,color:step.color,textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Prérequis</div>
+                                  <div style={{fontSize:12,color:G.muted,lineHeight:1.6}}>{step.requires}</div>
+                                </div>
+                                <div>
+                                  <div style={{fontSize:10,fontWeight:700,color:G.green,textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Récompenses</div>
+                                  <div style={{fontSize:12,color:G.muted,lineHeight:1.6}}>{step.rewards}</div>
+                                </div>
+                              </div>
+                              {step.optional&&<div style={{marginTop:8,fontSize:11,color:G.gold,fontStyle:"italic"}}>💡 {step.optional}</div>}
+                            </div>
+                          </div>
+
+                          {/* Arrow between steps */}
+                          {si<mod.progression.length-1&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",height:24,position:"relative"}}>
+                            <div style={{position:"absolute",left:-13,fontSize:10,color:G.muted}}>▼</div>
+                          </div>}
+                        </div>
+                      ))}
+                    </div>
+                  </>}
+                </div>}
+
+                {/* Regular section content */}
+                {curSection!=="__intro"&&<div style={{padding:"20px 24px"}}>
                   <div style={{display:"flex",flexDirection:"column",gap:10}}>
                     {sectionData.items.map((item,i)=>{
                       const qColors = {"Legendary":"#f5a623","Epic":"#845ef7","Rare":"#4ea8f0","Uncommon":"#3dd8c5","Common":"#95a5a6"};
@@ -1896,16 +2007,39 @@ function ModsPage() {
                           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6,flexWrap:"wrap"}}>
                             <span style={{fontSize:16,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{item.name}</span>
                             {item.quality&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{item.quality}</span>}
-                            {item.level&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.muted,fontWeight:600}}>Niv. {item.level}</span>}
+                            {item.level&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.muted,fontWeight:600}}>{item.level}</span>}
                             {item.slots&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.blue+"15",color:G.blue,fontWeight:600}}>{item.slots}</span>}
                           </div>
                           {item.stats&&<div style={{fontSize:12,color:sectionData.color,fontWeight:700,marginBottom:6,fontFamily:"var(--fb)"}}>{item.stats}</div>}
                           <div style={{fontSize:12,color:G.muted,lineHeight:1.6}}>{item.desc}</div>
+
+                          {/* Boss card for dungeons */}
+                          {item.boss&&<div style={{
+                            marginTop:12,padding:"14px 16px",borderRadius:10,
+                            background:`linear-gradient(135deg, ${sectionData.color}10, ${sectionData.color}04)`,
+                            border:`1px solid ${sectionData.color}25`,
+                          }}>
+                            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                              <span style={{fontSize:14}}>💀</span>
+                              <span style={{fontSize:14,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{item.boss.name}</span>
+                              <span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:"#ff6b6b15",color:"#ff6b6b",fontWeight:700}}>{item.boss.type}</span>
+                            </div>
+                            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                              <div>
+                                <div style={{fontSize:10,fontWeight:700,color:"#ff6b6b",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Mécaniques</div>
+                                <div style={{fontSize:11,color:G.muted,lineHeight:1.6}}>{item.boss.mechanics}</div>
+                              </div>
+                              <div>
+                                <div style={{fontSize:10,fontWeight:700,color:G.gold,textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Drops</div>
+                                <div style={{fontSize:11,color:G.muted,lineHeight:1.6}}>{item.boss.drops}</div>
+                              </div>
+                            </div>
+                          </div>}
                         </div>
                       );
                     })}
                   </div>
-                </div>
+                </div>}
               </div>}
             </div>
           );
