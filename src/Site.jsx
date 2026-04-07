@@ -1753,50 +1753,26 @@ const MODS_DATA = [
     id:"endgame",
     name:"Endgame & QoL",
     version:"4.1.5",
-    authors:["Lewai","ReyZ41 (Models/Textures)"],
+    authors:["Lewai","ReyZ41"],
     category:"combat",
     description:"Débloquez le plein potentiel de Hytale ! Nouveaux boss, armures endgame, mécaniques avancées et système de configuration complet.",
     color:"#e8653a",
-    links:[
-      {label:"CurseForge",url:"https://www.curseforge.com/hytale/mods/endgame-qol",icon:"🔗"},
-      {label:"Wiki",url:"https://wiki.hytalemodding.dev/mod/endgame-qol",icon:"📖"},
+    stats:{items:79,weapons:58,tools:6,potions:6,materials:6},
+    features:[
+      {icon:"🛡️",label:"Sets Prisma, Onyxium & Mithril",desc:"Armures endgame avec résistances élémentaires et bonus Signature"},
+      {icon:"🪄",label:"Staves magiques",desc:"7 bâtons (Cuivre → Onyxium) avec bonus Mana"},
+      {icon:"🪂",label:"Gliders",desc:"3 planeurs : Standard, Advanced, Endgame"},
+      {icon:"🌀",label:"Portails de donjons",desc:"Frozen, Swamp, Void Golem, Luminia, Forgotten Temple"},
+      {icon:"🎒",label:"Backpacks",desc:"3 niveaux d'agrandissement d'inventaire"},
+      {icon:"⚔️",label:"Épées Prisma & Frozen",desc:"Armes endgame avec bonus Mana et Stamina"},
+      {icon:"🏆",label:"Warden Challenges",desc:"4 tiers de défis (Uncommon → Legendary)"},
+      {icon:"⚗️",label:"Potions améliorées",desc:"Potions de mana, stamina et santé grande taille"},
     ],
     highlights:[
       {label:"Items",value:"79",color:"#e8653a"},
-      {label:"Armes",value:"12",color:"#f5a623"},
-      {label:"Armures",value:"4 sets",color:"#4ea8f0"},
-      {label:"Donjons",value:"3",color:"#845ef7"},
-    ],
-    sections:[
-      {id:"armors",label:"Armures",icon:"🛡️",color:"#4ea8f0",items:[
-        {name:"Set Prisma",quality:"Legendary",level:"55-65",slots:"Head/Chest/Legs/Hands",stats:"28% Phys · 15% Fire · 15% Fall · +47 HP · +30 Mana · +10% Signature",desc:"Le meilleur set du jeu. Résistances élémentaires complètes et bonus dégâts Signature sur chaque pièce."},
-        {name:"Set Onyxium",quality:"Epic",level:"55",slots:"Head/Chest/Legs/Hands",stats:"22% Phys · 12% Fire · +37 HP · +24 Mana · +8% Signature",desc:"Set endgame intermédiaire avec résistance au feu et bonus Signature."},
-        {name:"Set Mithril",quality:"Epic",level:"50",slots:"Head/Chest/Legs/Hands",stats:"18% Phys · +30 HP · +19 Mana · +6% Signature",desc:"Amélioration du Mithril EL de base avec Mana et bonus Signature ajoutés."},
-        {name:"Set Adamantite (amélioré)",quality:"Rare",level:"40",slots:"Head/Chest/Legs/Hands",stats:"14.4% Phys · +24 HP · +15 Mana · +6% Light",desc:"Bonus Mana et dégâts Light ajoutés par Endgame au set vanilla."},
-      ]},
-      {id:"weapons",label:"Armes",icon:"⚔️",color:"#e8653a",items:[
-        {name:"Épée Prisma",quality:"Legendary",level:"65",stats:"SigEnergy +30 · Mana +200 · Stamina +25",desc:"Épée endgame ultime avec des bonus massifs de Mana et Stamina."},
-        {name:"Daggers Prisma",quality:"Legendary",level:"70",stats:"SigEnergy +30 · Mana +200 · Stamina +20 · 9 attaques",desc:"Dagues les plus puissantes du jeu. 9 types d'attaques."},
-        {name:"Frozen Sword",quality:"Epic",level:"52",stats:"SigEnergy +20 · Stamina +15 · 12 attaques",desc:"Épée de glace avec dégâts Ice, récompense de donjon."},
-        {name:"Staves (7 tiers)",quality:"Uncommon→Epic",level:"10-55",stats:"Mana +15 à +60",desc:"Cuivre, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium. Chaque tier donne plus de Mana."},
-      ]},
-      {id:"dungeons",label:"Donjons",icon:"🏰",color:"#845ef7",items:[
-        {name:"Frozen Dungeon",quality:"Rare",level:"Débutant",stats:"Portail craftable",desc:"Donjon de glace avec mobs gelés. Premier donjon endgame accessible."},
-        {name:"Swamp Dungeon",quality:"Epic",level:"Intermédiaire",stats:"Portail craftable",desc:"Marais empoisonné avec boss et matériaux exclusifs (Swamp Gem, Swamp Ingot)."},
-        {name:"Golem Void",quality:"Legendary",level:"Avancé",stats:"Portail craftable",desc:"Affrontez le Golem du Void, l'un des boss les plus difficiles du serveur."},
-      ]},
-      {id:"gear",label:"Équipement",icon:"🎒",color:"#f5a623",items:[
-        {name:"Gliders (3 tiers)",quality:"Rare→Legendary",level:"3-10",stats:"Endgame Glider réduit conso Stamina",desc:"Standard, Advanced, Endgame. Planez à travers Orbis !"},
-        {name:"Backpacks (3 tiers)",quality:"Uncommon→Epic",level:"97-99",stats:"Agrandissement inventaire",desc:"3 niveaux de sacs à dos pour augmenter votre inventaire."},
-        {name:"Warden Challenges (4 tiers)",quality:"Uncommon→Legendary",level:"—",stats:"Défis progressifs",desc:"4 niveaux de défis : prouvez votre valeur face aux Wardens."},
-        {name:"Accessories (7 types)",quality:"Legendary",level:"—",stats:"Blazefist, Frostwalkers, etc.",desc:"Accessoires légendaires uniques : Hedera Seed, Ocean Striders, Void Amulet, Pocket Garden, Pouch."},
-      ]},
-      {id:"resources",label:"Ressources & Craft",icon:"⚗️",color:"#51cf66",items:[
-        {name:"Minerais",quality:"—",level:"—",stats:"Mithril (Niv.100) · Onyxium (Niv.6)",desc:"Deux minerais endgame pour crafter les sets et armes les plus puissants."},
-        {name:"Potions améliorées",quality:"Rare",level:"—",stats:"Health, Mana, Stamina Large",desc:"Versions grande taille des potions de base."},
-        {name:"Matériaux de donjon",quality:"Epic",level:"—",stats:"Swamp Gem/Ingot · Hedera Bramble/Key/Gem · Dragon Heart",desc:"Drops exclusifs des donjons, nécessaires pour l'équipement endgame."},
-        {name:"Mana Totem",quality:"Rare",level:"30",stats:"Déployable",desc:"Totem régénérateur de mana posable au sol."},
-      ]},
+      {label:"Armes",value:"58",color:"#f5a623"},
+      {label:"Donjons",value:"5",color:"#845ef7"},
+      {label:"Sets",value:"3",color:"#4ea8f0"},
     ],
   },
 ];
@@ -1804,7 +1780,6 @@ const MODS_DATA = [
 function ModsPage() {
   const [selectedCat, setSelectedCat] = useState("all");
   const [expandedMod, setExpandedMod] = useState(null);
-  const [activeSection, setActiveSection] = useState(null);
 
   const filteredMods = selectedCat === "all" ? MODS_DATA : MODS_DATA.filter(m => m.category === selectedCat);
 
@@ -1812,7 +1787,7 @@ function ModsPage() {
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
       <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.gold+"10",border:"1px solid "+G.gold+"20",fontSize:11,fontWeight:800,color:G.gold,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Serveur</div>
       <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Mods installés</h1>
-      <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{MODS_DATA.length} mod{MODS_DATA.length>1?"s":""} · {MODS_DATA.reduce((s,m)=>s+(parseInt(m.highlights[0]?.value)||0),0)} items ajoutés</p>
+      <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{MODS_DATA.length} mod{MODS_DATA.length>1?"s":""} · {MODS_DATA.reduce((s,m)=>s+m.stats.items,0)} items ajoutés</p>
 
       <div style={{ display:"flex",gap:6,marginBottom:28,flexWrap:"wrap" }}>
         {MOD_CATEGORIES.map(c=>(
@@ -1829,15 +1804,12 @@ function ModsPage() {
         {filteredMods.map(mod=>{
           const isOpen = expandedMod === mod.id;
           const catInfo = MOD_CATEGORIES.find(c=>c.id===mod.category) || MOD_CATEGORIES[0];
-          const curSection = activeSection || (mod.sections[0]?.id);
-          const sectionData = mod.sections.find(s=>s.id===curSection) || mod.sections[0];
           return (
-            <div key={mod.id} style={{
+            <div key={mod.id} className={`wiki-row${isOpen?" wiki-row-open":""}`} style={{
               background:G.card,border:"1px solid "+(isOpen?mod.color+"50":G.border),
               borderRadius:14,overflow:"hidden",transition:"border-color 0.2s",
             }}>
-              {/* Header */}
-              <div onClick={()=>{setExpandedMod(isOpen?null:mod.id);setActiveSection(null);}} style={{cursor:"pointer",padding:"20px 24px",display:"flex",alignItems:"center",gap:16}}>
+              <div onClick={()=>setExpandedMod(isOpen?null:mod.id)} style={{cursor:"pointer",padding:"20px 24px",display:"flex",alignItems:"center",gap:16}}>
                 <div style={{
                   width:56,height:56,borderRadius:12,flexShrink:0,
                   background:`linear-gradient(135deg, ${mod.color}20, ${mod.color}08)`,
@@ -1851,9 +1823,10 @@ function ModsPage() {
                     <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:catInfo.color+"15",color:catInfo.color,fontWeight:700}}>{catInfo.icon} {catInfo.label}</span>
                   </div>
                   <div style={{fontSize:13,color:G.muted,lineHeight:1.5}}>{mod.description}</div>
-                  <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap",alignItems:"center"}}>
-                    {mod.authors.map(a=>(<span key={a} style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.text,fontWeight:600}}>👤 {a}</span>))}
-                    {mod.links&&mod.links.map(l=>(<a key={l.label} href={l.url} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()} style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.teal+"15",color:G.teal,fontWeight:600,textDecoration:"none"}}>{l.icon} {l.label}</a>))}
+                  <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
+                    {mod.authors.map(a=>(
+                      <span key={a} style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.text,fontWeight:600}}>👤 {a}</span>
+                    ))}
                   </div>
                 </div>
                 <div style={{display:"flex",gap:12,alignItems:"center",flexShrink:0}}>
@@ -1867,43 +1840,33 @@ function ModsPage() {
                 </div>
               </div>
 
-              {/* Expanded */}
-              {isOpen&&<div className="wiki-expanded" style={{borderTop:"1px solid "+G.border+"60"}}>
-                {/* Section tabs */}
-                <div style={{display:"flex",gap:0,borderBottom:"1px solid "+G.border+"40",background:G.bg+"80",overflowX:"auto"}}>
-                  {mod.sections.map(s=>(
-                    <button key={s.id} onClick={()=>setActiveSection(s.id)} style={{
-                      padding:"12px 20px",border:"none",cursor:"pointer",fontFamily:"var(--fb)",
-                      background:curSection===s.id?G.card:"transparent",
-                      color:curSection===s.id?s.color:G.muted,fontWeight:curSection===s.id?800:600,fontSize:13,
-                      borderBottom:curSection===s.id?"2px solid "+s.color:"2px solid transparent",
-                      display:"flex",alignItems:"center",gap:6,whiteSpace:"nowrap",transition:"all 0.15s",
-                    }}><span style={{fontSize:15}}>{s.icon}</span> {s.label} <span style={{fontSize:10,opacity:0.6}}>({s.items.length})</span></button>
+              {isOpen&&<div className="wiki-expanded" style={{borderTop:"1px solid "+G.border+"60",background:G.bg+"60"}}>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(120px, 1fr))",gap:1,background:G.border+"30"}}>
+                  {mod.highlights.map(h=>(
+                    <div key={h.label} style={{background:G.card,padding:"16px 20px",textAlign:"center"}}>
+                      <div style={{fontSize:28,fontWeight:900,color:h.color,fontFamily:"var(--fd)"}}>{h.value}</div>
+                      <div style={{fontSize:11,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700,marginTop:4}}>{h.label}</div>
+                    </div>
                   ))}
                 </div>
-
-                {/* Section content */}
                 <div style={{padding:"20px 24px"}}>
-                  <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                    {sectionData.items.map((item,i)=>{
-                      const qColors = {"Legendary":"#f5a623","Epic":"#845ef7","Rare":"#4ea8f0","Uncommon":"#3dd8c5","Common":"#95a5a6"};
-                      const qc = qColors[item.quality] || G.muted;
-                      return (
-                        <div key={i} style={{
-                          background:sectionData.color+"06",border:"1px solid "+sectionData.color+"12",
-                          borderLeft:"3px solid "+sectionData.color+"60",borderRadius:10,padding:"16px 20px",
-                        }}>
-                          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6,flexWrap:"wrap"}}>
-                            <span style={{fontSize:16,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{item.name}</span>
-                            {item.quality&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{item.quality}</span>}
-                            {item.level&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.muted,fontWeight:600}}>Niv. {item.level}</span>}
-                            {item.slots&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.blue+"15",color:G.blue,fontWeight:600}}>{item.slots}</span>}
-                          </div>
-                          {item.stats&&<div style={{fontSize:12,color:sectionData.color,fontWeight:700,marginBottom:6,fontFamily:"var(--fb)"}}>{item.stats}</div>}
-                          <div style={{fontSize:12,color:G.muted,lineHeight:1.6}}>{item.desc}</div>
+                  <div style={{fontSize:12,fontWeight:800,color:mod.color,textTransform:"uppercase",letterSpacing:2,marginBottom:16,display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{width:20,height:2,background:mod.color,borderRadius:1}}></span>
+                    Contenu du mod
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))",gap:10}}>
+                    {mod.features.map((f,i)=>(
+                      <div key={i} className="wiki-stat-card" style={{
+                        background:mod.color+"06",border:"1px solid "+mod.color+"12",borderRadius:10,
+                        padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start",
+                      }}>
+                        <span style={{fontSize:20,flexShrink:0,marginTop:2}}>{f.icon}</span>
+                        <div>
+                          <div style={{fontSize:13,fontWeight:700,color:"#fff",marginBottom:3}}>{f.label}</div>
+                          <div style={{fontSize:11,color:G.muted,lineHeight:1.5}}>{f.desc}</div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>}
