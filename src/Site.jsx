@@ -1949,6 +1949,54 @@ const MODS_DATA = [
       ]},
     ],
   },
+  {
+    id:"arcanerelay",
+    name:"Arcane Relay",
+    version:"1.1.1",
+    authors:["PseudoAle","Fanzy"],
+    category:"craft",
+    description:"Système d'automatisation magique et de logique pour Hytale. Activez des mécanismes à distance, déplacez des blocs et créez des circuits.",
+    color:"#51cf66",
+    links:[
+      {label:"CurseForge",url:"https://www.curseforge.com/hytale/mods/arcane-relay",icon:"🔗"},
+    ],
+    highlights:[
+      {label:"Blocs",value:"8",color:"#51cf66"},
+      {label:"Actions",value:"15",color:"#f5a623"},
+      {label:"Bench",value:"1",color:"#845ef7"},
+      {label:"DL",value:"2.1K",color:"#4ea8f0"},
+    ],
+    intro:{
+      title:"L'automatisation magique sur Orbis",
+      paragraphs:[
+        "Arcane Relay est un mod d'automatisation et de logique qui permet de construire de véritables machines dans Hytale. Développé par Pseudo_Elephant (PseudoAle & Fanzy), il est l'un des mods les plus populaires sur CurseForge avec plus de 2 100 téléchargements et 65 commentaires.",
+        "Le concept est simple : des blocs arcaniques — Relays, Buttons, Pushers, Pullers — peuvent être connectés entre eux grâce à un Arcane Staff. Chaque bloc envoyeur peut déclencher à distance des actions sur d'autres blocs : ouvrir des portes, allumer des torches, déplacer des blocs, envoyer des signaux en chaîne. Le tout sans fil, par magie.",
+        "L'Arcane Bench, craftable au Workbench Tier 2 (10 Thorium Bars + 30 Linen + 20 Void Essence), offre trois catégories de craft : Portails, Artefacts et Divers. Avec un système de Toggle Relay qui peut bloquer ou relayer un signal, et un Discharge qui accumule des signaux avant de les relâcher, les joueurs créatifs peuvent construire des systèmes complexes : ascenseurs, bases secrètes, cryptes qui s'illuminent, portes automatiques et bien plus.",
+      ],
+    },
+    sections:[
+      {id:"blocks",label:"Blocs",icon:"🧱",color:"#51cf66",items:[
+        {name:"Arcane Relay",quality:"Rare",level:"Bloc",stats:"Envoyeur de signal",desc:"Le bloc de base. Relaie un signal vers ses sorties connectées. Interagissez pour envoyer manuellement un signal."},
+        {name:"Toggle Relay",quality:"Rare",level:"Bloc",stats:"Relais conditionnel · On/Off",desc:"Bloque ou relaie le signal selon son état. Chaque signal reçu bascule l'état. Interagissez pour changer l'état de départ."},
+        {name:"Button",quality:"Common",level:"Bloc",stats:"Déclencheur",desc:"Bouton qui envoie un signal à distance vers les blocs connectés. Le déclencheur le plus simple du système."},
+        {name:"Pusher",quality:"Rare",level:"Bloc",stats:"Déplacement de blocs",desc:"Pousse les blocs dans la direction où il fait face. Peut être déclenché à distance par un signal. Variante murale disponible pour pousser verticalement."},
+        {name:"Puller",quality:"Rare",level:"Bloc",stats:"Attraction de blocs",desc:"Tire un bloc distant vers lui. S'étend pour atteindre la cible, puis la ramène au signal suivant. Utilise des Puller Extensions."},
+        {name:"Discharge",quality:"Epic",level:"Bloc",stats:"Accumulateur de signaux",desc:"Stocke les signaux reçus avant de les relayer une fois chargé. Interagissez pour régler le nombre de signaux nécessaires. Parfait pour créer des minuteries et séquences."},
+      ]},
+      {id:"tools",label:"Outils",icon:"🔧",color:"#f5a623",items:[
+        {name:"Arcane Staff",quality:"Rare",level:"Outil",stats:"Configuration des connexions",desc:"L'outil indispensable pour configurer les connexions arcaniques. Clic droit : sélectionner un bloc source. Clic gauche : ajouter/retirer une destination. Accroupi + interaction : voir les connexions d'un bloc."},
+        {name:"Arcane Bench",quality:"Epic",level:"Bench",stats:"10 Thorium Bars · 30 Linen · 20 Void Essence",desc:"Établi de craft pour tous les blocs et outils arcaniques. Craftable au Workbench Tier 2. Trois catégories : Portails, Artefacts et Divers."},
+        {name:"Crystal Cyan",quality:"Common",level:"Ingrédient",stats:"Ressource de craft",desc:"Cristal cyan utilisé comme composant dans les recettes arcaniques."},
+      ]},
+      {id:"activations",label:"Interactions",icon:"⚡",color:"#4ea8f0",items:[
+        {name:"Toggle Door / Gate",quality:"—",level:"Action",stats:"Porte · Porte horizontale · Grille",desc:"Ouvrez et fermez des portes et grilles à distance. Trois variantes : porte standard, porte horizontale et grille."},
+        {name:"Toggle Torch",quality:"—",level:"Action",stats:"Torche · Torche brute",desc:"Allumez et éteignez des torches à distance. Idéal pour les cryptes et les éclairages automatiques."},
+        {name:"Move Block",quality:"—",level:"Action",stats:"Déplacement haut/bas",desc:"Déplace un bloc vers le haut ou le bas. Base pour construire des ascenseurs et plateformes mobiles."},
+        {name:"Push / Pull Chain",quality:"—",level:"Action",stats:"Chaîne de Pusher · Chaîne de Puller",desc:"Les Pushers et Pullers peuvent fonctionner en chaîne, poussant ou tirant plusieurs blocs à la suite."},
+        {name:"Send Signal",quality:"—",level:"Action",stats:"Propagation",desc:"Envoie un signal d'un bloc arcanique à un autre. La brique élémentaire de tout circuit logique."},
+      ]},
+    ],
+  },
 ];
 
 function ModsPage() {
