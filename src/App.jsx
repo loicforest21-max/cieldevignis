@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════
 import { useState, useEffect } from "react";
 import { G, GlobalStyles } from './styles.jsx';
-import { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage, DungeonsPage, CommunityPage } from './Site.jsx';
+import { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage, DungeonsPage, CommunityPage, ModsPage } from './Site.jsx';
 
 function SiteApp() {
   const [page, setPage] = useState("home");
@@ -33,6 +33,7 @@ function SiteApp() {
       {page === "community" && <CommunityPage setPage={setPage} initialCode={communityCode} onClearInitialCode={() => setCommunityCode("")} onEditInBuilder={goToBuilderWithCode} />}
       {page === "dungeons" && <DungeonsPage />}
       {page === "wiki" && <WikiPage />}
+      {page === "mods" && <ModsPage />}
       {page === "map" && <MapPage />}
     </div>
   );

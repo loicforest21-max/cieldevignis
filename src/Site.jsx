@@ -100,6 +100,7 @@ function Navbar({ page, setPage }) {
     { id: "community", label: "Communauté", icon: "🌍" },
     { id: "dungeons", label: "Donjons", icon: "🏰" },
     { id: "wiki", label: "Wiki", icon: "📖" },
+    { id: "mods", label: "Mods", icon: "🧩" },
     { id: "map", label: "Carte", icon: "🗺️" },
     { id: "discord", label: "Discord", icon: "💬" },
   ];
@@ -422,7 +423,7 @@ function HomePage({ setPage }) {
             <div>
               <div style={{ fontSize: 12, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Outils</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {[{label:"Build Creator",icon:"⚔️",id:"builds"},{label:"Communauté",icon:"🌍",id:"community"},{label:"Donjons",icon:"🏰",id:"dungeons"},{label:"Wiki",icon:"📖",id:"wiki"}].map(l=>(
+                {[{label:"Build Creator",icon:"⚔️",id:"builds"},{label:"Communauté",icon:"🌍",id:"community"},{label:"Donjons",icon:"🏰",id:"dungeons"},{label:"Wiki",icon:"📖",id:"wiki"},{label:"Mods",icon:"🧩",id:"mods"}].map(l=>(
                   <span key={l.id} onClick={()=>setPage(l.id)} className="footer-link" style={{ fontSize: "var(--text-sm)", color: G.muted, display: "flex", alignItems: "center", gap: 6 }}
                   >{l.icon} {l.label}</span>
                 ))}
@@ -810,12 +811,11 @@ function WikiPage() {
               <ItemImg id={r.id} fallback={catInfo.icon} />
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.id)}</div>
-                <div style={{display:"flex",gap:8,fontSize:11,color:G.muted,marginTop:3}}>{r.sc&&<span style={{padding:"1px 6px",borderRadius:3,background:catInfo.color+"10",color:catInfo.color,fontSize:10,fontWeight:600}}>{r.sc}</span>}{r.l>0&&<span>Niv. {r.l}</span>}</div>
+                <div style={{display:"flex",gap:8,fontSize:11,color:G.muted,marginTop:3}}><span style={{padding:"1px 6px",borderRadius:3,background:catInfo.color+"10",color:catInfo.color,fontSize:10,fontWeight:600}}>{catInfo.icon} {catInfo.label}</span>{r.sc&&<span style={{padding:"1px 6px",borderRadius:3,background:G.border+"80",color:G.muted,fontSize:10,fontWeight:600}}>{r.sc}</span>}{r.l>0&&<span>Niv. {r.l}</span>}{r.dur>0&&<span>🔧 {r.dur}</span>}</div>
               </div>
               <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
                 {sort==="dps"&&itemDPS(r)>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#e8653a15",color:"#e8653a",fontWeight:700}}>{itemDPS(r)} DMG</span>}
                 {sort==="res"&&itemRes(r)>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#4ea8f015",color:"#4ea8f0",fontWeight:700}}>{(itemRes(r)*100).toFixed(0)}% RES</span>}
-                {sort==="dur"&&r.dur>0&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:"#51cf6615",color:"#51cf66",fontWeight:700}}>{r.dur} DUR</span>}
                 {r.q&&<span style={{fontSize:10,padding:"3px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
                 {canCompare(r)&&<button onClick={e=>{e.stopPropagation();toggleCompare(r.id);}} title={compareIds.includes(r.id)?"Retirer du comparateur":"Ajouter au comparateur (max 3)"} style={{width:26,height:26,borderRadius:6,border:"1px solid "+(compareIds.includes(r.id)?G.gold:G.border),background:compareIds.includes(r.id)?G.gold+"18":"transparent",color:compareIds.includes(r.id)?G.gold:G.muted,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all 0.15s"}}>⚖️</button>}
                 <span style={{fontSize:12,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s"}}>▼</span>
@@ -831,6 +831,7 @@ function WikiPage() {
                   <div style={{fontSize:11,fontWeight:800,color:"#4ea8f0",textTransform:"uppercase",letterSpacing:1.5,marginBottom:8,display:"flex",alignItems:"center",gap:6}}>🛡️ Résistance {r.sl&&<span style={{fontSize:10,fontWeight:600,color:G.muted,textTransform:"none",letterSpacing:0}}>({r.sl})</span>}</div>
                   {Object.entries(r.res).map(([k,v])=><div key={k} className="wiki-stat-card" style={{background:"#4ea8f006",border:"1px solid #4ea8f015",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}><span style={{color:G.text}}>{k}</span><span style={{fontWeight:800,color:"#4ea8f0"}}>{(v*100).toFixed(0)}%</span></div>)}
                   {r.sm&&Object.entries(r.sm).map(([k,v])=><div key={k} className="wiki-stat-card" style={{background:"#51cf6606",border:"1px solid #51cf6615",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}><span style={{color:G.text}}>{k}</span><span style={{fontWeight:800,color:"#51cf66"}}>+{v}</span></div>)}
+                  {r.dce&&Object.entries(r.dce).map(([k,v])=><div key={k} className="wiki-stat-card" style={{background:"#f5a62306",border:"1px solid #f5a62315",borderRadius:6,padding:"6px 12px",marginBottom:4,display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:12}}><span style={{color:G.text}}>Bonus {k}</span><span style={{fontWeight:800,color:"#f5a623"}}>+{(v*100).toFixed(0)}%</span></div>)}
                 </div>}
                 {r.r&&<div>
                   <div style={{fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8,display:"flex",alignItems:"center",gap:6}}>🔨 Recette</div>
@@ -1038,7 +1039,7 @@ function WikiPage() {
             <div style={{display:"flex",alignItems:"center",gap:10,padding:"11px 16px"}}>
               <ItemImg id={r.id} fallback={benchInfo.icon} />
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.id)}</div>
+                <div style={{fontSize:14,fontWeight:700,color:isOpen?"#fff":G.text,fontFamily:"var(--fd)"}}>{fmtItem(r.id)}{r.oq>1&&<span style={{fontSize:11,fontWeight:800,color:G.gold,marginLeft:6}}>×{r.oq}</span>}</div>
                 <div style={{display:"flex",gap:6,fontSize:11,color:G.muted,marginTop:2}}>
                   {r.l>0&&<span>Niv. {r.l}</span>}
                   <span>{r.r.length} ingrédient{r.r.length>1?"s":""}</span>
@@ -1060,7 +1061,7 @@ function WikiPage() {
                   <div style={{background:G.bg+"80",border:"1px solid "+G.border,borderRadius:"var(--radius-md)",padding:10}}>
                     {r.r.map(([ingId,ingQty])=>renderTree(ingId,ingQty,0,new Set([r.id])))}
                   </div>
-                  <div style={{marginTop:8,fontSize:11,color:G.muted}}>🔨 {fmtItem(r.b)}{r.ct>0&&<span> · ⏱️ {r.ct}s</span>}{r.dur>0&&<span> · 🔧 {r.dur}</span>}</div>
+                  <div style={{marginTop:8,fontSize:11,color:G.muted}}>🔨 {fmtItem(r.b)}{r.ct>0&&<span> · ⏱️ {r.ct}s</span>}{r.dur>0&&<span> · 🔧 {r.dur}</span>}{r.oq>1&&<span style={{color:G.gold,fontWeight:700}}> · 📦 Produit ×{r.oq}</span>}</div>
                 </div>
                 {/* Right: Total raw materials */}
                 <div>
@@ -1121,6 +1122,7 @@ function WikiPage() {
             // Collect all stat keys
             const allResKeys = [...new Set(items.flatMap(i=>i.res?Object.keys(i.res):[]))];
             const allSmKeys = [...new Set(items.flatMap(i=>i.sm?Object.keys(i.sm):[]))];
+            const allDceKeys = [...new Set(items.flatMap(i=>i.dce?Object.keys(i.dce):[]))];
             const allDmgActions = [...new Set(items.flatMap(i=>i.dmg?i.dmg.map(d=>d.a):[]))];
 
             const bestOf = (vals, higher=true) => {
@@ -1185,6 +1187,15 @@ function WikiPage() {
                   {items.map(r=><div key={r.id} style={{background:G.bg2,padding:"8px 14px"}}></div>)}
                 </div>
                 {allSmKeys.map(k=><Row key={k} label={k} vals={items.map(i=>i.sm?.[k]||0)} color="#51cf66" fmt={v=>"+"+v} />)}
+              </>}
+
+              {/* Damage Class Enhancement */}
+              {allDceKeys.length>0&&<>
+                <div style={{display:"grid",gridTemplateColumns:"200px repeat("+items.length+", 1fr)",gap:1,background:G.border+"30"}}>
+                  <div style={{background:G.bg2,padding:"8px 14px",fontSize:11,fontWeight:800,color:"#f5a623",textTransform:"uppercase",letterSpacing:1.5}}>⚡ Bonus Dégâts</div>
+                  {items.map(r=><div key={r.id} style={{background:G.bg2,padding:"8px 14px"}}></div>)}
+                </div>
+                {allDceKeys.map(k=><Row key={k} label={"Bonus "+k} vals={items.map(i=>i.dce?.[k]||0)} color="#f5a623" fmt={v=>"+"+(v*100).toFixed(0)+"%"} />)}
               </>}
             </div>;
           })()}
@@ -1725,4 +1736,188 @@ function CommunityPage({ setPage, initialCode, onClearInitialCode, onEditInBuild
   );
 }
 
-export { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage, DungeonsPage, CommunityPage };
+// ═══════════════════════════════════════════════════
+// MODS PAGE
+// ═══════════════════════════════════════════════════
+const MOD_CATEGORIES = [
+  {id:"all",label:"Tous",icon:"📦",color:G.gold},
+  {id:"combat",label:"Combat & RPG",icon:"⚔️",color:"#e8653a"},
+  {id:"craft",label:"Craft & Outils",icon:"🔨",color:"#f5a623"},
+  {id:"decoration",label:"Décoration",icon:"🏡",color:"#51cf66"},
+  {id:"exploration",label:"Exploration",icon:"🗺️",color:"#4ea8f0"},
+  {id:"qol",label:"Quality of Life",icon:"✨",color:"#845ef7"},
+];
+
+const MODS_DATA = [
+  {
+    id:"endgame",
+    name:"Endgame & QoL",
+    version:"4.1.5",
+    authors:["Lewai","ReyZ41 (Models/Textures)"],
+    category:"combat",
+    description:"Débloquez le plein potentiel de Hytale ! Nouveaux boss, armures endgame, mécaniques avancées et système de configuration complet.",
+    color:"#e8653a",
+    links:[
+      {label:"CurseForge",url:"https://www.curseforge.com/hytale/mods/endgame-qol",icon:"🔗"},
+      {label:"Wiki",url:"https://wiki.hytalemodding.dev/mod/endgame-qol",icon:"📖"},
+    ],
+    highlights:[
+      {label:"Items",value:"79",color:"#e8653a"},
+      {label:"Armes",value:"12",color:"#f5a623"},
+      {label:"Armures",value:"4 sets",color:"#4ea8f0"},
+      {label:"Donjons",value:"3",color:"#845ef7"},
+    ],
+    sections:[
+      {id:"armors",label:"Armures",icon:"🛡️",color:"#4ea8f0",items:[
+        {name:"Set Prisma",quality:"Legendary",level:"55-65",slots:"Head/Chest/Legs/Hands",stats:"28% Phys · 15% Fire · 15% Fall · +47 HP · +30 Mana · +10% Signature",desc:"Le meilleur set du jeu. Résistances élémentaires complètes et bonus dégâts Signature sur chaque pièce."},
+        {name:"Set Onyxium",quality:"Epic",level:"55",slots:"Head/Chest/Legs/Hands",stats:"22% Phys · 12% Fire · +37 HP · +24 Mana · +8% Signature",desc:"Set endgame intermédiaire avec résistance au feu et bonus Signature."},
+        {name:"Set Mithril",quality:"Epic",level:"50",slots:"Head/Chest/Legs/Hands",stats:"18% Phys · +30 HP · +19 Mana · +6% Signature",desc:"Amélioration du Mithril EL de base avec Mana et bonus Signature ajoutés."},
+        {name:"Set Adamantite (amélioré)",quality:"Rare",level:"40",slots:"Head/Chest/Legs/Hands",stats:"14.4% Phys · +24 HP · +15 Mana · +6% Light",desc:"Bonus Mana et dégâts Light ajoutés par Endgame au set vanilla."},
+      ]},
+      {id:"weapons",label:"Armes",icon:"⚔️",color:"#e8653a",items:[
+        {name:"Épée Prisma",quality:"Legendary",level:"65",stats:"SigEnergy +30 · Mana +200 · Stamina +25",desc:"Épée endgame ultime avec des bonus massifs de Mana et Stamina."},
+        {name:"Daggers Prisma",quality:"Legendary",level:"70",stats:"SigEnergy +30 · Mana +200 · Stamina +20 · 9 attaques",desc:"Dagues les plus puissantes du jeu. 9 types d'attaques."},
+        {name:"Frozen Sword",quality:"Epic",level:"52",stats:"SigEnergy +20 · Stamina +15 · 12 attaques",desc:"Épée de glace avec dégâts Ice, récompense de donjon."},
+        {name:"Staves (7 tiers)",quality:"Uncommon→Epic",level:"10-55",stats:"Mana +15 à +60",desc:"Cuivre, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium. Chaque tier donne plus de Mana."},
+      ]},
+      {id:"dungeons",label:"Donjons",icon:"🏰",color:"#845ef7",items:[
+        {name:"Frozen Dungeon",quality:"Rare",level:"Débutant",stats:"Portail craftable",desc:"Donjon de glace avec mobs gelés. Premier donjon endgame accessible."},
+        {name:"Swamp Dungeon",quality:"Epic",level:"Intermédiaire",stats:"Portail craftable",desc:"Marais empoisonné avec boss et matériaux exclusifs (Swamp Gem, Swamp Ingot)."},
+        {name:"Golem Void",quality:"Legendary",level:"Avancé",stats:"Portail craftable",desc:"Affrontez le Golem du Void, l'un des boss les plus difficiles du serveur."},
+      ]},
+      {id:"gear",label:"Équipement",icon:"🎒",color:"#f5a623",items:[
+        {name:"Gliders (3 tiers)",quality:"Rare→Legendary",level:"3-10",stats:"Endgame Glider réduit conso Stamina",desc:"Standard, Advanced, Endgame. Planez à travers Orbis !"},
+        {name:"Backpacks (3 tiers)",quality:"Uncommon→Epic",level:"97-99",stats:"Agrandissement inventaire",desc:"3 niveaux de sacs à dos pour augmenter votre inventaire."},
+        {name:"Warden Challenges (4 tiers)",quality:"Uncommon→Legendary",level:"—",stats:"Défis progressifs",desc:"4 niveaux de défis : prouvez votre valeur face aux Wardens."},
+        {name:"Accessories (7 types)",quality:"Legendary",level:"—",stats:"Blazefist, Frostwalkers, etc.",desc:"Accessoires légendaires uniques : Hedera Seed, Ocean Striders, Void Amulet, Pocket Garden, Pouch."},
+      ]},
+      {id:"resources",label:"Ressources & Craft",icon:"⚗️",color:"#51cf66",items:[
+        {name:"Minerais",quality:"—",level:"—",stats:"Mithril (Niv.100) · Onyxium (Niv.6)",desc:"Deux minerais endgame pour crafter les sets et armes les plus puissants."},
+        {name:"Potions améliorées",quality:"Rare",level:"—",stats:"Health, Mana, Stamina Large",desc:"Versions grande taille des potions de base."},
+        {name:"Matériaux de donjon",quality:"Epic",level:"—",stats:"Swamp Gem/Ingot · Hedera Bramble/Key/Gem · Dragon Heart",desc:"Drops exclusifs des donjons, nécessaires pour l'équipement endgame."},
+        {name:"Mana Totem",quality:"Rare",level:"30",stats:"Déployable",desc:"Totem régénérateur de mana posable au sol."},
+      ]},
+    ],
+  },
+];
+
+function ModsPage() {
+  const [selectedCat, setSelectedCat] = useState("all");
+  const [expandedMod, setExpandedMod] = useState(null);
+  const [activeSection, setActiveSection] = useState(null);
+
+  const filteredMods = selectedCat === "all" ? MODS_DATA : MODS_DATA.filter(m => m.category === selectedCat);
+
+  return (
+    <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
+      <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.gold+"10",border:"1px solid "+G.gold+"20",fontSize:11,fontWeight:800,color:G.gold,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Serveur</div>
+      <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Mods installés</h1>
+      <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{MODS_DATA.length} mod{MODS_DATA.length>1?"s":""} · {MODS_DATA.reduce((s,m)=>s+(parseInt(m.highlights[0]?.value)||0),0)} items ajoutés</p>
+
+      <div style={{ display:"flex",gap:6,marginBottom:28,flexWrap:"wrap" }}>
+        {MOD_CATEGORIES.map(c=>(
+          <button key={c.id} onClick={()=>setSelectedCat(c.id)} style={{
+            padding:"8px 18px",borderRadius:20,border:"1px solid "+(selectedCat===c.id?c.color:G.border),
+            background:selectedCat===c.id?c.color+"15":"transparent",color:selectedCat===c.id?c.color:G.muted,
+            fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:6,
+            transition:"all 0.15s",fontFamily:"var(--fb)",
+          }}><span style={{fontSize:14}}>{c.icon}</span> {c.label}</button>
+        ))}
+      </div>
+
+      <div style={{ display:"flex",flexDirection:"column",gap:16 }}>
+        {filteredMods.map(mod=>{
+          const isOpen = expandedMod === mod.id;
+          const catInfo = MOD_CATEGORIES.find(c=>c.id===mod.category) || MOD_CATEGORIES[0];
+          const curSection = activeSection || (mod.sections[0]?.id);
+          const sectionData = mod.sections.find(s=>s.id===curSection) || mod.sections[0];
+          return (
+            <div key={mod.id} style={{
+              background:G.card,border:"1px solid "+(isOpen?mod.color+"50":G.border),
+              borderRadius:14,overflow:"hidden",transition:"border-color 0.2s",
+            }}>
+              {/* Header */}
+              <div onClick={()=>{setExpandedMod(isOpen?null:mod.id);setActiveSection(null);}} style={{cursor:"pointer",padding:"20px 24px",display:"flex",alignItems:"center",gap:16}}>
+                <div style={{
+                  width:56,height:56,borderRadius:12,flexShrink:0,
+                  background:`linear-gradient(135deg, ${mod.color}20, ${mod.color}08)`,
+                  border:"1px solid "+mod.color+"30",
+                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,
+                }}>{catInfo.icon}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4,flexWrap:"wrap"}}>
+                    <span style={{fontSize:20,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{mod.name}</span>
+                    <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:mod.color+"15",color:mod.color,fontWeight:700}}>v{mod.version}</span>
+                    <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:catInfo.color+"15",color:catInfo.color,fontWeight:700}}>{catInfo.icon} {catInfo.label}</span>
+                  </div>
+                  <div style={{fontSize:13,color:G.muted,lineHeight:1.5}}>{mod.description}</div>
+                  <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap",alignItems:"center"}}>
+                    {mod.authors.map(a=>(<span key={a} style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.text,fontWeight:600}}>👤 {a}</span>))}
+                    {mod.links&&mod.links.map(l=>(<a key={l.label} href={l.url} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()} style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.teal+"15",color:G.teal,fontWeight:600,textDecoration:"none"}}>{l.icon} {l.label}</a>))}
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:12,alignItems:"center",flexShrink:0}}>
+                  {mod.highlights.map(h=>(
+                    <div key={h.label} style={{textAlign:"center",minWidth:48}}>
+                      <div style={{fontSize:20,fontWeight:900,color:h.color,fontFamily:"var(--fd)"}}>{h.value}</div>
+                      <div style={{fontSize:9,color:G.muted,textTransform:"uppercase",letterSpacing:1,fontWeight:700}}>{h.label}</div>
+                    </div>
+                  ))}
+                  <span style={{fontSize:14,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s",marginLeft:8}}>▼</span>
+                </div>
+              </div>
+
+              {/* Expanded */}
+              {isOpen&&<div className="wiki-expanded" style={{borderTop:"1px solid "+G.border+"60"}}>
+                {/* Section tabs */}
+                <div style={{display:"flex",gap:0,borderBottom:"1px solid "+G.border+"40",background:G.bg+"80",overflowX:"auto"}}>
+                  {mod.sections.map(s=>(
+                    <button key={s.id} onClick={()=>setActiveSection(s.id)} style={{
+                      padding:"12px 20px",border:"none",cursor:"pointer",fontFamily:"var(--fb)",
+                      background:curSection===s.id?G.card:"transparent",
+                      color:curSection===s.id?s.color:G.muted,fontWeight:curSection===s.id?800:600,fontSize:13,
+                      borderBottom:curSection===s.id?"2px solid "+s.color:"2px solid transparent",
+                      display:"flex",alignItems:"center",gap:6,whiteSpace:"nowrap",transition:"all 0.15s",
+                    }}><span style={{fontSize:15}}>{s.icon}</span> {s.label} <span style={{fontSize:10,opacity:0.6}}>({s.items.length})</span></button>
+                  ))}
+                </div>
+
+                {/* Section content */}
+                <div style={{padding:"20px 24px"}}>
+                  <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                    {sectionData.items.map((item,i)=>{
+                      const qColors = {"Legendary":"#f5a623","Epic":"#845ef7","Rare":"#4ea8f0","Uncommon":"#3dd8c5","Common":"#95a5a6"};
+                      const qc = qColors[item.quality] || G.muted;
+                      return (
+                        <div key={i} style={{
+                          background:sectionData.color+"06",border:"1px solid "+sectionData.color+"12",
+                          borderLeft:"3px solid "+sectionData.color+"60",borderRadius:10,padding:"16px 20px",
+                        }}>
+                          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6,flexWrap:"wrap"}}>
+                            <span style={{fontSize:16,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{item.name}</span>
+                            {item.quality&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{item.quality}</span>}
+                            {item.level&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.muted,fontWeight:600}}>Niv. {item.level}</span>}
+                            {item.slots&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.blue+"15",color:G.blue,fontWeight:600}}>{item.slots}</span>}
+                          </div>
+                          {item.stats&&<div style={{fontSize:12,color:sectionData.color,fontWeight:700,marginBottom:6,fontFamily:"var(--fb)"}}>{item.stats}</div>}
+                          <div style={{fontSize:12,color:G.muted,lineHeight:1.6}}>{item.desc}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>}
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{marginTop:32,padding:"24px",borderRadius:14,border:"1px dashed "+G.border,textAlign:"center"}}>
+        <div style={{fontSize:14,color:G.muted,marginBottom:4}}>🚧 D'autres mods seront ajoutés prochainement</div>
+        <div style={{fontSize:12,color:G.border}}>59 mods au total sur le serveur</div>
+      </div>
+    </div>
+  );
+}
+
+export { Particles, Navbar, HomePage, WikiPage, BuildsPage, MapPage, DungeonsPage, CommunityPage, ModsPage };
