@@ -218,6 +218,14 @@ function StatRow() {
 }
 
 function HomePage({ setPage }) {
+  const heroRef = useRef(null);
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const h = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", h, { passive: true });
+    return () => window.removeEventListener("scroll", h);
+  }, []);
+  const px = (factor) => `translateY(${scrollY * factor}px)`;
   return (
     <div style={{ position: "relative", zIndex: 1 }}>
       {/* HERO — Epic dragon landscape */}
@@ -229,8 +237,8 @@ function HomePage({ setPage }) {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0c0a08 0%, #141010 8%, #1e1610 18%, #2a1e14 30%, #3a2a18 42%, #44301a 50%, #3a2818 60%, #2a2015 72%, #18150f 88%, #12100c 100%)" }} />
         
         {/* Sun glow */}
-        <div style={{ position: "absolute", top: "18%", left: "50%", transform: "translateX(-50%)", width: 350, height: 180, background: "radial-gradient(ellipse, #e8a53740, #f0c06a20, #c45a2d10, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translateX(-50%)", width: 60, height: 60, borderRadius: "50%", background: "radial-gradient(circle, #f0e6d228, #e8a53715, transparent 70%)", boxShadow: "0 0 60px #e8a53718", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "18%", left: "50%", transform: `translateX(-50%) ${px(-0.15)}`, width: 350, height: 180, background: "radial-gradient(ellipse, #e8a53740, #f0c06a20, #c45a2d10, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "30%", left: "50%", transform: `translateX(-50%) ${px(-0.12)}`, width: 60, height: 60, borderRadius: "50%", background: "radial-gradient(circle, #f0e6d228, #e8a53715, transparent 70%)", boxShadow: "0 0 60px #e8a53718", pointerEvents: "none" }} />
 
         {/* God rays */}
         <div style={{ position: "absolute", top: "15%", left: "46%", width: 3, height: 140, background: "linear-gradient(180deg, #e8a53715, transparent)", transform: "rotate(-6deg)", transformOrigin: "top", pointerEvents: "none" }} />
@@ -241,42 +249,42 @@ function HomePage({ setPage }) {
         <div style={{ position: "absolute", top: "6%", left: "5%", width: 300, height: 50, background: "radial-gradient(ellipse, #1a151020, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: "3%", right: "10%", width: 250, height: 45, background: "radial-gradient(ellipse, #2a201518, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
 
-        {/* ═══ MAIN DRAGON ═══ */}
-        <div style={{ position: "absolute", top: "10%", left: "50%", transform: "translateX(-50%)", width: 200, height: 100, pointerEvents: "none", opacity: 0.85 }}>
-          <svg viewBox="0 0 200 100" style={{ width: "100%", height: "100%" }}>
-            <ellipse cx="100" cy="58" rx="22" ry="9" fill="#0e0c08"/>
-            <path d="M80 54 Q62 40 48 30 Q42 24 36 26" fill="none" stroke="#0e0c08" strokeWidth="6" strokeLinecap="round"/>
-            <ellipse cx="34" cy="25" rx="8" ry="5" fill="#0e0c08"/>
-            <path d="M26 24 L20 27 L26 28" fill="#0e0c08"/>
-            <path d="M30 20 L27 14" stroke="#0e0c08" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M35 21 L34 16" stroke="#0e0c08" strokeWidth="1.5" strokeLinecap="round"/>
-            <circle cx="30" cy="23" r="1.5" fill="#e8a53760"/>
-            <path d="M122 58 Q142 62 158 54 Q168 48 175 52" fill="none" stroke="#0e0c08" strokeWidth="5" strokeLinecap="round"/>
-            <path d="M175 52 L182 46 L178 56 L175 52Z" fill="#0e0c08"/>
-            <path d="M85 50 L22 16 L38 36 L10 6 L42 30 L2 0 L48 28" fill="#0e0c08" opacity="0.95"/>
-            <path d="M85 50 L22 16" stroke="#1a1610" strokeWidth="0.8"/>
-            <path d="M85 50 L10 6" stroke="#1a1610" strokeWidth="0.8"/>
-            <path d="M85 50 L2 0" stroke="#1a1610" strokeWidth="0.8"/>
-            <path d="M48 28 L60 42 L85 50" fill="#0e0c08"/>
-            <path d="M115 50 L175 14 L160 36 L190 6 L155 30 L198 0 L150 28" fill="#0e0c08" opacity="0.95"/>
-            <path d="M115 50 L175 14" stroke="#1a1610" strokeWidth="0.8"/>
-            <path d="M115 50 L190 6" stroke="#1a1610" strokeWidth="0.8"/>
-            <path d="M115 50 L198 0" stroke="#1a1610" strokeWidth="0.8"/>
-            <path d="M150 28 L138 42 L115 50" fill="#0e0c08"/>
-            <path d="M90 65 L86 74 L92 72" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
-            <path d="M110 65 L114 74 L108 72" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
-            <path d="M82 50 L80 46 M87 48 L85 44 M92 48 L90 44 M97 49 L95 45" stroke="#0e0c08" strokeWidth="1.2" strokeLinecap="round"/>
+        {/* ═══ MAIN DRAGON — animated wings ═══ */}
+        <div style={{ position: "absolute", top: "8%", left: "50%", width: 220, height: 120, pointerEvents: "none", opacity: 0.85, animation: "dragonFly 8s ease-in-out infinite", transform: px(-0.25) }}>
+          <svg viewBox="0 0 220 120" style={{ width: "100%", height: "100%" }}>
+            <g style={{ transformOrigin: "90px 58px", animation: "wingFlap 1.8s ease-in-out infinite" }}>
+              <path d="M90 58 L22 18 L42 40 L8 6 L46 34 L0 0 L52 32" fill="#0e0c08" opacity="0.95"/>
+              <path d="M52 32 L66 48 L90 58" fill="#0e0c08"/>
+              <path d="M90 58 L22 18" stroke="#1a1610" strokeWidth="0.7"/><path d="M90 58 L8 6" stroke="#1a1610" strokeWidth="0.7"/><path d="M90 58 L0 0" stroke="#1a1610" strokeWidth="0.7"/>
+            </g>
+            <g style={{ transformOrigin: "128px 58px", animation: "wingFlap 1.8s ease-in-out infinite 0.15s" }}>
+              <path d="M128 58 L192 16 L174 40 L210 6 L170 34 L220 0 L164 32" fill="#0e0c08" opacity="0.95"/>
+              <path d="M164 32 L150 48 L128 58" fill="#0e0c08"/>
+              <path d="M128 58 L192 16" stroke="#1a1610" strokeWidth="0.7"/><path d="M128 58 L210 6" stroke="#1a1610" strokeWidth="0.7"/><path d="M128 58 L220 0" stroke="#1a1610" strokeWidth="0.7"/>
+            </g>
+            <ellipse cx="110" cy="65" rx="24" ry="10" fill="#0e0c08"/>
+            <path d="M88 60 Q68 46 52 34 Q46 28 40 30" fill="none" stroke="#0e0c08" strokeWidth="6.5" strokeLinecap="round"/>
+            <ellipse cx="38" cy="29" rx="9" ry="5.5" fill="#0e0c08"/>
+            <path d="M30 28 L22 32 L30 33" fill="#0e0c08"/>
+            <path d="M33 23 L30 16" stroke="#0e0c08" strokeWidth="2.2" strokeLinecap="round"/>
+            <path d="M39 24 L38 18" stroke="#0e0c08" strokeWidth="1.6" strokeLinecap="round"/>
+            <circle cx="33" cy="27" r="1.8" fill="#e8a53770"/>
+            <path d="M134 65 Q156 70 174 60 Q184 54 192 58" fill="none" stroke="#0e0c08" strokeWidth="5.5" strokeLinecap="round"/>
+            <path d="M192 58 L200 51 L196 63 L192 58Z" fill="#0e0c08"/>
+            <path d="M95 74 L91 84 L97 82" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M125 74 L129 84 L123 82" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M90 57 L87 52 M96 55 L93 50 M102 55 L99 50 M108 56 L105 51" stroke="#0e0c08" strokeWidth="1.3" strokeLinecap="round"/>
           </svg>
         </div>
 
-        {/* Second smaller dragon */}
-        <div style={{ position: "absolute", top: "22%", right: "12%", width: 55, height: 30, opacity: 0.45, pointerEvents: "none" }}>
+        {/* Second smaller dragon — animated */}
+        <div style={{ position: "absolute", top: "22%", right: "12%", width: 65, height: 35, opacity: 0.45, pointerEvents: "none", animation: "dragonSmall 10s ease-in-out infinite 2s" }}>
           <svg viewBox="0 0 55 30" style={{ width: "100%", height: "100%" }}>
             <ellipse cx="27" cy="17" rx="7" ry="3.5" fill="#0e0c08"/>
             <path d="M20 15 Q14 10 10 8" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
             <ellipse cx="9" cy="7.5" rx="3" ry="2" fill="#0e0c08"/>
-            <path d="M22 14 L8 4 L14 10 L4 0 L16 9" fill="#0e0c08"/>
-            <path d="M32 14 L44 3 L38 10 L50 0 L36 9" fill="#0e0c08"/>
+            <g style={{ transformOrigin: "22px 14px", animation: "wingSmall 2.2s ease-in-out infinite" }}><path d="M22 14 L8 4 L14 10 L4 0 L16 9" fill="#0e0c08"/></g>
+            <g style={{ transformOrigin: "32px 14px", animation: "wingSmall 2.2s ease-in-out infinite 0.1s" }}><path d="M32 14 L44 3 L38 10 L50 0 L36 9" fill="#0e0c08"/></g>
             <path d="M34 17 Q40 19 44 16 Q46 14 48 16" fill="none" stroke="#0e0c08" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
@@ -290,7 +298,7 @@ function HomePage({ setPage }) {
         </div>
 
         {/* Mountains */}
-        <div style={{ position: "absolute", bottom: "12%", left: 0, right: 0, height: 120, pointerEvents: "none" }}>
+        <div style={{ position: "absolute", bottom: "12%", left: 0, right: 0, height: 120, pointerEvents: "none", transform: px(-0.08) }}>
           <svg viewBox="0 0 680 120" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}><path d="M0 120 L0 78 L30 55 L65 68 L105 32 L140 50 L180 24 L215 44 L255 18 L295 40 L335 26 L370 48 L410 16 L445 42 L485 22 L520 44 L555 30 L595 50 L635 34 L680 48 L680 120Z" fill="#1a1610"/></svg>
         </div>
 
@@ -349,37 +357,66 @@ function HomePage({ setPage }) {
         {/* Horizon glow band */}
         <div style={{ position: "absolute", top: "48%", left: 0, right: 0, height: 35, background: "linear-gradient(180deg, transparent, #c45a2d0a, #e8a53708, #c45a2d06, transparent)", pointerEvents: "none" }} />
 
-        {/* ═══ TEXT CONTENT ═══ */}
-        <div style={{ position: "relative", zIndex: 2, animation: "fadeSlideUp 0.8s ease both" }}>
+        {/* ═══ CSS EMBERS ═══ */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+          {[
+            { x: "15%", dur: 4, drift: "drift1", dDur: 4, c: "#e8a537", s: 5, d: 0 },
+            { x: "30%", dur: 5, drift: "drift2", dDur: 5, c: "#f0c06a", s: 4, d: 0.3 },
+            { x: "45%", dur: 3.5, drift: "drift3", dDur: 3.5, c: "#c45a2d", s: 6, d: 0.8 },
+            { x: "58%", dur: 4.5, drift: "drift1", dDur: 4.5, c: "#e8a537", s: 4, d: 1.2 },
+            { x: "72%", dur: 3.8, drift: "drift2", dDur: 3.8, c: "#f0c06a", s: 5, d: 1.8 },
+            { x: "85%", dur: 5.2, drift: "drift3", dDur: 5.2, c: "#e8653a", s: 3, d: 0.5 },
+            { x: "22%", dur: 3.2, drift: "drift1", dDur: 3.2, c: "#c45a2d", s: 4, d: 2 },
+            { x: "38%", dur: 4.8, drift: "drift2", dDur: 4.8, c: "#e8a537", s: 5, d: 2.5 },
+            { x: "55%", dur: 3.6, drift: "drift3", dDur: 3.6, c: "#f0c06a", s: 3, d: 3 },
+            { x: "68%", dur: 5.5, drift: "drift1", dDur: 5.5, c: "#e8653a", s: 6, d: 0.2 },
+            { x: "80%", dur: 4.2, drift: "drift2", dDur: 4.2, c: "#e8a537", s: 4, d: 1.5 },
+            { x: "10%", dur: 6, drift: "drift3", dDur: 6, c: "#c45a2d", s: 5, d: 3.5 },
+          ].map((e, i) => (
+            <div key={i} style={{ position: "absolute", bottom: 50 + (i % 3) * 8, left: e.x, animation: `${e.drift} ${e.dDur}s ease-in-out infinite ${e.d}s` }}>
+              <div style={{ "--ec": e.c, width: e.s, height: e.s, borderRadius: "50%", background: e.c, animation: `ember ${e.dur}s ease-out infinite ${e.d}s, pulseGlow ${0.7 + (i % 4) * 0.2}s ease-in-out infinite` }} />
+            </div>
+          ))}
+        </div>
+
+        {/* ═══ CINEMATIC TITLE ═══ */}
+        <div style={{ position: "relative", zIndex: 2, textAlign: "center" }}>
           <div style={{
             fontSize: 11, color: "#8a6a40", letterSpacing: 5, marginBottom: 14,
             textTransform: "uppercase", fontFamily: "var(--fd)",
+            animation: "subIn 1s ease-out 0.3s both",
           }}>⚔ Serveur PvE Hytale ⚔</div>
 
-          <h1 style={{
-            fontSize: "clamp(48px, 8vw, 80px)", fontWeight: 900, lineHeight: 1.0, margin: "0 0 10px",
-            fontFamily: "var(--fd)", letterSpacing: 2,
-            color: "#f0e6d2",
-            textShadow: "0 2px 30px #000e, 0 0 80px #e8a53712",
-            animation: "fadeSlideUp 0.8s ease 0.1s both",
-          }}>
-            Ciel de Vignis
+          <h1 style={{ margin: "0 0 0", position: "relative", display: "inline-block" }}>
+            {"Ciel de Vignis".split("").map((ch, i) => (
+              <span key={i} style={{
+                display: "inline-block",
+                fontSize: "clamp(42px, 7vw, 72px)", fontWeight: 900, fontFamily: "var(--fd)", letterSpacing: 3,
+                animation: `letterIn 0.5s ease-out ${1.0 + i * 0.09}s both`,
+                ...(ch === " " ? { width: "0.3em" } : {}),
+              }}>{ch === " " ? "\u00A0" : ch}</span>
+            ))}
+            <div style={{
+              position: "absolute", bottom: -4, left: 0, right: 0, height: 2, overflow: "hidden",
+            }}>
+              <div style={{
+                position: "absolute", width: "40%", height: "100%",
+                background: "linear-gradient(90deg, transparent, #e8a537, #f0c06a, #e8a537, transparent)",
+                animation: "flashSweep 1s ease-out 2.5s both",
+              }} />
+            </div>
           </h1>
-
-          <div style={{
-            width: 100, height: 2, margin: "0 auto 16px",
-            background: "linear-gradient(90deg, transparent, #c45a2d60, #e8a537, #c45a2d60, transparent)",
-          }} />
 
           <p style={{
             fontSize: "clamp(15px, 2.2vw, 19px)", color: "#c9a878", fontFamily: "var(--fd)", fontStyle: "italic",
-            margin: "0 auto 36px", animation: "fadeSlideUp 0.8s ease 0.2s both",
+            margin: "18px auto 36px",
             textShadow: "0 1px 12px #000a",
+            animation: "fadeUp 0.8s ease-out 3s both",
           }}>
             Forge ton destin. Maîtrise les éléments.
           </p>
 
-          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", animation: "fadeSlideUp 0.8s ease 0.3s both" }}>
+          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", animation: "fadeUp 0.8s ease-out 3.5s both" }}>
             <button onClick={() => setPage("builds")} className="btn-primary-lg">
               ⚔️ Forger un Build
             </button>
