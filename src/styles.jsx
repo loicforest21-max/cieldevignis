@@ -3,12 +3,12 @@
 // ═══════════════════════════════════════════════════
 
 const G = {
-  bg: "#0a0f1a", card: "#121a2b", border: "#1c2d45", accent: "#e8a537", accent2: "#f5a623",
+  bg: "#12100c", card: "#1a1610", border: "#2a2218", accent: "#e8a537", accent2: "#f5a623",
   teal: "#3dd8c5", blue: "#4ea8f0", purple: "#845ef7", pink: "#e060a0",
-  orange: "#e8653a", green: "#51cf66",
-  text: "#e8e4dc", muted: "#9aa3b8",
+  orange: "#c45a2d", green: "#51cf66",
+  text: "#f0e6d2", muted: "#8a8070",
   gold: "#e8a537", goldL: "#f0c06a", goldD: "#c8882a",
-  bg2: "#0d1320", bg3: "#111827",
+  bg2: "#0e0c08", bg3: "#1e1a14",
 };
 
 function GlobalStyles() {
@@ -42,15 +42,15 @@ function GlobalStyles() {
 
         --c-teal: #3dd8c5;
         --c-amber: #e8a537;
-        --c-bg: #0a0f1a;
-        --c-card: #121a2b;
-        --c-border: #1c2d45;
-        --c-text: #e8e4dc;
-        --c-muted: #9aa3b8;
+        --c-bg: #12100c;
+        --c-card: #1a1610;
+        --c-border: #2a2218;
+        --c-text: #f0e6d2;
+        --c-muted: #8a8070;
 
-        --card: #121a2b;
-        --brd: #1c2d45;
-        --bg: #0a0f1a;
+        --card: #1a1610;
+        --brd: #2a2218;
+        --bg: #12100c;
       }
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
@@ -59,12 +59,12 @@ function GlobalStyles() {
         font-family: var(--fb);
         background-image:
           radial-gradient(circle at 20% 50%, #e8a53706 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, #845ef705 0%, transparent 40%),
+          radial-gradient(circle at 80% 20%, #c45a2d04 0%, transparent 40%),
           radial-gradient(circle at 50% 80%, #3dd8c504 0%, transparent 45%);
       }
       ::-webkit-scrollbar { width: 5px; }
       ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #1c2d4580; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb { background: #2a221880; border-radius: 3px; }
       ::-webkit-scrollbar-thumb:hover { background: #e8a53740; }
       h1, h2, h3, h4 { font-family: var(--fd); letter-spacing: 0.5px; }
       input[type="range"] { height: 4px; }
@@ -73,8 +73,8 @@ function GlobalStyles() {
 
       /* ═══ WIKI LIST ═══ */
       .wiki-row { transition: background 0.12s, border-color 0.12s; }
-      .wiki-row:hover:not(.wiki-row-open) { background: #121a2b60 !important; border-color: #1c2d4590 !important; }
-      .wiki-row:nth-child(even):not(.wiki-row-open) { background: #0d132008; }
+      .wiki-row:hover:not(.wiki-row-open) { background: #1a161060 !important; border-color: #2a221890 !important; }
+      .wiki-row:nth-child(even):not(.wiki-row-open) { background: #1e1a1408; }
       .wiki-row-open { box-shadow: 0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03); }
       .wiki-expanded { animation: wikiExpand 0.2s ease-out; }
       @keyframes wikiExpand { from { opacity:0; max-height:0; } to { opacity:1; max-height:800px; } }
@@ -125,7 +125,7 @@ function GlobalStyles() {
       .btn-ghost {
         background: transparent;
         color: var(--c-muted);
-        border: 1.5px solid #2a3a55;
+        border: 1.5px solid #3a3025;
         border-radius: var(--radius-md);
         padding: 8px 16px;
         font-size: var(--text-sm);
@@ -176,7 +176,7 @@ function GlobalStyles() {
       .btn-discord {
         padding: 15px 40px;
         border-radius: 10px;
-        border: 1.5px solid #2a3a55;
+        border: 1.5px solid #3a3025;
         background: transparent;
         color: var(--c-text);
         font-size: 16px;
@@ -250,7 +250,7 @@ function GlobalStyles() {
         font-weight: var(--fw-bold);
         font-size: 12px;
         background: transparent;
-        color: #4a5e78;
+        color: #5a4e3d;
         border-radius: var(--radius-md) var(--radius-md) 0 0;
         border-bottom: 2px solid transparent;
         transition: all 0.2s ease;

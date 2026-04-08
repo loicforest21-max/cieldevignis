@@ -18,61 +18,35 @@ function Particles() {
     const canvas = canvasRef.current; if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
-    const COLORS = ["#3dd8c5", "#4ea8f0", "#845ef7", "#f5a623", "#51cf66", "#e8653a"];
-    const particles = Array.from({ length: 40 }, () => ({
+    const COLORS = ["#e8a537", "#f0c06a", "#c8882a", "#e8a537", "#3dd8c5"];
+    const particles = Array.from({ length: 30 }, () => ({
       x: Math.random() * w, y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.25, vy: -Math.random() * 0.4 - 0.08,
-      size: Math.random() * 6 + 3,
-      o: Math.random() * 0.35 + 0.05,
+      vx: (Math.random() - 0.5) * 0.15, vy: -Math.random() * 0.25 - 0.05,
+      size: Math.random() * 3 + 1.5,
+      o: Math.random() * 0.3 + 0.05,
       c: COLORS[Math.floor(Math.random() * COLORS.length)],
-      rot: Math.random() * Math.PI * 2,
-      rotSpeed: (Math.random() - 0.5) * 0.008,
       phase: Math.random() * Math.PI * 2,
+      drift: Math.random() * 0.3 + 0.1,
     }));
     let raf, t = 0;
     const draw = () => {
-      t += 0.01;
+      t += 0.008;
       ctx.clearRect(0, 0, w, h);
-      // Draw grid lines (subtle)
-      ctx.globalAlpha = 0.015;
-      ctx.strokeStyle = "#3dd8c5";
-      ctx.lineWidth = 0.5;
-      const gs = 80;
-      for (let gx = 0; gx < w; gx += gs) {
-        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
-      }
-      for (let gy = 0; gy < h; gy += gs) {
-        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
-      }
-      // Draw voxel cubes
       particles.forEach(p => {
-        ctx.globalAlpha = p.o + Math.sin(t * 2 + p.phase) * 0.05;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        // Draw a small cube face (square with slight 3D effect)
-        const s = p.size;
+        const pulse = 0.5 + Math.sin(t * 2 + p.phase) * 0.4;
+        ctx.globalAlpha = p.o * pulse;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = p.c;
-        ctx.fillRect(-s/2, -s/2, s, s);
-        // Top face (lighter)
-        ctx.fillStyle = p.c + "60";
-        ctx.beginPath();
-        ctx.moveTo(-s/2, -s/2);
-        ctx.lineTo(-s/2 + s*0.3, -s/2 - s*0.3);
-        ctx.lineTo(s/2 + s*0.3, -s/2 - s*0.3);
-        ctx.lineTo(s/2, -s/2);
         ctx.fill();
-        // Right face (darker)
-        ctx.fillStyle = p.c + "30";
+        // Glow
+        ctx.globalAlpha = p.o * pulse * 0.3;
         ctx.beginPath();
-        ctx.moveTo(s/2, -s/2);
-        ctx.lineTo(s/2 + s*0.3, -s/2 - s*0.3);
-        ctx.lineTo(s/2 + s*0.3, s/2 - s*0.3);
-        ctx.lineTo(s/2, s/2);
+        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+        ctx.fillStyle = p.c;
         ctx.fill();
-        ctx.restore();
-        p.x += p.vx; p.y += p.vy;
-        p.rot += p.rotSpeed;
+        p.x += p.vx + Math.sin(t + p.phase) * p.drift * 0.3;
+        p.y += p.vy;
         if (p.y < -20) { p.y = h + 20; p.x = Math.random() * w; }
         if (p.x < -20) p.x = w + 20; if (p.x > w + 20) p.x = -20;
       });
@@ -110,17 +84,17 @@ function Navbar({ page, setPage }) {
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       background: scrolled || menuOpen ? `${G.bg}f0` : "transparent",
       backdropFilter: scrolled || menuOpen ? "blur(20px) saturate(1.4)" : "none",
-      borderBottom: scrolled ? `1px solid ${G.gold || G.accent2}15` : "none",
+      borderBottom: scrolled ? `1px solid ${G.gold}15` : "none",
       transition: "all 0.4s ease", padding: "0 20px",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
         <div onClick={() => { setPage("home"); setMenuOpen(false); }} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
-            background: `linear-gradient(135deg, ${G.gold || G.accent2}, ${G.goldD || '#c8882a'})`,
+            background: `linear-gradient(135deg, ${G.gold}, ${G.goldD})`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 15, fontWeight: 900, color: G.bg, fontFamily: "var(--fd)",
-            boxShadow: `0 0 16px ${G.gold || G.accent2}25`,
+            boxShadow: `0 0 16px ${G.gold}25`,
           }}>C</div>
           <span className="nav-title" style={{
             fontSize: 18, fontWeight: 800, fontFamily: "var(--fd)", letterSpacing: 1,
@@ -147,7 +121,7 @@ function Navbar({ page, setPage }) {
       {/* Mobile menu */}
       {menuOpen && <div className="nav-mobile-menu" style={{
         display: "none", flexDirection: "column", gap: 2, padding: "8px 0 16px",
-        borderTop: `1px solid ${G.teal}20`, animation: "fadeSlideUp 0.2s ease",
+        borderTop: `1px solid ${G.gold}20`, animation: "fadeSlideUp 0.2s ease",
       }}>
         {links.map(l => (
           <button
@@ -170,21 +144,21 @@ function Navbar({ page, setPage }) {
 function FeatureCard({ icon, title, desc, color, delay, onClick }) {
   return (
     <div onClick={onClick} className="feature-card" style={{
-      background: `linear-gradient(165deg, ${G.card}, ${color}06)`,
-      border: `1px solid ${color}20`, borderRadius: "var(--radius-md)", padding: 0,
+      background: `linear-gradient(165deg, ${G.card}, ${color}08)`,
+      border: `1px solid ${G.border}`, borderRadius: 10, padding: 0,
       cursor: onClick ? "pointer" : "default",
       animation: `fadeSlideUp 0.6s ease ${delay}s both`,
-      borderTop: `3px solid ${color}60`,
-      "--hover-shadow": `0 16px 48px ${color}18, 0 0 20px ${color}08`,
+      position: "relative", overflow: "hidden",
     }}
     >
-      {/* Pixel grid overlay */}
-      <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${color}05 1px, transparent 1px), linear-gradient(90deg, ${color}05 1px, transparent 1px)`, backgroundSize: "16px 16px", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, background: `radial-gradient(circle, ${color}0c, transparent)`, borderRadius: "50%" }} />
-      <div style={{ padding: "28px 24px", position: "relative" }}>
-        <div style={{ fontSize: 40, marginBottom: 16, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.3))" }}>{icon}</div>
-        <h3 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 800, color: "#fff", fontFamily: "var(--fd)", letterSpacing: 0.5 }}>{title}</h3>
-        <p style={{ margin: 0, fontSize: 14, color: G.muted, lineHeight: 1.6 }}>{desc}</p>
+      {/* Top accent bar */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${color}, ${color}40)` }} />
+      {/* Corner glow */}
+      <div style={{ position: "absolute", top: -15, right: -15, width: 50, height: 50, background: `radial-gradient(circle, ${color}10, transparent)`, borderRadius: "50%", pointerEvents: "none" }} />
+      <div style={{ padding: "22px 20px", position: "relative" }}>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>{icon}</div>
+        <h3 style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 700, color: color, fontFamily: "var(--fd)", letterSpacing: 0.5 }}>{title}</h3>
+        <p style={{ margin: 0, fontSize: 13, color: G.muted, lineHeight: 1.6 }}>{desc}</p>
       </div>
     </div>
   );
@@ -246,82 +220,216 @@ function StatRow() {
 function HomePage({ setPage }) {
   return (
     <div style={{ position: "relative", zIndex: 1 }}>
-      {/* HERO */}
+      {/* HERO — Epic dragon landscape */}
       <section style={{
         minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        textAlign: "center", padding: "120px 24px 80px", position: "relative", overflow: "hidden",
+        textAlign: "center", position: "relative", overflow: "hidden",
       }}>
-        {/* Atmospheric glow orbs — warm Hytale style */}
-        <div style={{ position: "absolute", top: "10%", left: "5%", width: 400, height: 400, background: `radial-gradient(circle, ${G.gold || G.accent2}0a, transparent 70%)`, borderRadius: "50%", filter: "blur(80px)" }} />
-        <div style={{ position: "absolute", bottom: "15%", right: "10%", width: 350, height: 350, background: `radial-gradient(circle, ${G.purple}08, transparent 70%)`, borderRadius: "50%", filter: "blur(80px)" }} />
-        <div style={{ position: "absolute", top: "50%", left: "50%", width: 500, height: 500, transform: "translate(-50%,-50%)", background: `radial-gradient(circle, ${G.gold || G.accent2}08, transparent 60%)`, borderRadius: "50%", filter: "blur(100px)", animation: "heroGlow 6s ease-in-out infinite" }} />
+        {/* Sky gradient */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0c0a08 0%, #141010 8%, #1e1610 18%, #2a1e14 30%, #3a2a18 42%, #44301a 50%, #3a2818 60%, #2a2015 72%, #18150f 88%, #12100c 100%)" }} />
         
-        {/* Decorative voxel blocks */}
-        <div style={{ position: "absolute", top: "18%", left: "8%", width: 24, height: 24, background: G.teal, opacity: 0.08, transform: "rotate(15deg)", animation: "voxelFloat 6s ease infinite" }} />
-        <div style={{ position: "absolute", top: "30%", right: "12%", width: 16, height: 16, background: G.purple, opacity: 0.1, transform: "rotate(-10deg)", animation: "voxelFloat 8s ease infinite 1s" }} />
-        <div style={{ position: "absolute", bottom: "25%", left: "15%", width: 20, height: 20, background: G.accent2, opacity: 0.07, transform: "rotate(25deg)", animation: "voxelFloat 7s ease infinite 2s" }} />
-        <div style={{ position: "absolute", top: "60%", right: "20%", width: 14, height: 14, background: G.blue, opacity: 0.09, transform: "rotate(-20deg)", animation: "voxelFloat 9s ease infinite 0.5s" }} />
-        <div style={{ position: "absolute", bottom: "35%", right: "8%", width: 28, height: 28, background: G.green, opacity: 0.06, transform: "rotate(40deg)", animation: "voxelFloat 10s ease infinite 3s" }} />
+        {/* Sun glow */}
+        <div style={{ position: "absolute", top: "18%", left: "50%", transform: "translateX(-50%)", width: 350, height: 180, background: "radial-gradient(ellipse, #e8a53740, #f0c06a20, #c45a2d10, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translateX(-50%)", width: 60, height: 60, borderRadius: "50%", background: "radial-gradient(circle, #f0e6d228, #e8a53715, transparent 70%)", boxShadow: "0 0 60px #e8a53718", pointerEvents: "none" }} />
 
-        <div style={{ animation: "fadeSlideUp 0.8s ease both" }}>
+        {/* God rays */}
+        <div style={{ position: "absolute", top: "15%", left: "46%", width: 3, height: 140, background: "linear-gradient(180deg, #e8a53715, transparent)", transform: "rotate(-6deg)", transformOrigin: "top", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "18%", left: "54%", width: 2, height: 120, background: "linear-gradient(180deg, #e8a53712, transparent)", transform: "rotate(5deg)", transformOrigin: "top", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "16%", left: "50%", width: 2, height: 130, background: "linear-gradient(180deg, #f0c06a0c, transparent)", transform: "rotate(-1deg)", transformOrigin: "top", pointerEvents: "none" }} />
+
+        {/* Clouds */}
+        <div style={{ position: "absolute", top: "6%", left: "5%", width: 300, height: 50, background: "radial-gradient(ellipse, #1a151020, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "3%", right: "10%", width: 250, height: 45, background: "radial-gradient(ellipse, #2a201518, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
+
+        {/* ═══ MAIN DRAGON ═══ */}
+        <div style={{ position: "absolute", top: "10%", left: "50%", transform: "translateX(-50%)", width: 200, height: 100, pointerEvents: "none", opacity: 0.85 }}>
+          <svg viewBox="0 0 200 100" style={{ width: "100%", height: "100%" }}>
+            <ellipse cx="100" cy="58" rx="22" ry="9" fill="#0e0c08"/>
+            <path d="M80 54 Q62 40 48 30 Q42 24 36 26" fill="none" stroke="#0e0c08" strokeWidth="6" strokeLinecap="round"/>
+            <ellipse cx="34" cy="25" rx="8" ry="5" fill="#0e0c08"/>
+            <path d="M26 24 L20 27 L26 28" fill="#0e0c08"/>
+            <path d="M30 20 L27 14" stroke="#0e0c08" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M35 21 L34 16" stroke="#0e0c08" strokeWidth="1.5" strokeLinecap="round"/>
+            <circle cx="30" cy="23" r="1.5" fill="#e8a53760"/>
+            <path d="M122 58 Q142 62 158 54 Q168 48 175 52" fill="none" stroke="#0e0c08" strokeWidth="5" strokeLinecap="round"/>
+            <path d="M175 52 L182 46 L178 56 L175 52Z" fill="#0e0c08"/>
+            <path d="M85 50 L22 16 L38 36 L10 6 L42 30 L2 0 L48 28" fill="#0e0c08" opacity="0.95"/>
+            <path d="M85 50 L22 16" stroke="#1a1610" strokeWidth="0.8"/>
+            <path d="M85 50 L10 6" stroke="#1a1610" strokeWidth="0.8"/>
+            <path d="M85 50 L2 0" stroke="#1a1610" strokeWidth="0.8"/>
+            <path d="M48 28 L60 42 L85 50" fill="#0e0c08"/>
+            <path d="M115 50 L175 14 L160 36 L190 6 L155 30 L198 0 L150 28" fill="#0e0c08" opacity="0.95"/>
+            <path d="M115 50 L175 14" stroke="#1a1610" strokeWidth="0.8"/>
+            <path d="M115 50 L190 6" stroke="#1a1610" strokeWidth="0.8"/>
+            <path d="M115 50 L198 0" stroke="#1a1610" strokeWidth="0.8"/>
+            <path d="M150 28 L138 42 L115 50" fill="#0e0c08"/>
+            <path d="M90 65 L86 74 L92 72" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M110 65 L114 74 L108 72" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M82 50 L80 46 M87 48 L85 44 M92 48 L90 44 M97 49 L95 45" stroke="#0e0c08" strokeWidth="1.2" strokeLinecap="round"/>
+          </svg>
+        </div>
+
+        {/* Second smaller dragon */}
+        <div style={{ position: "absolute", top: "22%", right: "12%", width: 55, height: 30, opacity: 0.45, pointerEvents: "none" }}>
+          <svg viewBox="0 0 55 30" style={{ width: "100%", height: "100%" }}>
+            <ellipse cx="27" cy="17" rx="7" ry="3.5" fill="#0e0c08"/>
+            <path d="M20 15 Q14 10 10 8" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
+            <ellipse cx="9" cy="7.5" rx="3" ry="2" fill="#0e0c08"/>
+            <path d="M22 14 L8 4 L14 10 L4 0 L16 9" fill="#0e0c08"/>
+            <path d="M32 14 L44 3 L38 10 L50 0 L36 9" fill="#0e0c08"/>
+            <path d="M34 17 Q40 19 44 16 Q46 14 48 16" fill="none" stroke="#0e0c08" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
+
+        {/* Birds far away */}
+        <div style={{ position: "absolute", top: "18%", left: "20%", pointerEvents: "none" }}>
+          <svg viewBox="0 0 14 7" width="14" height="7"><path d="M0 5 Q3.5 0 7 4 Q10.5 0 14 5" fill="none" stroke="#0e0c0850" strokeWidth="1.2"/></svg>
+        </div>
+        <div style={{ position: "absolute", top: "24%", left: "25%", pointerEvents: "none" }}>
+          <svg viewBox="0 0 10 5" width="10" height="5"><path d="M0 3.5 Q2.5 0 5 3 Q7.5 0 10 3.5" fill="none" stroke="#0e0c0835" strokeWidth="1"/></svg>
+        </div>
+
+        {/* Mountains */}
+        <div style={{ position: "absolute", bottom: "12%", left: 0, right: 0, height: 120, pointerEvents: "none" }}>
+          <svg viewBox="0 0 680 120" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}><path d="M0 120 L0 78 L30 55 L65 68 L105 32 L140 50 L180 24 L215 44 L255 18 L295 40 L335 26 L370 48 L410 16 L445 42 L485 22 L520 44 L555 30 L595 50 L635 34 L680 48 L680 120Z" fill="#1a1610"/></svg>
+        </div>
+
+        {/* Fortress */}
+        <div style={{ position: "absolute", bottom: "10%", left: "38%", width: 80, height: 105, pointerEvents: "none" }}>
+          <svg viewBox="0 0 80 105" style={{ width: "100%", height: "100%" }}>
+            <rect x="24" y="25" width="32" height="80" fill="#1e1a12"/>
+            <rect x="24" y="20" width="7" height="8" fill="#1e1a12"/><rect x="34" y="20" width="7" height="8" fill="#1e1a12"/><rect x="44" y="20" width="7" height="8" fill="#1e1a12"/>
+            <polygon points="40,0 48,20 32,20" fill="#1e1a12"/>
+            <rect x="5" y="42" width="19" height="63" fill="#1e1a12"/>
+            <rect x="5" y="37" width="5" height="7" fill="#1e1a12"/><rect x="12" y="37" width="5" height="7" fill="#1e1a12"/>
+            <polygon points="14,28 22,37 7,37" fill="#1e1a12"/>
+            <rect x="56" y="38" width="19" height="67" fill="#1e1a12"/>
+            <rect x="56" y="33" width="5" height="7" fill="#1e1a12"/><rect x="63" y="33" width="5" height="7" fill="#1e1a12"/>
+            <polygon points="65,24 75,33 56,33" fill="#1e1a12"/>
+            <rect x="0" y="60" width="5" height="45" fill="#1e1a12"/>
+            <rect x="75" y="55" width="5" height="50" fill="#1e1a12"/>
+            <rect x="34" y="82" width="12" height="23" rx="6" fill="#14120c"/>
+            <rect x="36" y="40" width="4" height="5" fill="#e8a53718" rx="1"/>
+            <rect x="36" y="54" width="4" height="5" fill="#e8a53714" rx="1"/>
+            <rect x="36" y="68" width="4" height="5" fill="#e8a53710" rx="1"/>
+            <rect x="10" y="55" width="3" height="4" fill="#e8a53712" rx="0.5"/>
+            <rect x="10" y="68" width="3" height="4" fill="#e8a53710" rx="0.5"/>
+            <rect x="61" y="50" width="3" height="4" fill="#e8a53712" rx="0.5"/>
+            <rect x="61" y="63" width="3" height="4" fill="#e8a53710" rx="0.5"/>
+          </svg>
+        </div>
+
+        {/* Village houses */}
+        <div style={{ position: "absolute", bottom: "9%", left: "25%", width: 14, height: 14, pointerEvents: "none" }}>
+          <svg viewBox="0 0 14 14" style={{ width: "100%", height: "100%" }}><rect x="1" y="6" width="12" height="8" fill="#1a1610"/><polygon points="0,6 7,0 14,6" fill="#1a1610"/><rect x="4" y="8" width="2" height="2" fill="#e8a53710" rx="0.5"/></svg>
+        </div>
+        <div style={{ position: "absolute", bottom: "8.5%", right: "23%", width: 12, height: 13, pointerEvents: "none" }}>
+          <svg viewBox="0 0 12 13" style={{ width: "100%", height: "100%" }}><rect x="1" y="5.5" width="10" height="7.5" fill="#1a1610"/><polygon points="0,5.5 6,0 12,5.5" fill="#1a1610"/><rect x="4" y="7.5" width="2" height="2" fill="#e8a53710" rx="0.4"/></svg>
+        </div>
+
+        {/* Trees */}
+        <div style={{ position: "absolute", bottom: "10%", left: "10%", width: 14, height: 38, pointerEvents: "none" }}>
+          <svg viewBox="0 0 14 38" style={{ width: "100%", height: "100%" }}><line x1="7" y1="38" x2="7" y2="6" stroke="#16130e" strokeWidth="2.2"/><line x1="7" y1="14" x2="2" y2="6" stroke="#16130e" strokeWidth="1.5"/><line x1="7" y1="20" x2="12" y2="12" stroke="#16130e" strokeWidth="1.5"/></svg>
+        </div>
+        <div style={{ position: "absolute", bottom: "8.5%", right: "9%", width: 18, height: 34, pointerEvents: "none" }}>
+          <svg viewBox="0 0 18 34" style={{ width: "100%", height: "100%" }}><polygon points="9,0 17,23 1,23" fill="#16140f"/><rect x="7" y="23" width="4" height="11" fill="#16140f"/></svg>
+        </div>
+        <div style={{ position: "absolute", bottom: "9.5%", right: "14%", width: 13, height: 27, pointerEvents: "none" }}>
+          <svg viewBox="0 0 13 27" style={{ width: "100%", height: "100%" }}><polygon points="6.5,0 13,19 0,19" fill="#16140f"/><rect x="4.5" y="19" width="4" height="8" fill="#16140f"/></svg>
+        </div>
+        <div style={{ position: "absolute", bottom: "8%", left: "16%", width: 15, height: 30, pointerEvents: "none" }}>
+          <svg viewBox="0 0 15 30" style={{ width: "100%", height: "100%" }}><polygon points="7.5,0 14,20 1,20" fill="#18150f"/><rect x="5.5" y="20" width="4" height="10" fill="#18150f"/></svg>
+        </div>
+
+        {/* Foreground */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "10%", pointerEvents: "none" }}>
+          <svg viewBox="0 0 680 60" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}><path d="M0 60 L0 32 Q100 22 220 28 Q340 16 460 24 Q560 14 680 22 L680 60Z" fill="#12100c"/></svg>
+        </div>
+
+        {/* Horizon glow band */}
+        <div style={{ position: "absolute", top: "48%", left: 0, right: 0, height: 35, background: "linear-gradient(180deg, transparent, #c45a2d0a, #e8a53708, #c45a2d06, transparent)", pointerEvents: "none" }} />
+
+        {/* ═══ TEXT CONTENT ═══ */}
+        <div style={{ position: "relative", zIndex: 2, animation: "fadeSlideUp 0.8s ease both" }}>
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 22px", borderRadius: 8,
-            background: `${G.gold || G.accent2}0a`, border: `1px solid ${G.gold || G.accent2}18`,
-            fontSize: 13, fontWeight: 700, color: G.gold || G.accent2, marginBottom: 28,
-            fontFamily: "var(--fb)", letterSpacing: 1.2, textTransform: "uppercase",
+            fontSize: 11, color: "#8a6a40", letterSpacing: 5, marginBottom: 14,
+            textTransform: "uppercase", fontFamily: "var(--fd)",
+          }}>⚔ Serveur PvE Hytale ⚔</div>
+
+          <h1 style={{
+            fontSize: "clamp(48px, 8vw, 80px)", fontWeight: 900, lineHeight: 1.0, margin: "0 0 10px",
+            fontFamily: "var(--fd)", letterSpacing: 2,
+            color: "#f0e6d2",
+            textShadow: "0 2px 30px #000e, 0 0 80px #e8a53712",
+            animation: "fadeSlideUp 0.8s ease 0.1s both",
           }}>
-            <span style={{ display: "inline-block", width: 6, height: 6, background: G.gold || G.accent2, borderRadius: "50%", animation: "glowPulse 2s ease infinite" }} />
-            Serveur Hytale PvE — EndlessLeveling v7.0.6
+            Ciel de Vignis
+          </h1>
+
+          <div style={{
+            width: 100, height: 2, margin: "0 auto 16px",
+            background: "linear-gradient(90deg, transparent, #c45a2d60, #e8a537, #c45a2d60, transparent)",
+          }} />
+
+          <p style={{
+            fontSize: "clamp(15px, 2.2vw, 19px)", color: "#c9a878", fontFamily: "var(--fd)", fontStyle: "italic",
+            margin: "0 auto 36px", animation: "fadeSlideUp 0.8s ease 0.2s both",
+            textShadow: "0 1px 12px #000a",
+          }}>
+            Forge ton destin. Maîtrise les éléments.
+          </p>
+
+          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", animation: "fadeSlideUp 0.8s ease 0.3s both" }}>
+            <button onClick={() => setPage("builds")} className="btn-primary-lg">
+              ⚔️ Forger un Build
+            </button>
+            <button onClick={() => window.open("https://discord.gg/7YmTATJcf", "_blank")} className="btn-discord">
+              💬 Rejoindre Discord
+            </button>
           </div>
         </div>
 
-        <h1 style={{
-          fontSize: "clamp(52px, 9vw, 88px)", fontWeight: 900, lineHeight: 1.0, margin: "0 0 24px",
-          fontFamily: "var(--fd)", letterSpacing: 2,
-          background: `linear-gradient(135deg, ${G.goldL || '#f0c06a'} 0%, ${G.gold || '#e8a537'} 30%, #f5f0e8 50%, ${G.gold || '#e8a537'} 70%, ${G.goldD || '#c8882a'} 100%)`,
-          backgroundSize: "200% auto",
-          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-          animation: "fadeSlideUp 0.8s ease 0.1s both, shimmer 5s linear infinite",
-          textShadow: "none",
-        }}>
-          CielDeVignis
-        </h1>
-
-        <p style={{
-          fontSize: "clamp(16px, 2.5vw, 21px)", color: G.muted, maxWidth: 620, margin: "0 auto 44px",
-          lineHeight: 1.7, fontFamily: "var(--fb)", animation: "fadeSlideUp 0.8s ease 0.2s both",
-        }}>
-          Explore des donjons, affronte des créatures, crée ton build parfait.
-          <br /><span style={{ color: G.teal }}>12 races</span> · <span style={{ color: G.accent2 }}>14 classes</span> · <span style={{ color: G.purple }}>55 augments</span> — des possibilités infinies.
-        </p>
-
-        <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", animation: "fadeSlideUp 0.8s ease 0.3s both" }}>
-          <button onClick={() => setPage("builds")} className="btn-primary-lg">
-            ⚔️ Créer un Build
-          </button>
-          <button onClick={() => window.open("https://discord.gg/7YmTATJcf", "_blank")} className="btn-discord">
-            💬 Rejoindre Discord
-          </button>
-        </div>
-
-        {/* Scroll indicator — voxel style */}
-        <div style={{ position: "absolute", bottom: 30, animation: "bounce 2s ease infinite", opacity: 0.35 }}>
-          <div style={{ width: 22, height: 38, borderRadius: 4, border: `2px solid ${G.teal}60`, display: "flex", justifyContent: "center", paddingTop: 8 }}>
-            <div style={{ width: 4, height: 8, borderRadius: 1, background: G.teal, animation: "scrollDot 2s ease infinite" }} />
+        {/* Scroll indicator */}
+        <div style={{ position: "absolute", bottom: 30, animation: "bounce 2s ease infinite", opacity: 0.35, zIndex: 2 }}>
+          <div style={{ width: 22, height: 38, borderRadius: 9, border: "1px solid #4a403060", display: "flex", justifyContent: "center", paddingTop: 8 }}>
+            <div style={{ width: 3, height: 8, borderRadius: 2, background: "#e8a53780" }} />
           </div>
         </div>
       </section>
 
       {/* STATS BAR */}
-      <section style={{ padding: "20px 24px 60px" }}>
-        <StatRow />
+      <section style={{ padding: "20px 24px 50px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 28 }}>
+          <div style={{ flex: 1, maxWidth: 120, height: 1, background: "linear-gradient(90deg, transparent, #e8a53725)" }} />
+          <div style={{ fontSize: 10, color: "#6a5a40", letterSpacing: 3, fontFamily: "var(--fd)", textTransform: "uppercase" }}>En chiffres</div>
+          <div style={{ flex: 1, maxWidth: 120, height: 1, background: "linear-gradient(90deg, #e8a53725, transparent)" }} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", gap: 40, flexWrap: "wrap", textAlign: "center" }}>
+          {[
+            { v: "8594", l: "objets", c: G.gold },
+            { v: "72", l: "races", c: G.teal },
+            { v: "14", l: "classes", c: G.blue },
+            { v: "11", l: "donjons", c: G.orange },
+            { v: "55", l: "augments", c: G.purple },
+            { v: "29", l: "mods", c: "#f0c06a" },
+          ].map(s => (
+            <div key={s.l}>
+              <div style={{ fontSize: 28, fontWeight: 700, color: s.c, fontFamily: "var(--fd)" }}>{s.v}</div>
+              <div style={{ fontSize: 11, color: "#6a5a45" }}>{s.l}</div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* FEATURES */}
       <section style={{ padding: "40px 24px 80px", maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div style={{ display: "inline-block", padding: "5px 16px", borderRadius: 6, background: `${G.gold || G.accent2}0c`, border: `1px solid ${G.gold || G.accent2}18`, fontSize: 11, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 14 }}>Outils</div>
-          <h2 style={{ fontSize: 38, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)", margin: "8px 0 10px", letterSpacing: 1, animation: "fadeSlideUp 0.6s ease both" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 18 }}>
+            <div style={{ flex: 1, maxWidth: 120, height: 1, background: "linear-gradient(90deg, transparent, #e8a53725)" }} />
+            <div style={{ fontSize: 10, color: "#6a5a40", letterSpacing: 3, fontFamily: "var(--fd)", textTransform: "uppercase" }}>Découvrir</div>
+            <div style={{ flex: 1, maxWidth: 120, height: 1, background: "linear-gradient(90deg, #e8a53725, transparent)" }} />
+          </div>
+          <h2 style={{ fontSize: 38, fontWeight: 900, color: "#f0e6d2", fontFamily: "var(--fd)", margin: "8px 0 10px", letterSpacing: 1, animation: "fadeSlideUp 0.6s ease both" }}>
             Tout pour ton aventure
           </h2>
           <p style={{ fontSize: 16, color: G.muted, margin: 0, fontFamily: "var(--fb)" }}>
@@ -330,7 +438,7 @@ function HomePage({ setPage }) {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
           <FeatureCard icon="⚔️" title="Build Creator" desc="Crée et simule tes builds avec un calcul précis de toutes tes stats. Race, classes, SP, augments — tout y est." color={G.teal} delay={0.1} onClick={() => setPage("builds")} />
-          <FeatureCard icon="🏰" title="Donjons & Monstres" desc="Explore les 11 donjons du serveur — niveaux, boss, scaling et loot pour chaque instance." color={G.gold || G.accent2} delay={0.2} onClick={() => setPage("dungeons")} />
+          <FeatureCard icon="🏰" title="Donjons & Monstres" desc="Explore les 11 donjons du serveur — niveaux, boss, scaling et loot pour chaque instance." color={G.gold} delay={0.2} onClick={() => setPage("dungeons")} />
           <FeatureCard icon="🗡️" title="Armes & Armures" desc="Toutes les armes et armures du serveur avec leurs stats, bonus, et compatibilité de classe." color={G.orange} delay={0.3} onClick={() => setPage("wiki")} />
           <FeatureCard icon="📊" title="Communauté" desc="Partage tes builds, explore ceux de ta guilde, et compare les configurations." color={G.purple} delay={0.4} onClick={() => setPage("community")} />
         </div>
@@ -339,8 +447,12 @@ function HomePage({ setPage }) {
       {/* RACES SHOWCASE */}
       <section style={{ padding: "40px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: `${G.accent2}10`, border: `1px solid ${G.accent2}20`, fontSize: 11, fontWeight: 800, color: G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Races</div>
-          <h2 style={{ fontSize: 34, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)", margin: "8px 0 8px", letterSpacing: 0.5 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 14 }}>
+            <div style={{ flex: 1, maxWidth: 100, height: 1, background: "linear-gradient(90deg, transparent, #e8a53720)" }} />
+            <div style={{ fontSize: 10, color: "#6a5a40", letterSpacing: 3, fontFamily: "var(--fd)", textTransform: "uppercase" }}>Races</div>
+            <div style={{ flex: 1, maxWidth: 100, height: 1, background: "linear-gradient(90deg, #e8a53720, transparent)" }} />
+          </div>
+          <h2 style={{ fontSize: 34, fontWeight: 900, color: "#f0e6d2", fontFamily: "var(--fd)", margin: "8px 0 8px", letterSpacing: 0.5 }}>
             12 Races
           </h2>
           <p style={{ fontSize: 14, color: G.muted, margin: 0, fontFamily: "var(--fb)" }}>
@@ -355,8 +467,12 @@ function HomePage({ setPage }) {
       {/* CLASSES SHOWCASE */}
       <section style={{ padding: "40px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: `${G.blue}10`, border: `1px solid ${G.blue}20`, fontSize: 11, fontWeight: 800, color: G.blue, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Classes</div>
-          <h2 style={{ fontSize: 34, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)", margin: "8px 0 8px", letterSpacing: 0.5 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 14 }}>
+            <div style={{ flex: 1, maxWidth: 100, height: 1, background: "linear-gradient(90deg, transparent, #e8a53720)" }} />
+            <div style={{ fontSize: 10, color: "#6a5a40", letterSpacing: 3, fontFamily: "var(--fd)", textTransform: "uppercase" }}>Classes</div>
+            <div style={{ flex: 1, maxWidth: 100, height: 1, background: "linear-gradient(90deg, #e8a53720, transparent)" }} />
+          </div>
+          <h2 style={{ fontSize: 34, fontWeight: 900, color: "#f0e6d2", fontFamily: "var(--fd)", margin: "8px 0 8px", letterSpacing: 0.5 }}>
             14 Classes × 5 Tiers
           </h2>
           <p style={{ fontSize: 14, color: G.muted, margin: 0, fontFamily: "var(--fb)" }}>
@@ -383,14 +499,14 @@ function HomePage({ setPage }) {
       <section style={{ padding: "60px 24px 100px", textAlign: "center" }}>
         <div style={{
           maxWidth: 720, margin: "0 auto", padding: "52px 44px", borderRadius: "var(--radius-md)",
-          background: `linear-gradient(165deg, ${G.card}, ${G.gold || G.accent2}06)`,
-          border: `1px solid ${G.gold || G.accent2}18`, position: "relative", overflow: "hidden",
-          borderTop: `2px solid ${G.gold || G.accent2}40`,
+          background: `linear-gradient(165deg, ${G.card}, ${G.gold}06)`,
+          border: `1px solid ${G.gold}18`, position: "relative", overflow: "hidden",
+          borderTop: `2px solid ${G.gold}40`,
         }}>
           {/* Grid overlay */}
-          <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${G.gold || G.accent2}03 1px, transparent 1px), linear-gradient(90deg, ${G.gold || G.accent2}03 1px, transparent 1px)`, backgroundSize: "24px 24px", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, background: `radial-gradient(circle, ${G.gold || G.accent2}0a, transparent)`, borderRadius: "50%" }} />
-          <h2 style={{ fontSize: 34, fontWeight: 900, color: "#fff", margin: "0 0 14px", fontFamily: "var(--fd)", position: "relative", letterSpacing: 1 }}>
+          <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${G.gold}03 1px, transparent 1px), linear-gradient(90deg, ${G.gold}03 1px, transparent 1px)`, backgroundSize: "24px 24px", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, background: `radial-gradient(circle, ${G.gold}0a, transparent)`, borderRadius: "50%" }} />
+          <h2 style={{ fontSize: 34, fontWeight: 900, color: "#f0e6d2", margin: "0 0 14px", fontFamily: "var(--fd)", position: "relative", letterSpacing: 1 }}>
             Prêt à créer ton build ?
           </h2>
           <p style={{ fontSize: 16, color: G.muted, margin: "0 0 32px", fontFamily: "var(--fb)", position: "relative" }}>
@@ -403,16 +519,16 @@ function HomePage({ setPage }) {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ borderTop: `1px solid ${G.gold || G.accent2}12`, background: `${G.card}90`, marginTop: 20, position: "relative", overflow: "hidden" }}>
+      <footer style={{ borderTop: `1px solid ${G.gold}12`, background: `${G.card}90`, marginTop: 20, position: "relative", overflow: "hidden" }}>
         {/* Grid overlay */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${G.gold || G.accent2}02 1px, transparent 1px), linear-gradient(90deg, ${G.gold || G.accent2}02 1px, transparent 1px)`, backgroundSize: "40px 40px", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${G.gold}02 1px, transparent 1px), linear-gradient(90deg, ${G.gold}02 1px, transparent 1px)`, backgroundSize: "40px 40px", pointerEvents: "none" }} />
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "48px 32px 24px", position: "relative" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 40, marginBottom: 36 }}>
             {/* Brand */}
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 6, background: `linear-gradient(135deg, ${G.gold || G.accent2}, ${G.goldD || '#c8882a'})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 900, color: G.bg, fontFamily: "var(--fd)", boxShadow: `0 0 12px ${G.gold || G.accent2}20` }}>C</div>
-                <span style={{ fontSize: 17, fontWeight: 800, fontFamily: "var(--fd)", color: "#fff", letterSpacing: 0.5 }}>CielDeVignis</span>
+                <div style={{ width: 32, height: 32, borderRadius: 6, background: `linear-gradient(135deg, ${G.gold}, ${G.goldD})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 900, color: G.bg, fontFamily: "var(--fd)", boxShadow: `0 0 12px ${G.gold}20` }}>C</div>
+                <span style={{ fontSize: 17, fontWeight: 800, fontFamily: "var(--fd)", color: "#f0e6d2", letterSpacing: 0.5 }}>CielDeVignis</span>
               </div>
               <p style={{ fontSize: 13, color: G.muted, lineHeight: 1.6, margin: 0 }}>
                 Serveur communautaire Hytale PvE.
@@ -421,7 +537,7 @@ function HomePage({ setPage }) {
             </div>
             {/* Outils */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Outils</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Outils</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {[{label:"Build Creator",icon:"⚔️",id:"builds"},{label:"Communauté",icon:"🌍",id:"community"},{label:"Donjons",icon:"🏰",id:"dungeons"},{label:"Wiki",icon:"📖",id:"wiki"},{label:"Mods",icon:"🧩",id:"mods"}].map(l=>(
                   <span key={l.id} onClick={()=>setPage(l.id)} className="footer-link" style={{ fontSize: "var(--text-sm)", color: G.muted, display: "flex", alignItems: "center", gap: 6 }}
@@ -431,7 +547,7 @@ function HomePage({ setPage }) {
             </div>
             {/* Stats */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Contenu</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Contenu</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {[{v:"12",l:"Races",c:G.accent2},{v:"14",l:"Classes",c:G.teal},{v:"59",l:"Augments",c:G.purple},{v:"72",l:"Évolutions",c:G.blue},{v:"11",l:"Donjons",c:G.orange}].map(s=>(
                   <div key={s.l} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: G.muted }}>
@@ -442,7 +558,7 @@ function HomePage({ setPage }) {
             </div>
             {/* Communauté */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold || G.accent2, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Communauté</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: G.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, fontFamily: "var(--fd)" }}>Communauté</div>
               <a href="https://discord.gg/7YmTATJcf" target="_blank" rel="noopener" className="discord-link" style={{
                 display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 20px",
                 borderRadius: "var(--radius-sm)", background: "#5865F210", border: "1px solid #5865F225",
@@ -454,9 +570,9 @@ function HomePage({ setPage }) {
             </div>
           </div>
           {/* Bottom bar */}
-          <div style={{ borderTop: `1px solid ${G.gold || G.accent2}0c`, paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-            <div style={{ fontSize: 12, color: "#3a5068" }}>© 2025 CielDeVignis — EndlessLeveling v7.0.6</div>
-            <div style={{ fontSize: 11, color: "#3a5068" }}>Fait avec passion pour la communauté Hytale</div>
+          <div style={{ borderTop: `1px solid ${G.gold}0c`, paddingTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+            <div style={{ fontSize: 12, color: "#4a4030" }}>© 2025 CielDeVignis — EndlessLeveling v7.0.6</div>
+            <div style={{ fontSize: 11, color: "#4a4030" }}>Fait avec passion pour la communauté Hytale</div>
           </div>
         </div>
       </footer>
@@ -741,7 +857,7 @@ function WikiPage() {
   return (
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
       <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.teal+"10",border:"1px solid "+G.teal+"20",fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Base de données</div>
-      <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Wiki CielDeVignis</h1>
+      <h1 style={{ fontSize:38,fontWeight:900,color:"#f0e6d2",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Wiki CielDeVignis</h1>
       <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{wikiItems.length} objets · {wikiMobs.length} créatures · {wikiRecipes.length} recettes salvage · {craftableItems.length} recettes craft</p>
       {/* Tabs */}
       <div style={{ display:"flex",gap:4,marginBottom:24,borderBottom:"2px solid "+G.border }}>
@@ -764,7 +880,7 @@ function WikiPage() {
         </div>
       }
       <div style={{ display:"flex",gap:10,marginBottom:18,flexWrap:"wrap",alignItems:"center" }}>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..." style={{ flex:1,minWidth:200,maxWidth:500,padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:"#fff",fontSize:14,fontFamily:"var(--fb)",outline:"none" }}/>
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..." style={{ flex:1,minWidth:200,maxWidth:500,padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:"#f0e6d2",fontSize:14,fontFamily:"var(--fb)",outline:"none" }}/>
         <select value={sort} onChange={e=>setSort(e.target.value)} style={{ padding:"10px 14px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:sort!=="name"?G.teal:G.muted,fontSize:12,fontWeight:700,fontFamily:"var(--fb)",cursor:"pointer",outline:"none",appearance:"auto" }}>
           {(SORT_OPTIONS[wikiTab]||[]).map(o=><option key={o.id} value={o.id}>{o.label}</option>)}
         </select>
@@ -786,9 +902,9 @@ function WikiPage() {
           <div>
             <div style={{ fontSize:11,fontWeight:800,color:G.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:8 }}>Niveau</div>
             <div style={{ display:"flex",gap:8,alignItems:"center" }}>
-              <input type="number" value={lvlMin} onChange={e=>setLvlMin(e.target.value)} placeholder="Min" min={1} max={75} style={{ width:80,padding:"8px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#fff",fontSize:13,fontFamily:"var(--fb)",outline:"none",textAlign:"center" }}/>
+              <input type="number" value={lvlMin} onChange={e=>setLvlMin(e.target.value)} placeholder="Min" min={1} max={75} style={{ width:80,padding:"8px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#f0e6d2",fontSize:13,fontFamily:"var(--fb)",outline:"none",textAlign:"center" }}/>
               <span style={{ color:G.muted,fontSize:13 }}>—</span>
-              <input type="number" value={lvlMax} onChange={e=>setLvlMax(e.target.value)} placeholder="Max" min={1} max={75} style={{ width:80,padding:"8px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#fff",fontSize:13,fontFamily:"var(--fb)",outline:"none",textAlign:"center" }}/>
+              <input type="number" value={lvlMax} onChange={e=>setLvlMax(e.target.value)} placeholder="Max" min={1} max={75} style={{ width:80,padding:"8px 12px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#f0e6d2",fontSize:13,fontFamily:"var(--fb)",outline:"none",textAlign:"center" }}/>
               <span style={{ fontSize:11,color:G.muted }}>(1 – 75)</span>
             </div>
           </div>
@@ -947,7 +1063,7 @@ function WikiPage() {
           </div>
           {/* Search to add items */}
           <div style={{position:"relative",marginBottom:12}}>
-            <input value={calcSearch} onChange={e=>setCalcSearch(e.target.value)} placeholder="Ajouter un item à crafter..." style={{width:"100%",padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#fff",fontSize:13,fontFamily:"var(--fb)",outline:"none",boxSizing:"border-box"}}/>
+            <input value={calcSearch} onChange={e=>setCalcSearch(e.target.value)} placeholder="Ajouter un item à crafter..." style={{width:"100%",padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.bg,color:"#f0e6d2",fontSize:13,fontFamily:"var(--fb)",outline:"none",boxSizing:"border-box"}}/>
             {calcSearchResults.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:G.card,border:"1px solid "+G.border,borderRadius:"0 0 8px 8px",maxHeight:240,overflowY:"auto",boxShadow:"0 8px 24px rgba(0,0,0,0.4)"}}>
               {calcSearchResults.map(r=>{const qc=QUALITY_COLORS[r.q]||G.muted;return(
                 <div key={r.id} onClick={()=>{addToCalc(r.id);setCalcSearch("");}} style={{padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,borderBottom:"1px solid "+G.border+"40",transition:"background 0.1s"}} onMouseEnter={e=>e.currentTarget.style.background=G.bg} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
@@ -1110,7 +1226,7 @@ function WikiPage() {
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
             <div>
               <div style={{fontSize:11,fontWeight:800,color:G.gold,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Comparateur</div>
-              <h2 style={{fontSize:28,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:0}}>{compareItems2[0].c==="Weapon"?"Armes":"Armures"}</h2>
+              <h2 style={{fontSize:28,fontWeight:900,color:"#f0e6d2",fontFamily:"var(--fd)",margin:0}}>{compareItems2[0].c==="Weapon"?"Armes":"Armures"}</h2>
             </div>
             <button onClick={()=>setCompareOpen(false)} style={{width:40,height:40,borderRadius:10,border:"1px solid "+G.border,background:G.card,color:G.muted,fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
           </div>
@@ -1146,7 +1262,7 @@ function WikiPage() {
                 {items.map(r=>{const qc=QUALITY_COLORS[r.q]||G.muted;return(
                   <div key={r.id} style={{background:G.bg,padding:"14px",textAlign:"center"}}>
                     <div style={{display:"flex",justifyContent:"center",marginBottom:8}}><ItemImg id={r.id} size={32} fallback={isWeapon?"🗡️":"🛡️"} /></div>
-                    <div style={{fontSize:13,fontWeight:800,color:"#fff",fontFamily:"var(--fd)",marginBottom:4}}>{fmtItem(r.id)}</div>
+                    <div style={{fontSize:13,fontWeight:800,color:"#f0e6d2",fontFamily:"var(--fd)",marginBottom:4}}>{fmtItem(r.id)}</div>
                     <div style={{display:"flex",gap:4,justifyContent:"center",flexWrap:"wrap"}}>
                       {r.q&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:qc+"15",color:qc,fontWeight:700}}>{r.q}</span>}
                       {r.sc&&<span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:G.border,color:G.muted,fontWeight:600}}>{r.sc}</span>}
@@ -1225,7 +1341,7 @@ function MapPage() {
         Exploration
       </div>
       <h1 style={{
-        fontSize: 38, fontWeight: "var(--fw-black)", color: "#fff",
+        fontSize: 38, fontWeight: "var(--fw-black)", color: "#f0e6d2",
         fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1,
       }}>
         🗺️ Carte du monde
@@ -1289,7 +1405,7 @@ function DungeonsPage() {
       <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: G.orange + "10", border: "1px solid " + G.orange + "20", fontSize: 11, fontWeight: 800, color: G.orange, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>
         Instances PvE
       </div>
-      <h1 style={{ fontSize: 38, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1 }}>
+      <h1 style={{ fontSize: 38, fontWeight: 900, color: "#f0e6d2", fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1 }}>
         Donjons
       </h1>
       <p style={{ fontSize: 16, color: G.muted, margin: "0 0 24px" }}>
@@ -1455,7 +1571,7 @@ function DungeonsPage() {
                                 <div key={bi} style={{
                                   background: "#e0525208", border: "1px solid #e0525220", borderRadius: 8, padding: 12,
                                 }}>
-                                  <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", fontFamily: "var(--fd)", marginBottom: 6 }}>
+                                  <div style={{ fontSize: 16, fontWeight: 800, color: "#f0e6d2", fontFamily: "var(--fd)", marginBottom: 6 }}>
                                     {b.name}
                                   </div>
                                   <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -1617,13 +1733,13 @@ function CommunityPage({ setPage, initialCode, onClearInitialCode, onEditInBuild
   });
 
   const allRoles = [...new Set(CLASSES.flatMap(c => c.roles))].sort();
-  const inp = { width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid " + G.border, background: G.bg, color: "#fff", fontSize: 14, fontFamily: "var(--fb)", outline: "none" };
+  const inp = { width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid " + G.border, background: G.bg, color: "#f0e6d2", fontSize: 14, fontFamily: "var(--fb)", outline: "none" };
   const sel = { ...inp, cursor: "pointer", appearance: "auto" };
 
   return (
     <div style={{ position: "relative", zIndex: 1, padding: "100px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
       <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: G.teal + "10", border: "1px solid " + G.teal + "20", fontSize: 11, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Partage de builds</div>
-      <h1 style={{ fontSize: 38, fontWeight: 900, color: "#fff", fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1 }}>Communauté</h1>
+      <h1 style={{ fontSize: 38, fontWeight: 900, color: "#f0e6d2", fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1 }}>Communauté</h1>
       <p style={{ fontSize: 16, color: G.muted, margin: "0 0 24px" }}>Parcours les builds de la communauté ou partage les tiens.</p>
 
       <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
@@ -1633,7 +1749,7 @@ function CommunityPage({ setPage, initialCode, onClearInitialCode, onEditInBuild
 
       {showPublish && (
         <div style={{ background: G.card, border: "1px solid " + G.teal + "30", borderRadius: "var(--radius-lg)", padding: 24, marginBottom: 24 }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", fontFamily: "var(--fd)", marginBottom: 16 }}>📤 Publier un build</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#f0e6d2", fontFamily: "var(--fd)", marginBottom: 16 }}>📤 Publier un build</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
             <div>
               <label style={{ fontSize: 12, color: G.muted, fontWeight: 700, display: "block", marginBottom: 4 }}>Code du build *</label>
@@ -1707,7 +1823,7 @@ function CommunityPage({ setPage, initialCode, onClearInitialCode, onEditInBuild
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap", marginBottom: 8 }}>
                   <div style={{ flex: 1, minWidth: 200 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: "#fff", fontFamily: "var(--fd)" }}>{b.name}</span>
+                      <span style={{ fontSize: 16, fontWeight: 800, color: "#f0e6d2", fontFamily: "var(--fd)" }}>{b.name}</span>
                       <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: G.border, color: G.muted }}>par {b.author}</span>
                       <span style={{ fontSize: 10, color: G.muted + "80" }}>{fmtDate(b.createdAt)}</span>
                     </div>
@@ -2009,7 +2125,7 @@ function ModsPage() {
   return (
     <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
       <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.gold+"10",border:"1px solid "+G.gold+"20",fontSize:11,fontWeight:800,color:G.gold,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Serveur</div>
-      <h1 style={{ fontSize:38,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Mods installés</h1>
+      <h1 style={{ fontSize:38,fontWeight:900,color:"#f0e6d2",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Mods installés</h1>
       <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{MODS_DATA.length} mod{MODS_DATA.length>1?"s":""} documenté{MODS_DATA.length>1?"s":""}</p>
 
       <div style={{ display:"flex",gap:6,marginBottom:28,flexWrap:"wrap" }}>
@@ -2044,7 +2160,7 @@ function ModsPage() {
                 }}>{catInfo.icon}</div>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4,flexWrap:"wrap"}}>
-                    <span style={{fontSize:20,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{mod.name}</span>
+                    <span style={{fontSize:20,fontWeight:800,color:"#f0e6d2",fontFamily:"var(--fd)"}}>{mod.name}</span>
                     <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:mod.color+"15",color:mod.color,fontWeight:700}}>v{mod.version}</span>
                     <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:catInfo.color+"15",color:catInfo.color,fontWeight:700}}>{catInfo.icon} {catInfo.label}</span>
                   </div>
@@ -2090,7 +2206,7 @@ function ModsPage() {
                 {/* Intro / Aperçu section */}
                 {curSection==="__intro"&&mod.intro&&<div style={{padding:"28px 24px"}}>
                   {/* Intro text */}
-                  <h3 style={{fontSize:22,fontWeight:900,color:"#fff",fontFamily:"var(--fd)",marginBottom:16}}>{mod.intro.title}</h3>
+                  <h3 style={{fontSize:22,fontWeight:900,color:"#f0e6d2",fontFamily:"var(--fd)",marginBottom:16}}>{mod.intro.title}</h3>
                   {mod.intro.paragraphs.map((p,i)=>(
                     <p key={i} style={{fontSize:13,color:G.muted,lineHeight:1.8,marginBottom:i<mod.intro.paragraphs.length-1?14:0}}>{p}</p>
                   ))}
@@ -2130,7 +2246,7 @@ function ModsPage() {
                               borderRadius:12,padding:"16px 20px",marginLeft:12,
                             }}>
                               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8,flexWrap:"wrap"}}>
-                                <span style={{fontSize:17,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{step.label}</span>
+                                <span style={{fontSize:17,fontWeight:800,color:"#f0e6d2",fontFamily:"var(--fd)"}}>{step.label}</span>
                                 <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:step.color+"18",color:step.color,fontWeight:700,border:`1px solid ${step.color}25`}}>{step.sublabel}</span>
                               </div>
                               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
@@ -2169,7 +2285,7 @@ function ModsPage() {
                           borderLeft:"3px solid "+sectionData.color+"60",borderRadius:10,padding:"16px 20px",
                         }}>
                           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6,flexWrap:"wrap"}}>
-                            <span style={{fontSize:16,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{item.name}</span>
+                            <span style={{fontSize:16,fontWeight:800,color:"#f0e6d2",fontFamily:"var(--fd)"}}>{item.name}</span>
                             {item.quality&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:qc+"15",color:qc,fontWeight:700}}>{item.quality}</span>}
                             {item.level&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.muted,fontWeight:600}}>{item.level}</span>}
                             {item.slots&&<span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.blue+"15",color:G.blue,fontWeight:600}}>{item.slots}</span>}
@@ -2185,7 +2301,7 @@ function ModsPage() {
                           }}>
                             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
                               <span style={{fontSize:14}}>💀</span>
-                              <span style={{fontSize:14,fontWeight:800,color:"#fff",fontFamily:"var(--fd)"}}>{item.boss.name}</span>
+                              <span style={{fontSize:14,fontWeight:800,color:"#f0e6d2",fontFamily:"var(--fd)"}}>{item.boss.name}</span>
                               <span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:"#ff6b6b15",color:"#ff6b6b",fontWeight:700}}>{item.boss.type}</span>
                             </div>
                             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
