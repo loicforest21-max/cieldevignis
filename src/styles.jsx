@@ -392,6 +392,73 @@ function GlobalStyles() {
         100% { opacity: 1; transform: translateY(0); }
       }
 
+      /* ═══ MAGIC HERO — Direction C "Magie Vivante" ═══ */
+      .cdv-star {
+        animation: cdvStarTwinkle 3s ease-in-out infinite;
+        transform-origin: center;
+      }
+      @keyframes cdvStarTwinkle {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+      }
+      @keyframes cdvAurora {
+        0%, 100% { transform: translateX(0); opacity: 0.3; }
+        50% { transform: translateX(80px); opacity: 0.6; }
+      }
+      .cdv-portal-outer {
+        animation: cdvPortalSpin 30s linear infinite;
+        transform-origin: 130px 100px;
+      }
+      .cdv-portal-inner {
+        animation: cdvPortalSpinReverse 20s linear infinite;
+        transform-origin: 130px 100px;
+      }
+      .cdv-portal-core {
+        animation: cdvPortalCorePulse 4s ease-in-out infinite;
+        transform-origin: 130px 100px;
+      }
+      @keyframes cdvPortalSpin {
+        to { transform: rotate(360deg); }
+      }
+      @keyframes cdvPortalSpinReverse {
+        to { transform: rotate(-360deg); }
+      }
+      @keyframes cdvPortalCorePulse {
+        0%, 100% { opacity: 0.55; transform: scale(1); }
+        50% { opacity: 0.85; transform: scale(1.1); }
+      }
+      @keyframes cdvPhoenixFly {
+        0% { left: -8%; top: 18%; opacity: 0; }
+        6% { opacity: 0.85; }
+        50% { top: 12%; }
+        94% { opacity: 0.85; }
+        100% { left: 115%; top: 20%; opacity: 0; }
+      }
+      @keyframes cdvPhoenixFlap {
+        0%, 100% { transform: scaleY(1); }
+        40% { transform: scaleY(0.45); }
+        70% { transform: scaleY(1.15); }
+      }
+      .cdv-phoenix-trail {
+        animation: cdvPhoenixTrail 1s ease-in-out infinite;
+      }
+      @keyframes cdvPhoenixTrail {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+      }
+      @keyframes cdvOrbFloat {
+        0%, 100% { transform: translate(0, 0); }
+        33% { transform: translate(12px, -16px); }
+        66% { transform: translate(-10px, -8px); }
+      }
+      .cdv-dragon-eye {
+        animation: cdvDragonEyeGlow 2.5s ease-in-out infinite;
+      }
+      @keyframes cdvDragonEyeGlow {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+      }
+
       /* ═══ SECTION DIVIDER ═══ */
       .section-divider {
         display: flex;
@@ -491,6 +558,53 @@ function GlobalStyles() {
         .build-tabs-desktop { display: flex !important; }
         .more-menu-overlay { display: none !important; }
       }
+
+      
+      /* ═══ DUNGEONS MAP ═══ */
+      .cdv-map-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .cdv-map-frame {
+        background: #1c170f;
+        border: 1px solid #3a2e1d;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: inset 0 1px 0 rgba(232,165,55,0.04);
+      }
+      .cdv-map-svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .cdv-map-svg g[onclick], .cdv-map-svg g[role="button"] { cursor: pointer; }
+      .cdv-map-panel {
+        background: #1a1610;
+        border: 1px solid rgba(232,165,55,0.22);
+        border-radius: var(--radius-md);
+        min-height: 480px;
+        max-height: 720px;
+        overflow-y: auto;
+      }
+      .cdv-map-panel::-webkit-scrollbar { width: 5px; }
+      .cdv-map-panel::-webkit-scrollbar-thumb { background: #e8a53730; border-radius: 3px; }
+      .cdv-map-hint {
+        display: none;
+        text-align: center;
+        font-size: 11px;
+        color: #6b5d44;
+        font-style: italic;
+        letter-spacing: 0.05em;
+        margin-top: 6px;
+      }
+      @media (max-width: 900px) {
+        .cdv-map-grid { grid-template-columns: 1fr; }
+        .cdv-map-panel { min-height: auto; max-height: none; }
+        .cdv-map-hint { display: block; }
+      }
+
 
       div::-webkit-scrollbar { height: 0; }
     `}</style>

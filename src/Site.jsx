@@ -249,8 +249,147 @@ function HomePage({ setPage }) {
         <div style={{ position: "absolute", top: "6%", left: "5%", width: 300, height: 50, background: "radial-gradient(ellipse, #1a151020, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: "3%", right: "10%", width: 250, height: 45, background: "radial-gradient(ellipse, #2a201518, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
 
-        {/* ═══ MAIN DRAGON — animated wings ═══ */}
-        <div style={{ position: "absolute", top: "8%", left: "50%", width: 220, height: 120, pointerEvents: "none", opacity: 0.85, animation: "dragonFly 8s ease-in-out infinite", transform: px(-0.25) }}>
+        {/* ═══ MAGIC — AURORA LAYERS ═══ */}
+        <div style={{ position: "absolute", top: "5%", left: "-10%", right: "-10%", height: 200, pointerEvents: "none",
+          opacity: 0.4, filter: "blur(20px)",
+          background: "linear-gradient(90deg, transparent, #e8a53766, transparent)",
+          animation: "cdvAurora 12s ease-in-out infinite", transform: px(-0.06) }} />
+        <div style={{ position: "absolute", top: "12%", left: "-10%", right: "-10%", height: 200, pointerEvents: "none",
+          opacity: 0.4, filter: "blur(20px)",
+          background: "linear-gradient(90deg, transparent, #3dd8c54d, transparent)",
+          animation: "cdvAurora 16s ease-in-out infinite 2s", transform: px(-0.05) }} />
+        <div style={{ position: "absolute", top: "8%", left: "-10%", right: "-10%", height: 200, pointerEvents: "none",
+          opacity: 0.4, filter: "blur(20px)",
+          background: "linear-gradient(90deg, transparent, #a878ff4d, transparent)",
+          animation: "cdvAurora 14s ease-in-out infinite 4s", transform: px(-0.06) }} />
+
+        {/* ═══ MAGIC — TWINKLING STARS (mystic color mix) ═══ */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "40%", pointerEvents: "none", transform: px(-0.03) }}>
+          <svg viewBox="0 0 1000 200" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}>
+            <g fill="#f0c06a">
+              <circle cx="85" cy="22" r="0.9" className="cdv-star" style={{ animationDelay: "0s" }}/>
+              <circle cx="178" cy="52" r="0.8" className="cdv-star" style={{ animationDelay: "1s" }}/>
+              <circle cx="278" cy="16" r="1" className="cdv-star" style={{ animationDelay: "2s" }}/>
+              <circle cx="378" cy="72" r="0.8" className="cdv-star" style={{ animationDelay: "0.6s" }}/>
+              <circle cx="720" cy="38" r="0.9" className="cdv-star" style={{ animationDelay: "1.5s" }}/>
+              <circle cx="818" cy="62" r="0.7" className="cdv-star" style={{ animationDelay: "2.2s" }}/>
+              <circle cx="918" cy="26" r="1" className="cdv-star" style={{ animationDelay: "0.8s" }}/>
+              <circle cx="128" cy="96" r="0.7" className="cdv-star" style={{ animationDelay: "2.8s" }}/>
+              <circle cx="868" cy="112" r="0.8" className="cdv-star" style={{ animationDelay: "1.9s" }}/>
+              <circle cx="475" cy="144" r="0.7" className="cdv-star" style={{ animationDelay: "3.1s" }}/>
+            </g>
+            <g fill="#c9a5ff">
+              <circle cx="220" cy="88" r="0.9" className="cdv-star" style={{ animationDelay: "0.4s" }}/>
+              <circle cx="600" cy="22" r="1" className="cdv-star" style={{ animationDelay: "1.7s" }}/>
+              <circle cx="760" cy="96" r="0.8" className="cdv-star" style={{ animationDelay: "2.5s" }}/>
+              <circle cx="480" cy="56" r="0.9" className="cdv-star" style={{ animationDelay: "0.2s" }}/>
+              <circle cx="340" cy="120" r="0.7" className="cdv-star" style={{ animationDelay: "2.9s" }}/>
+            </g>
+            <g fill="#a5eedd">
+              <circle cx="320" cy="140" r="0.8" className="cdv-star" style={{ animationDelay: "1.3s" }}/>
+              <circle cx="680" cy="142" r="0.9" className="cdv-star" style={{ animationDelay: "0.7s" }}/>
+              <circle cx="560" cy="168" r="0.7" className="cdv-star" style={{ animationDelay: "2.4s" }}/>
+            </g>
+          </svg>
+        </div>
+
+        {/* ═══ MAGIC — ARCANE PORTAL (background) ═══ */}
+        <div style={{ position: "absolute", top: "28%", left: "50%", transform: `translateX(-50%) ${px(-0.08)}`, width: 260, height: 200, pointerEvents: "none", opacity: 0.6 }}>
+          <svg viewBox="0 0 260 200" style={{ width: "100%", height: "100%" }}>
+            <defs>
+              <radialGradient id="cdvPortalGrad">
+                <stop offset="0%" stopColor="#f0c06a" stopOpacity="0.65"/>
+                <stop offset="40%" stopColor="#c9a5ff" stopOpacity="0.35"/>
+                <stop offset="100%" stopColor="#3dd8c5" stopOpacity="0"/>
+              </radialGradient>
+            </defs>
+            <g className="cdv-portal-outer">
+              <circle cx="130" cy="100" r="90" fill="none" stroke="#e8a537" strokeWidth="0.6" strokeDasharray="4 5" opacity="0.6"/>
+              <circle cx="130" cy="100" r="82" fill="none" stroke="#c9a5ff" strokeWidth="0.4" strokeDasharray="2 6" opacity="0.5"/>
+              <circle cx="130" cy="10" r="2" fill="#f0c06a" opacity="0.7"/>
+              <circle cx="220" cy="100" r="2" fill="#f0c06a" opacity="0.7"/>
+              <circle cx="130" cy="190" r="2" fill="#f0c06a" opacity="0.7"/>
+              <circle cx="40" cy="100" r="2" fill="#f0c06a" opacity="0.7"/>
+            </g>
+            <g className="cdv-portal-inner">
+              <circle cx="130" cy="100" r="62" fill="none" stroke="#3dd8c5" strokeWidth="0.5" strokeDasharray="3 4" opacity="0.4"/>
+              <text x="130" y="42" textAnchor="middle" fontFamily="var(--fd), serif" fontSize="11" fill="#c9a5ff" opacity="0.6">ᛟ</text>
+              <text x="188" y="104" textAnchor="middle" fontFamily="var(--fd), serif" fontSize="11" fill="#c9a5ff" opacity="0.6">ᛉ</text>
+              <text x="130" y="166" textAnchor="middle" fontFamily="var(--fd), serif" fontSize="11" fill="#c9a5ff" opacity="0.6">ᛇ</text>
+              <text x="72" y="104" textAnchor="middle" fontFamily="var(--fd), serif" fontSize="11" fill="#c9a5ff" opacity="0.6">ᛚ</text>
+            </g>
+            <g className="cdv-portal-core">
+              <ellipse cx="130" cy="100" rx="48" ry="42" fill="url(#cdvPortalGrad)" opacity="0.55"/>
+            </g>
+          </svg>
+        </div>
+
+        {/* ═══ MAGIC — PHOENIX (distant, crossing) ═══ */}
+        <div style={{ position: "absolute", top: "14%", left: "-8%", width: 140, height: 70, opacity: 0.85, pointerEvents: "none",
+          animation: "cdvPhoenixFly 28s linear infinite", filter: "drop-shadow(0 0 18px #e8a53780)", transform: px(-0.18) }}>
+          <svg viewBox="0 0 140 70" style={{ width: "100%", height: "100%" }}>
+            <defs>
+              <linearGradient id="cdvPBody" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ffecb4"/>
+                <stop offset="50%" stopColor="#e8a537"/>
+                <stop offset="100%" stopColor="#c45a2d"/>
+              </linearGradient>
+              <linearGradient id="cdvPWing" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#ffecb4"/>
+                <stop offset="40%" stopColor="#f0c06a"/>
+                <stop offset="100%" stopColor="#c45a2d"/>
+              </linearGradient>
+              <linearGradient id="cdvPTrail" x1="1" y1="0" x2="0" y2="0">
+                <stop offset="0%" stopColor="#ffecb4" stopOpacity="0.8"/>
+                <stop offset="100%" stopColor="#e8a537" stopOpacity="0"/>
+              </linearGradient>
+            </defs>
+            <g className="cdv-phoenix-trail">
+              <ellipse cx="25" cy="35" rx="15" ry="3" fill="url(#cdvPTrail)" opacity="0.6"/>
+              <ellipse cx="10" cy="35" rx="10" ry="2" fill="#f0c06a" opacity="0.4"/>
+            </g>
+            <ellipse cx="70" cy="38" rx="15" ry="4.5" fill="url(#cdvPBody)"/>
+            <ellipse cx="56" cy="33" rx="5" ry="3.2" fill="#ffecb4"/>
+            <path d="M51 33 L45 35 L51 36" fill="#e8a537"/>
+            <circle cx="54" cy="32.5" r="0.8" fill="#2a1810"/>
+            <g style={{ transformOrigin: "60px 35px", animation: "cdvPhoenixFlap 1.4s ease-in-out infinite" }}>
+              <path d="M60 35 L32 14 L42 26 L22 6 L48 24 L14 0 L52 22" fill="url(#cdvPWing)" opacity="0.95"/>
+            </g>
+            <g style={{ transformOrigin: "80px 35px", animation: "cdvPhoenixFlap 1.4s ease-in-out infinite 0.1s" }}>
+              <path d="M80 35 L108 12 L100 24 L118 4 L104 22 L126 0 L114 20" fill="url(#cdvPWing)" opacity="0.95"/>
+            </g>
+            <path d="M85 40 Q95 48 105 42 L110 48 L100 44 L115 52 L103 46" fill="#e8a537"/>
+          </svg>
+        </div>
+
+        {/* ═══ MAGIC — FLOATING ORBS ═══ */}
+        <div style={{ position: "absolute", top: "42%", left: "12%", width: 14, height: 14, borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(circle, #ffecb4f0 0%, #e8a53780 40%, transparent 70%)",
+          boxShadow: "0 0 25px #e8a537b0, 0 0 45px #f0c06a66",
+          animation: "cdvOrbFloat 8s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", top: "58%", left: "20%", width: 11, height: 11, borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(circle, #a5fff0e6 0%, #3dd8c573 40%, transparent 70%)",
+          boxShadow: "0 0 25px #3dd8c5a6, 0 0 45px #64f0dc59",
+          animation: "cdvOrbFloat 8s ease-in-out infinite 2s" }} />
+        <div style={{ position: "absolute", top: "48%", right: "15%", width: 13, height: 13, borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(circle, #dcb4ffe6 0%, #a878ff73 40%, transparent 70%)",
+          boxShadow: "0 0 25px #a878ff99, 0 0 45px #c896ff59",
+          animation: "cdvOrbFloat 8s ease-in-out infinite 1s" }} />
+        <div style={{ position: "absolute", top: "60%", right: "22%", width: 10, height: 10, borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(circle, #ffecb4f0 0%, #e8a53780 40%, transparent 70%)",
+          boxShadow: "0 0 25px #e8a537b0, 0 0 45px #f0c06a66",
+          animation: "cdvOrbFloat 8s ease-in-out infinite 3s" }} />
+        <div style={{ position: "absolute", top: "32%", left: "32%", width: 8, height: 8, borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(circle, #a5fff0e6 0%, #3dd8c573 40%, transparent 70%)",
+          boxShadow: "0 0 20px #3dd8c5a6",
+          animation: "cdvOrbFloat 8s ease-in-out infinite 4s" }} />
+        <div style={{ position: "absolute", top: "38%", right: "32%", width: 9, height: 9, borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(circle, #dcb4ffe6 0%, #a878ff73 40%, transparent 70%)",
+          boxShadow: "0 0 22px #a878ff99",
+          animation: "cdvOrbFloat 8s ease-in-out infinite 5s" }} />
+
+        {/* ═══ MAIN DRAGON — animated wings (with arcane aura) ═══ */}
+        <div style={{ position: "absolute", top: "8%", left: "50%", width: 220, height: 120, pointerEvents: "none", opacity: 0.85, animation: "dragonFly 8s ease-in-out infinite", transform: px(-0.25), filter: "drop-shadow(0 0 16px #a878ff40)" }}>
           <svg viewBox="0 0 220 120" style={{ width: "100%", height: "100%" }}>
             <g style={{ transformOrigin: "90px 58px", animation: "wingFlap 1.8s ease-in-out infinite" }}>
               <path d="M90 58 L22 18 L42 40 L8 6 L46 34 L0 0 L52 32" fill="#0e0c08" opacity="0.95"/>
@@ -268,7 +407,8 @@ function HomePage({ setPage }) {
             <path d="M30 28 L22 32 L30 33" fill="#0e0c08"/>
             <path d="M33 23 L30 16" stroke="#0e0c08" strokeWidth="2.2" strokeLinecap="round"/>
             <path d="M39 24 L38 18" stroke="#0e0c08" strokeWidth="1.6" strokeLinecap="round"/>
-            <circle cx="33" cy="27" r="1.8" fill="#e8a53770"/>
+            <circle cx="33" cy="27" r="1.8" fill="#c9a5ff" className="cdv-dragon-eye"/>
+            <circle cx="33" cy="27" r="0.7" fill="#fff3d4"/>
             <path d="M134 65 Q156 70 174 60 Q184 54 192 58" fill="none" stroke="#0e0c08" strokeWidth="5.5" strokeLinecap="round"/>
             <path d="M192 58 L200 51 L196 63 L192 58Z" fill="#0e0c08"/>
             <path d="M95 74 L91 84 L97 82" fill="none" stroke="#0e0c08" strokeWidth="2.5" strokeLinecap="round"/>
@@ -357,21 +497,21 @@ function HomePage({ setPage }) {
         {/* Horizon glow band */}
         <div style={{ position: "absolute", top: "48%", left: 0, right: 0, height: 35, background: "linear-gradient(180deg, transparent, #c45a2d0a, #e8a53708, #c45a2d06, transparent)", pointerEvents: "none" }} />
 
-        {/* ═══ CSS EMBERS ═══ */}
+        {/* ═══ MAGIC MOTES — multi-color arcane particles ═══ */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
           {[
             { x: "15%", dur: 4, drift: "drift1", dDur: 4, c: "#e8a537", s: 5, d: 0 },
-            { x: "30%", dur: 5, drift: "drift2", dDur: 5, c: "#f0c06a", s: 4, d: 0.3 },
-            { x: "45%", dur: 3.5, drift: "drift3", dDur: 3.5, c: "#c45a2d", s: 6, d: 0.8 },
+            { x: "30%", dur: 5, drift: "drift2", dDur: 5, c: "#3dd8c5", s: 4, d: 0.3 },
+            { x: "45%", dur: 3.5, drift: "drift3", dDur: 3.5, c: "#a878ff", s: 6, d: 0.8 },
             { x: "58%", dur: 4.5, drift: "drift1", dDur: 4.5, c: "#e8a537", s: 4, d: 1.2 },
-            { x: "72%", dur: 3.8, drift: "drift2", dDur: 3.8, c: "#f0c06a", s: 5, d: 1.8 },
-            { x: "85%", dur: 5.2, drift: "drift3", dDur: 5.2, c: "#e8653a", s: 3, d: 0.5 },
-            { x: "22%", dur: 3.2, drift: "drift1", dDur: 3.2, c: "#c45a2d", s: 4, d: 2 },
-            { x: "38%", dur: 4.8, drift: "drift2", dDur: 4.8, c: "#e8a537", s: 5, d: 2.5 },
-            { x: "55%", dur: 3.6, drift: "drift3", dDur: 3.6, c: "#f0c06a", s: 3, d: 3 },
-            { x: "68%", dur: 5.5, drift: "drift1", dDur: 5.5, c: "#e8653a", s: 6, d: 0.2 },
-            { x: "80%", dur: 4.2, drift: "drift2", dDur: 4.2, c: "#e8a537", s: 4, d: 1.5 },
-            { x: "10%", dur: 6, drift: "drift3", dDur: 6, c: "#c45a2d", s: 5, d: 3.5 },
+            { x: "72%", dur: 3.8, drift: "drift2", dDur: 3.8, c: "#3dd8c5", s: 5, d: 1.8 },
+            { x: "85%", dur: 5.2, drift: "drift3", dDur: 5.2, c: "#a878ff", s: 3, d: 0.5 },
+            { x: "22%", dur: 3.2, drift: "drift1", dDur: 3.2, c: "#f0c06a", s: 4, d: 2 },
+            { x: "38%", dur: 4.8, drift: "drift2", dDur: 4.8, c: "#a5eedd", s: 5, d: 2.5 },
+            { x: "55%", dur: 3.6, drift: "drift3", dDur: 3.6, c: "#c9a5ff", s: 3, d: 3 },
+            { x: "68%", dur: 5.5, drift: "drift1", dDur: 5.5, c: "#e8a537", s: 6, d: 0.2 },
+            { x: "80%", dur: 4.2, drift: "drift2", dDur: 4.2, c: "#3dd8c5", s: 4, d: 1.5 },
+            { x: "10%", dur: 6, drift: "drift3", dDur: 6, c: "#a878ff", s: 5, d: 3.5 },
           ].map((e, i) => (
             <div key={i} style={{ position: "absolute", bottom: 50 + (i % 3) * 8, left: e.x, animation: `${e.drift} ${e.dDur}s ease-in-out infinite ${e.d}s` }}>
               <div style={{ "--ec": e.c, width: e.s, height: e.s, borderRadius: "50%", background: e.c, animation: `ember ${e.dur}s ease-out infinite ${e.d}s, pulseGlow ${0.7 + (i % 4) * 0.2}s ease-in-out infinite` }} />
@@ -1422,252 +1562,454 @@ function MapPage() {
 }
 
 // ═══════════════════════════════════════════════════
+// REMPLACEMENT DE DungeonsPage — Carte enchantée
+// ═══════════════════════════════════════════════════
+// À coller dans Site.jsx en remplacement des lignes 1425-1670
+// (l'ancienne function DungeonsPage() entière)
+//
+// Aucun changement d'import nécessaire : G, DUNGEONS, DUNGEON_TIERS
+// sont déjà importés en haut de Site.jsx.
+//
+// À la fin du fichier, l'export existant reste inchangé :
+//   export { ..., DungeonsPage, ... };
+// DungeonDetails est un sous-composant interne, pas besoin de l'exporter.
+// ═══════════════════════════════════════════════════
+
+// ─── Coordonnées des donjons sur la carte (viewBox 1000x620) ───
+// Tu pourras ajuster ces positions après premier rendu Vercel.
+const DUNGEON_COORDS = {
+  frozen_dungeon:      { x: 180, y: 120 },  // NW — montagnes gelées
+  shivas_ice_cave:     { x: 440, y: 95  },  // N — falaises glacées
+  tower_of_shiva:      { x: 760, y: 115 },  // NE — pics sacrés
+  golem_void:          { x: 880, y: 240 },  // E lointain — faille du Vide
+  overgrown_ruins:     { x: 185, y: 310 },  // O — forêt envahissante
+  major_d01:           { x: 360, y: 260 },  // Centre-O — plaines / Silvermoon
+  major_d02:           { x: 500, y: 380 },  // Centre — ruines de Katherina
+  forbidden_labyrinth: { x: 690, y: 270 },  // E — dédale oriental
+  swamp_dungeon:       { x: 720, y: 455 },  // SE — marécage
+  major_d03:           { x: 430, y: 500 },  // S — forteresse du Baron
+  reliquary:           { x: 170, y: 495 },  // SO lointain — sanctuaire scellé
+};
+
+// ─── Sentiers entre donjons (progression narrative) ───
+const DUNGEON_PATHS = [
+  ["overgrown_ruins", "major_d01"],
+  ["major_d01", "shivas_ice_cave"],
+  ["shivas_ice_cave", "frozen_dungeon"],
+  ["major_d01", "major_d02"],
+  ["major_d02", "swamp_dungeon"],
+  ["major_d02", "tower_of_shiva"],
+  ["swamp_dungeon", "forbidden_labyrinth"],
+  ["tower_of_shiva", "golem_void"],
+  ["forbidden_labyrinth", "golem_void"],
+  ["major_d02", "major_d03"],
+  ["major_d03", "reliquary"],
+];
+
+// Pré-calcul des courbes (évite de recalculer à chaque render)
+const DUNGEON_PATH_CURVES = DUNGEON_PATHS.map(([a, b]) => {
+  const pa = DUNGEON_COORDS[a], pb = DUNGEON_COORDS[b];
+  if (!pa || !pb) return null;
+  const mx = (pa.x + pb.x) / 2;
+  const my = (pa.y + pb.y) / 2 - Math.abs(pb.x - pa.x) * 0.12;
+  return `M ${pa.x} ${pa.y} Q ${mx} ${my} ${pb.x} ${pb.y}`;
+}).filter(Boolean);
+
+// ─── Tailles de marqueur par tier ───
+const TIER_RING = { beginner: 12, intermediate: 13, advanced: 14, endgame: 15 };
+const TIER_AURA = { beginner: 0,  intermediate: 0,  advanced: 20, endgame: 24 };
+
+// ═══════════════════════════════════════════════════
 // DUNGEONS PAGE
 // ═══════════════════════════════════════════════════
 function DungeonsPage() {
-  const [expanded, setExpanded] = useState(null);
-  const [filterTier, setFilterTier] = useState("ALL");
+  const [selectedId, setSelectedId] = useState(null);
+  const [hoveredId, setHoveredId] = useState(null);
+  const [filterTier, setFilterTier] = useState(null);
 
-  const filtered = filterTier === "ALL" ? DUNGEONS : DUNGEONS.filter(d => d.tier === filterTier);
-  const grouped = DUNGEON_TIERS.map(t => ({
-    ...t,
-    dungeons: filtered.filter(d => d.tier === t.id),
-  })).filter(g => g.dungeons.length > 0);
-
+  const selected = selectedId ? DUNGEONS.find(d => d.id === selectedId) : null;
   const fmtAug = (id) => id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const tierMeta = (tid) => DUNGEON_TIERS.find(t => t.id === tid) || {};
+
+  const toggleTier = (id) => setFilterTier(filterTier === id ? null : id);
+  const isDimmed = (d) => filterTier && d.tier !== filterTier;
 
   return (
-    <div style={{ position: "relative", zIndex: 1, padding: "100px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
+    <div style={{ position: "relative", zIndex: 1, padding: "100px 24px 60px", maxWidth: 1280, margin: "0 auto" }}>
       {/* Header */}
-      <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: G.orange + "10", border: "1px solid " + G.orange + "20", fontSize: 11, fontWeight: 800, color: G.orange, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>
-        Instances PvE
+      <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: G.gold + "10", border: "1px solid " + G.gold + "20", fontSize: 11, fontWeight: 800, color: G.gold, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>
+        Carte du royaume
       </div>
       <h1 style={{ fontSize: 38, fontWeight: 900, color: "#f0e6d2", fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1 }}>
         Donjons
       </h1>
       <p style={{ fontSize: 16, color: G.muted, margin: "0 0 24px" }}>
-        {DUNGEONS.length} donjons · 5 mods · Progression Niv. 5 → 80+
+        {DUNGEONS.length} donjons · {DUNGEON_TIERS.length} tiers · Progression Niv. 5 → 80+
       </p>
 
-      {/* Tier filter */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 28, flexWrap: "wrap" }}>
-        <button onClick={() => setFilterTier("ALL")} style={{
-          padding: "8px 18px", borderRadius: "var(--radius-md)", border: "2px solid " + (filterTier === "ALL" ? G.teal : G.border),
-          background: filterTier === "ALL" ? G.teal + "15" : "transparent", color: filterTier === "ALL" ? G.teal : G.muted,
-          fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "var(--fb)",
-        }}>Tous ({DUNGEONS.length})</button>
+      {/* Tier legend / filter */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
         {DUNGEON_TIERS.map(t => {
           const count = DUNGEONS.filter(d => d.tier === t.id).length;
+          const active = filterTier === t.id;
+          const inactive = filterTier && !active;
           return (
-            <button key={t.id} onClick={() => setFilterTier(t.id)} style={{
-              padding: "8px 18px", borderRadius: "var(--radius-md)", border: "2px solid " + (filterTier === t.id ? t.color : G.border),
-              background: filterTier === t.id ? t.color + "15" : "transparent", color: filterTier === t.id ? t.color : G.muted,
-              fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "var(--fb)", display: "flex", alignItems: "center", gap: 6,
+            <button key={t.id} onClick={() => toggleTier(t.id)} style={{
+              padding: "7px 13px", borderRadius: "var(--radius-md)",
+              border: "1.5px solid " + (active ? t.color : t.color + "35"),
+              background: active ? t.color + "20" : "transparent",
+              color: inactive ? G.muted : t.color,
+              opacity: inactive ? 0.55 : 1,
+              fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "var(--fb)",
+              display: "flex", alignItems: "center", gap: 6, letterSpacing: 0.3,
+              transition: "all 0.15s",
             }}>
-              <span style={{ fontSize: 15 }}>{t.icon}</span> {t.label} ({count})
+              <span style={{ width: 9, height: 9, borderRadius: "50%", background: t.color, display: "inline-block" }}></span>
+              {t.label} · {count}
             </button>
           );
         })}
+        {filterTier && (
+          <button onClick={() => setFilterTier(null)} style={{
+            padding: "7px 13px", borderRadius: "var(--radius-md)",
+            border: "1.5px solid " + G.border, background: "transparent",
+            color: G.muted, fontWeight: 600, fontSize: 12, cursor: "pointer",
+            fontFamily: "var(--fb)", letterSpacing: 0.3,
+          }}>Réinitialiser</button>
+        )}
       </div>
 
-      {/* Dungeon groups by tier */}
-      {grouped.map(group => (
-        <div key={group.id} style={{ marginBottom: 36 }}>
-          {/* Tier header */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 12, marginBottom: 16,
-            paddingBottom: 10, borderBottom: "2px solid " + group.color + "25",
-          }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: "var(--radius-md)",
-              background: group.color + "15", border: "2px solid " + group.color + "30",
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20,
-            }}>{group.icon}</div>
-            <div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: group.color, fontFamily: "var(--fd)", letterSpacing: 1 }}>
-                {group.label}
-              </div>
-              <div style={{ fontSize: 12, color: G.muted }}>{group.range}</div>
-            </div>
-          </div>
+      {/* Carte + panneau détails */}
+      <div className="cdv-map-grid">
+        {/* --- Carte SVG --- */}
+        <div className="cdv-map-frame">
+          <svg className="cdv-map-svg" viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="cdvParchDots" width="20" height="20" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="0.5" fill="#3a2e1d" opacity="0.5"/>
+              </pattern>
+            </defs>
 
-          {/* Dungeon cards */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {group.dungeons.map(dg => {
-              const isOpen = expanded === dg.id;
+            {/* Parchemin */}
+            <rect width="1000" height="620" fill="#1c170f"/>
+            <rect width="1000" height="620" fill="url(#cdvParchDots)"/>
+
+            {/* Cadre décoratif */}
+            <rect x="10" y="10" width="980" height="600" fill="none" stroke="#3a2e1d" strokeWidth="1"/>
+            <rect x="16" y="16" width="968" height="588" fill="none" stroke="#e8a537" strokeWidth="0.6" opacity="0.4"/>
+
+            {/* Flourishes de coins */}
+            <g stroke="#e8a537" strokeWidth="0.9" fill="none" opacity="0.6">
+              <path d="M 30 30 L 30 60 M 30 30 L 60 30 M 30 30 Q 42 42 52 40 M 30 30 Q 42 42 40 52"/>
+              <path d="M 970 30 L 970 60 M 970 30 L 940 30 M 970 30 Q 958 42 948 40 M 970 30 Q 958 42 960 52"/>
+              <path d="M 30 590 L 30 560 M 30 590 L 60 590 M 30 590 Q 42 578 52 580 M 30 590 Q 42 578 40 568"/>
+              <path d="M 970 590 L 970 560 M 970 590 L 940 590 M 970 590 Q 958 578 948 580 M 970 590 Q 958 578 960 568"/>
+            </g>
+
+            {/* Biomes */}
+            <ellipse cx="500" cy="80"  rx="450" ry="55"  fill="#2a3640" opacity="0.35"/>  {/* Montagnes N */}
+            <ellipse cx="200" cy="290" rx="160" ry="130" fill="#232a1a" opacity="0.55"/> {/* Forêt O */}
+            <ellipse cx="460" cy="325" rx="230" ry="80"  fill="#2a2418" opacity="0.3"/>  {/* Plaines */}
+            <ellipse cx="710" cy="260" rx="180" ry="110" fill="#2a241a" opacity="0.4"/>  {/* Plateau E */}
+            <ellipse cx="720" cy="455" rx="140" ry="85"  fill="#1a2820" opacity="0.5"/>  {/* Marécage SE */}
+            <ellipse cx="885" cy="240" rx="80"  ry="80"  fill="#2a1838" opacity="0.55"/> {/* Faille Vide */}
+            <ellipse cx="430" cy="495" rx="210" ry="80"  fill="#2a1812" opacity="0.45"/> {/* Forteresse S */}
+            <ellipse cx="170" cy="490" rx="130" ry="85"  fill="#1f1a14" opacity="0.4"/>  {/* Pierre SO */}
+
+            {/* Montagnes (détails ligne) */}
+            <g fill="none" stroke="#8aa0b0" strokeWidth="0.9" opacity="0.55">
+              <path d="M 80 95 L 105 62 L 128 92 M 150 98 L 180 58 L 210 95 M 240 92 L 270 62 L 298 94 M 330 98 L 362 56 L 392 96 L 412 78 L 438 98 M 470 92 L 500 54 L 530 94 M 560 96 L 592 62 L 622 92 M 658 98 L 692 62 L 725 96 L 748 78 L 775 98 M 810 94 L 840 60 L 870 96 M 890 98 L 915 68 L 940 96"/>
+            </g>
+
+            {/* Forêt (points d'arbres) */}
+            <g fill="#4a5236" opacity="0.6">
+              <circle cx="140" cy="240" r="3"/><circle cx="165" cy="255" r="3.5"/><circle cx="185" cy="235" r="3"/>
+              <circle cx="210" cy="260" r="3"/><circle cx="230" cy="240" r="3.5"/><circle cx="255" cy="255" r="3"/>
+              <circle cx="155" cy="285" r="3"/><circle cx="195" cy="305" r="3.5"/><circle cx="240" cy="300" r="3"/>
+              <circle cx="180" cy="340" r="3"/><circle cx="270" cy="285" r="3"/><circle cx="125" cy="260" r="3"/>
+              <circle cx="280" cy="310" r="3"/><circle cx="295" cy="270" r="2.5"/>
+              <circle cx="140" cy="360" r="3"/><circle cx="220" cy="355" r="3"/>
+            </g>
+
+            {/* Marécage (vagues) */}
+            <g stroke="#4a6c5a" strokeWidth="0.8" fill="none" opacity="0.55">
+              <path d="M 630 430 Q 650 436 670 430 T 710 430 T 750 430 T 790 430"/>
+              <path d="M 640 455 Q 660 461 680 455 T 720 455 T 760 455 T 800 455"/>
+              <path d="M 650 480 Q 670 486 690 480 T 730 480 T 770 480"/>
+            </g>
+
+            {/* Faille du Vide (aura violette) */}
+            <g opacity="0.4">
+              <circle cx="885" cy="240" r="40" fill="#845ef7" opacity="0.2"/>
+              <circle cx="885" cy="240" r="24" fill="#6c5ce7" opacity="0.35"/>
+            </g>
+
+            {/* Forteresse (créneaux S) */}
+            <g fill="#8a2a20" opacity="0.5">
+              <rect x="395" y="475" width="6" height="14"/>
+              <rect x="410" y="470" width="6" height="19"/>
+              <rect x="425" y="475" width="6" height="14"/>
+              <rect x="445" y="480" width="5" height="12"/>
+              <rect x="465" y="478" width="5" height="13"/>
+            </g>
+
+            {/* Porte scellée (SO) */}
+            <g stroke="#8a7a5c" strokeWidth="0.7" fill="none" opacity="0.5">
+              <rect x="155" y="475" width="30" height="38" rx="2"/>
+              <line x1="170" y1="478" x2="170" y2="510"/>
+            </g>
+
+            {/* Sentiers (routes dorées pointillées) */}
+            <g stroke="#e8a537" strokeWidth="1" fill="none" strokeDasharray="3 4" opacity="0.4">
+              {DUNGEON_PATH_CURVES.map((d, i) => <path key={i} d={d}/>)}
+            </g>
+
+            {/* Rose des vents */}
+            <g transform="translate(910, 560)">
+              <circle r="32" fill="#1c170f" stroke="#e8a537" strokeWidth="0.7" opacity="0.75"/>
+              <circle r="23" fill="none" stroke="#e8a537" strokeWidth="0.4" opacity="0.4"/>
+              <path d="M 0 -28 L 3 0 L 0 28 L -3 0 Z" fill="#e8a537" opacity="0.85"/>
+              <path d="M -28 0 L 0 3 L 28 0 L 0 -3 Z" fill="#e8a537" opacity="0.55"/>
+              <text y="-34" textAnchor="middle" fontSize="11" fill="#e8a537" fontFamily="var(--fd), serif">N</text>
+              <text y="42"  textAnchor="middle" fontSize="11" fill="#e8a537" fontFamily="var(--fd), serif">S</text>
+              <text x="-37" y="4" textAnchor="middle" fontSize="11" fill="#e8a537" fontFamily="var(--fd), serif">O</text>
+              <text x="37"  y="4" textAnchor="middle" fontSize="11" fill="#e8a537" fontFamily="var(--fd), serif">E</text>
+            </g>
+
+            {/* Échelle */}
+            <g transform="translate(50, 590)">
+              <line x1="0" y1="0" x2="100" y2="0" stroke="#e8a537" strokeWidth="1" opacity="0.6"/>
+              <line x1="0"   y1="-4" x2="0"   y2="4" stroke="#e8a537" strokeWidth="1" opacity="0.6"/>
+              <line x1="50"  y1="-4" x2="50"  y2="4" stroke="#e8a537" strokeWidth="1" opacity="0.6"/>
+              <line x1="100" y1="-4" x2="100" y2="4" stroke="#e8a537" strokeWidth="1" opacity="0.6"/>
+              <text x="50" y="16" textAnchor="middle" fontSize="10" fill="#8a7a5c" fontFamily="var(--fd), serif" letterSpacing="0.15em">50 LIEUES</text>
+            </g>
+
+            {/* Marqueurs de donjons */}
+            {DUNGEONS.map(d => {
+              const c = DUNGEON_COORDS[d.id];
+              if (!c) return null;
+              const tm = tierMeta(d.tier);
+              const tc = tm.color || G.gold;
+              const isSelected = selectedId === d.id;
+              const isHover = hoveredId === d.id;
+              const dim = isDimmed(d);
+              const ringR = TIER_RING[d.tier] || 12;
+              const auraR = TIER_AURA[d.tier] || 0;
               return (
-                <div key={dg.id} onClick={() => setExpanded(isOpen ? null : dg.id)} style={{
-                  background: isOpen ? G.card : G.card + "80",
-                  border: "1px solid " + (isOpen ? dg.color + "40" : G.border),
-                  borderLeft: "4px solid " + dg.color + (isOpen ? "" : "60"),
-                  borderRadius: "var(--radius-md)", cursor: "pointer",
-                  transition: "all 0.2s ease", overflow: "hidden",
-                }}>
-                  {/* Card header */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px" }}>
-                    <span style={{ fontSize: 28, flexShrink: 0 }}>{dg.emoji}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 17, fontWeight: 800, color: isOpen ? "#fff" : G.text, fontFamily: "var(--fd)" }}>
-                          {dg.name}
-                        </span>
-                        <span style={{
-                          fontSize: 10, padding: "2px 8px", borderRadius: 4,
-                          background: dg.color + "15", color: dg.color, fontWeight: 700,
-                        }}>Niv. {dg.levels}</span>
-                        <span style={{
-                          fontSize: 10, padding: "2px 8px", borderRadius: 4,
-                          background: G.border, color: G.muted, fontWeight: 600,
-                        }}>{dg.source}</span>
-                      </div>
-                      <div style={{ fontSize: 13, color: G.muted, marginTop: 4 }}>{dg.desc}</div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-                      {dg.bosses ? <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
-                        <span style={{ fontSize: 11, color: "#e05252", fontWeight: 700 }}>👑 {dg.bosses.length} Boss</span>
-                        <span style={{ fontSize: 10, color: G.muted }}>{dg.bosses.map(b => b.name).join(" + ")}</span>
-                      </div> : dg.boss && <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
-                        <span style={{ fontSize: 11, color: "#e05252", fontWeight: 700 }}>👑 {dg.boss.name}</span>
-                        <span style={{ fontSize: 10, color: G.muted }}>{dg.boss.hp.toLocaleString()} PV{dg.boss.level ? " · Lv" + dg.boss.level : ""}</span>
-                      </div>}
-                      <span style={{
-                        fontSize: 14, color: G.muted,
-                        transform: isOpen ? "rotate(180deg)" : "", transition: "transform 0.2s",
-                      }}>▼</span>
-                    </div>
-                  </div>
-
-                  {/* Expanded detail */}
-                  {isOpen && (
-                    <div style={{ padding: "0 18px 18px", borderTop: "1px solid " + G.border }} onClick={e => e.stopPropagation()}>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, marginTop: 16 }}>
-
-                        {/* Scaling */}
-                        <div>
-                          <div style={{ fontSize: 11, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
-                            ⚙️ Scaling des mobs
-                          </div>
-                          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            {[
-                              { l: "PV", v: `×${dg.scaling.hp.base} base + ${(dg.scaling.hp.perLv * 100).toFixed(1)}%/niv`, c: "#ff6b6b" },
-                              { l: "Dégâts", v: `×${dg.scaling.dmg.base} base + ${(dg.scaling.dmg.perLv * 100).toFixed(1)}%/niv`, c: "#ff9f43" },
-                              { l: "Défense", v: `${(dg.scaling.def.negMax * 100).toFixed(0)}% – ${(dg.scaling.def.posMax * 100).toFixed(0)}% (cap ${(dg.scaling.def.abovePos * 100).toFixed(0)}%)`, c: "#54a0ff" },
-                            ].map(s => (
-                              <div key={s.l} style={{
-                                display: "flex", justifyContent: "space-between", alignItems: "center",
-                                padding: "6px 10px", background: s.c + "08", borderRadius: 6, border: "1px solid " + s.c + "15",
-                              }}>
-                                <span style={{ fontSize: 12, color: s.c, fontWeight: 700 }}>{s.l}</span>
-                                <span style={{ fontSize: 12, color: G.text }}>{s.v}</span>
-                              </div>
-                            ))}
-                          </div>
-                          {dg.tiered && (
-                            <div style={{
-                              marginTop: 8, padding: "6px 10px", background: G.purple + "08",
-                              borderRadius: 6, border: "1px solid " + G.purple + "15", fontSize: 11, color: G.purple,
-                            }}>
-                              ♾️ Tiers infinis · +{dg.levelsPerTier} niv/tier · S'adapte au joueur
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Mobs */}
-                        <div>
-                          <div style={{ fontSize: 11, fontWeight: 800, color: G.accent2, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
-                            🐉 Créatures ({dg.mobs.length})
-                          </div>
-                          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                            {dg.mobs.map((m, i) => (
-                              <div key={i} style={{
-                                display: "flex", justifyContent: "space-between", alignItems: "center",
-                                padding: "5px 10px", background: G.bg + "80", borderRadius: 6, border: "1px solid " + G.border,
-                              }}>
-                                <div>
-                                  <span style={{ fontSize: 12, fontWeight: 700, color: G.text }}>{m.name}</span>
-                                  <span style={{ fontSize: 10, color: G.muted, marginLeft: 6 }}>{m.type}</span>
-                                </div>
-                                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                                  <span style={{ fontSize: 11, color: "#ff6b6b", fontWeight: 700 }}>{m.hp} PV</span>
-                                  {m.dmg && <span style={{ fontSize: 10, color: G.muted }}>{m.dmg}</span>}
-                                  {m.augments && <span style={{ fontSize: 9, color: G.purple }}>🔮 {m.augments.length}</span>}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Boss detail */}
-                        {(dg.boss || dg.bosses) && (
-                          <div>
-                            <div style={{ fontSize: 11, fontWeight: 800, color: "#e05252", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
-                              👑 {dg.bosses ? `Boss (${dg.bosses.length})` : "Boss"}
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                              {(dg.bosses || [dg.boss]).map((b, bi) => (
-                                <div key={bi} style={{
-                                  background: "#e0525208", border: "1px solid #e0525220", borderRadius: 8, padding: 12,
-                                }}>
-                                  <div style={{ fontSize: 16, fontWeight: 800, color: "#f0e6d2", fontFamily: "var(--fd)", marginBottom: 6 }}>
-                                    {b.name}
-                                  </div>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                                    <div style={{ fontSize: 12, color: G.text }}>
-                                      ❤️ <span style={{ fontWeight: 700, color: "#ff6b6b" }}>{b.hp.toLocaleString()} PV</span>
-                                      {b.level && <span style={{ color: G.muted }}> · Niveau fixé {b.level}</span>}
-                                    </div>
-                                    {b.dmg && <div style={{ fontSize: 12, color: G.text }}>⚔️ {b.dmg}</div>}
-                                    {b.augments && b.augments.length > 0 && (
-                                      <div style={{ marginTop: 4 }}>
-                                        <span style={{ fontSize: 10, color: G.purple, fontWeight: 700 }}>Augments: </span>
-                                        {b.augments.map((a, i) => (
-                                          <span key={i} style={{
-                                            fontSize: 10, padding: "2px 6px", borderRadius: 4, marginLeft: 3,
-                                            background: G.purple + "15", color: G.purple, fontWeight: 600,
-                                          }}>{fmtAug(a)}</span>
-                                        ))}
-                                      </div>
-                                    )}
-                                    {b.scaling && (
-                                      <div style={{ marginTop: 6, padding: "4px 8px", background: "#ff6b6b08", borderRadius: 4, border: "1px solid #ff6b6b15", fontSize: 10, color: G.muted }}>
-                                        Boss scaling: PV ×{b.scaling.hp.base} +{(b.scaling.hp.perLv * 100)}%/niv · Dmg ×{b.scaling.dmg.base} +{(b.scaling.dmg.perLv * 100)}%/niv · Def cap {(b.scaling.def.abovePos * 100).toFixed(1)}%
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Loot */}
-                        <div>
-                          <div style={{ fontSize: 11, fontWeight: 800, color: G.accent2, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
-                            🎁 Loot
-                          </div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                            {dg.loot.map((item, i) => (
-                              <span key={i} style={{
-                                fontSize: 11, padding: "4px 10px", borderRadius: 4,
-                                background: G.accent2 + "10", border: "1px solid " + G.accent2 + "18",
-                                color: G.accent2, fontWeight: 600,
-                              }}>{item}</span>
-                            ))}
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
+                <g key={d.id} transform={`translate(${c.x}, ${c.y})`}
+                   onClick={() => setSelectedId(d.id)}
+                   onMouseEnter={() => setHoveredId(d.id)}
+                   onMouseLeave={() => setHoveredId(null)}
+                   style={{ cursor: "pointer", opacity: dim ? 0.3 : 1, transition: "opacity 0.15s" }}>
+                  {auraR > 0 && (
+                    <circle r={auraR} fill={tc} opacity={isSelected ? 0.28 : 0.14}
+                            style={{ transition: "opacity 0.15s" }}/>
                   )}
-                </div>
+                  <circle r={ringR} fill="#1c170f"
+                          stroke={isSelected ? G.goldL : tc}
+                          strokeWidth={isSelected ? 3 : isHover ? 2.8 : 2}
+                          style={{ transition: "stroke-width 0.15s" }}/>
+                  <text y="5" textAnchor="middle" fontSize="16"
+                        style={{ pointerEvents: "none", userSelect: "none" }}>
+                    {d.emoji}
+                  </text>
+                  <text y={ringR + 15} textAnchor="middle" fontSize="11"
+                        fill={isSelected || isHover ? G.goldL : "#c9b892"}
+                        fontFamily="var(--fd), serif" letterSpacing="0.04em"
+                        style={{ pointerEvents: "none", userSelect: "none", transition: "fill 0.15s" }}>
+                    {d.name}
+                  </text>
+                  <title>{d.name} — {tm.label} · Niv. {d.levels}</title>
+                </g>
               );
             })}
-          </div>
+          </svg>
         </div>
-      ))}
+
+        {/* --- Panneau de détails --- */}
+        <div className="cdv-map-panel">
+          {selected ? (
+            <DungeonDetails d={selected} tm={tierMeta(selected.tier)} fmtAug={fmtAug}
+                            onClose={() => setSelectedId(null)}/>
+          ) : (
+            <div style={{ padding: "50px 22px", textAlign: "center", color: G.muted }}>
+              <div style={{ fontSize: 38, opacity: 0.35, marginBottom: 14 }}>🗺️</div>
+              <div style={{ fontSize: 13, fontFamily: "var(--fd)", color: G.gold, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 10, fontWeight: 700 }}>
+                Choisis ta destination
+              </div>
+              <div style={{ fontSize: 12.5, lineHeight: 1.6, color: G.muted, maxWidth: 240, margin: "0 auto" }}>
+                Clique sur un marqueur de la carte pour découvrir ses créatures, ses boss et son butin.
+              </div>
+              <div style={{ marginTop: 22, paddingTop: 16, borderTop: "1px solid " + G.border, fontSize: 10.5, color: "#6b5d44", fontStyle: "italic", letterSpacing: 0.3 }}>
+                Les sentiers dorés indiquent une progression suggérée.
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="cdv-map-hint">
+        Touche un marqueur pour afficher sa fiche
+      </div>
     </div>
   );
 }
+
+// ═══════════════════════════════════════════════════
+// DungeonDetails — panneau latéral
+// ═══════════════════════════════════════════════════
+function DungeonDetails({ d, tm, fmtAug, onClose }) {
+  return (
+    <div style={{ padding: "18px 18px 22px" }}>
+      {/* Bouton fermer + tier badge */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <span style={{ width: 9, height: 9, borderRadius: "50%", background: tm.color, display: "inline-block" }}></span>
+          <span style={{ fontSize: 10, color: tm.color, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5 }}>
+            {tm.label} · Niv. {d.levels}
+          </span>
+        </div>
+        <button onClick={onClose} style={{
+          background: "transparent", border: "1px solid " + G.border, color: G.muted,
+          width: 22, height: 22, borderRadius: 4, cursor: "pointer", fontSize: 11,
+          display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
+          fontFamily: "var(--fb)",
+        }} title="Fermer">✕</button>
+      </div>
+
+      {/* Nom */}
+      <h3 style={{ fontSize: 19, fontWeight: 800, color: "#f0e6d2", fontFamily: "var(--fd)", margin: "0 0 4px", letterSpacing: 0.5 }}>
+        <span style={{ marginRight: 8 }}>{d.emoji}</span>{d.name}
+      </h3>
+
+      {/* Source (mod) */}
+      <div style={{ fontSize: 10, color: G.muted, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>
+        Mod · {d.source}
+      </div>
+
+      {/* Description */}
+      <p style={{ fontSize: 12.5, color: "#c9b892", lineHeight: 1.55, margin: "0 0 16px", fontStyle: "italic" }}>
+        {d.desc}
+      </p>
+
+      {/* Scaling */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 10, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>
+          ⚙️ Scaling des mobs
+        </div>
+        <div style={{ display: "grid", gap: 4 }}>
+          {[
+            { l: "PV",      v: `×${d.scaling.hp.base} + ${(d.scaling.hp.perLv * 100).toFixed(1)}%/niv`,       c: "#ff6b6b" },
+            { l: "Dégâts",  v: `×${d.scaling.dmg.base} + ${(d.scaling.dmg.perLv * 100).toFixed(1)}%/niv`,     c: "#ff9f43" },
+            { l: "Défense", v: `${(d.scaling.def.negMax * 100).toFixed(0)}%–${(d.scaling.def.posMax * 100).toFixed(0)}% · cap ${(d.scaling.def.abovePos * 100).toFixed(0)}%`, c: "#54a0ff" },
+          ].map(s => (
+            <div key={s.l} style={{
+              display: "flex", justifyContent: "space-between", fontSize: 11,
+              padding: "4px 8px", background: s.c + "08", borderRadius: 4, border: "1px solid " + s.c + "18",
+            }}>
+              <span style={{ color: s.c, fontWeight: 700 }}>{s.l}</span>
+              <span style={{ color: G.text }}>{s.v}</span>
+            </div>
+          ))}
+        </div>
+        {d.tiered && (
+          <div style={{ marginTop: 6, padding: "4px 8px", background: G.purple + "08", borderRadius: 4, border: "1px solid " + G.purple + "18", fontSize: 10.5, color: G.purple }}>
+            ♾️ Tiers infinis · +{d.levelsPerTier} niv/tier
+          </div>
+        )}
+      </div>
+
+      {/* Mobs */}
+      {d.mobs && d.mobs.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 10, fontWeight: 800, color: G.accent2, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>
+            🐉 Créatures ({d.mobs.length})
+          </div>
+          <div style={{ display: "grid", gap: 3 }}>
+            {d.mobs.map((m, i) => (
+              <div key={i} style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "4px 8px", background: G.bg + "80", borderRadius: 4, border: "1px solid " + G.border, fontSize: 11,
+              }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <span style={{ fontWeight: 700, color: G.text }}>{m.name}</span>
+                  <span style={{ fontSize: 10, color: G.muted, marginLeft: 5 }}>{m.type}</span>
+                </div>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
+                  <span style={{ color: "#ff6b6b", fontWeight: 700 }}>{m.hp} PV</span>
+                  {m.dmg && <span style={{ fontSize: 9.5, color: G.muted }}>{m.dmg}</span>}
+                  {m.augments && <span style={{ fontSize: 9, color: G.purple }}>🔮{m.augments.length}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Boss(es) */}
+      {(d.boss || d.bosses) && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 10, fontWeight: 800, color: "#e05252", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>
+            👑 {d.bosses ? `Boss (${d.bosses.length})` : "Boss"}
+          </div>
+          <div style={{ display: "grid", gap: 6 }}>
+            {(d.bosses || [d.boss]).map((b, bi) => (
+              <div key={bi} style={{
+                background: "#e0525208", border: "1px solid #e0525222", borderRadius: 6, padding: 10,
+              }}>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#f0e6d2", fontFamily: "var(--fd)", marginBottom: 4, letterSpacing: 0.3 }}>
+                  {b.name}
+                </div>
+                {b.hp && (
+                  <div style={{ fontSize: 11, color: G.text, marginBottom: 2 }}>
+                    ❤️ <span style={{ fontWeight: 700, color: "#ff6b6b" }}>{b.hp.toLocaleString()} PV</span>
+                    {b.level && <span style={{ color: G.muted }}> · Lv{b.level}</span>}
+                  </div>
+                )}
+                {b.dmg && <div style={{ fontSize: 11, color: G.text, marginBottom: 2 }}>⚔️ {b.dmg}</div>}
+                {b.augments && b.augments.length > 0 && (
+                  <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 3 }}>
+                    {b.augments.map((a, i) => (
+                      <span key={i} style={{
+                        fontSize: 9, padding: "1.5px 5px", borderRadius: 3,
+                        background: G.purple + "15", color: G.purple, fontWeight: 600,
+                      }}>{fmtAug(a)}</span>
+                    ))}
+                  </div>
+                )}
+                {b.scaling && (
+                  <div style={{ marginTop: 5, padding: "3px 6px", background: "#ff6b6b08", borderRadius: 3, border: "1px solid #ff6b6b15", fontSize: 9.5, color: G.muted }}>
+                    Boss scaling : PV ×{b.scaling.hp.base} · Dmg ×{b.scaling.dmg.base} · Def cap {(b.scaling.def.abovePos * 100).toFixed(1)}%
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Loot */}
+      {d.loot && d.loot.length > 0 && (
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: G.accent2, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>
+            🎁 Loot
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+            {d.loot.map((item, i) => (
+              <span key={i} style={{
+                fontSize: 10.5, padding: "3px 7px", borderRadius: 3,
+                background: G.accent2 + "10", border: "1px solid " + G.accent2 + "18",
+                color: G.accent2, fontWeight: 600,
+              }}>{item}</span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 // ═══════════════════════════════════════════════════
 // COMMUNITY PAGE — Browse & share builds
