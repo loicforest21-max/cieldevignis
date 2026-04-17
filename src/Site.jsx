@@ -233,21 +233,21 @@ function HomePage({ setPage }) {
         minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         textAlign: "center", position: "relative", overflow: "hidden",
       }}>
-        {/* Sky gradient */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0c0a08 0%, #141010 8%, #1e1610 18%, #2a1e14 30%, #3a2a18 42%, #44301a 50%, #3a2818 60%, #2a2015 72%, #18150f 88%, #12100c 100%)" }} />
+        {/* Sky gradient — magical night (Direction C) */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0a0812 0%, #0f0a1a 10%, #1a1228 22%, #2a1a34 34%, #3a2240 46%, #3a3048 56%, #2a2238 68%, #1a1428 82%, #0e0a14 94%, #12100c 100%)" }} />
         
-        {/* Sun glow */}
-        <div style={{ position: "absolute", top: "18%", left: "50%", transform: `translateX(-50%) ${px(-0.15)}`, width: 350, height: 180, background: "radial-gradient(ellipse, #e8a53740, #f0c06a20, #c45a2d10, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: "30%", left: "50%", transform: `translateX(-50%) ${px(-0.12)}`, width: 60, height: 60, borderRadius: "50%", background: "radial-gradient(circle, #f0e6d228, #e8a53715, transparent 70%)", boxShadow: "0 0 60px #e8a53718", pointerEvents: "none" }} />
+        {/* Mystical moonlit glow (replaces sun) */}
+        <div style={{ position: "absolute", top: "18%", left: "50%", transform: `translateX(-50%) ${px(-0.15)}`, width: 380, height: 200, background: "radial-gradient(ellipse, #c9a5ff30, #a878ff1a, #3dd8c510, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "30%", left: "50%", transform: `translateX(-50%) ${px(-0.12)}`, width: 60, height: 60, borderRadius: "50%", background: "radial-gradient(circle, #f0e6d228, #c9a5ff20, transparent 70%)", boxShadow: "0 0 60px #a878ff20", pointerEvents: "none" }} />
 
-        {/* God rays */}
-        <div style={{ position: "absolute", top: "15%", left: "46%", width: 3, height: 140, background: "linear-gradient(180deg, #e8a53715, transparent)", transform: "rotate(-6deg)", transformOrigin: "top", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: "18%", left: "54%", width: 2, height: 120, background: "linear-gradient(180deg, #e8a53712, transparent)", transform: "rotate(5deg)", transformOrigin: "top", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: "16%", left: "50%", width: 2, height: 130, background: "linear-gradient(180deg, #f0c06a0c, transparent)", transform: "rotate(-1deg)", transformOrigin: "top", pointerEvents: "none" }} />
+        {/* Arcane rays */}
+        <div style={{ position: "absolute", top: "15%", left: "46%", width: 3, height: 140, background: "linear-gradient(180deg, #a878ff1a, transparent)", transform: "rotate(-6deg)", transformOrigin: "top", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "18%", left: "54%", width: 2, height: 120, background: "linear-gradient(180deg, #3dd8c518, transparent)", transform: "rotate(5deg)", transformOrigin: "top", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "16%", left: "50%", width: 2, height: 130, background: "linear-gradient(180deg, #c9a5ff14, transparent)", transform: "rotate(-1deg)", transformOrigin: "top", pointerEvents: "none" }} />
 
         {/* Clouds */}
-        <div style={{ position: "absolute", top: "6%", left: "5%", width: 300, height: 50, background: "radial-gradient(ellipse, #1a151020, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: "3%", right: "10%", width: 250, height: 45, background: "radial-gradient(ellipse, #2a201518, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "6%", left: "5%", width: 300, height: 50, background: "radial-gradient(ellipse, #1a1a2820, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "3%", right: "10%", width: 250, height: 45, background: "radial-gradient(ellipse, #2a203818, transparent)", borderRadius: "50%", pointerEvents: "none" }} />
 
         {/* ═══ MAGIC — AURORA LAYERS ═══ */}
         <div style={{ position: "absolute", top: "5%", left: "-10%", right: "-10%", height: 200, pointerEvents: "none",
@@ -494,8 +494,8 @@ function HomePage({ setPage }) {
           <svg viewBox="0 0 680 60" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}><path d="M0 60 L0 32 Q100 22 220 28 Q340 16 460 24 Q560 14 680 22 L680 60Z" fill="#12100c"/></svg>
         </div>
 
-        {/* Horizon glow band */}
-        <div style={{ position: "absolute", top: "48%", left: 0, right: 0, height: 35, background: "linear-gradient(180deg, transparent, #c45a2d0a, #e8a53708, #c45a2d06, transparent)", pointerEvents: "none" }} />
+        {/* Horizon glow band (magical) */}
+        <div style={{ position: "absolute", top: "48%", left: 0, right: 0, height: 35, background: "linear-gradient(180deg, transparent, #a878ff0c, #c9a5ff08, #3dd8c506, transparent)", pointerEvents: "none" }} />
 
         {/* ═══ MAGIC MOTES — multi-color arcane particles ═══ */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
