@@ -1053,10 +1053,33 @@ function WikiPage() {
   const ALL_QUALITIES = ["Common","Uncommon","Rare","Epic","Legendary"];
 
   return (
-    <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
-      <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.teal+"10",border:"1px solid "+G.teal+"20",fontSize:11,fontWeight:800,color:G.teal,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Base de données</div>
-      <h1 style={{ fontSize:38,fontWeight:900,color:"#f0e6d2",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Wiki CielDeVignis</h1>
-      <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{wikiItems.length} objets · {wikiMobs.length} créatures · {wikiRecipes.length} recettes salvage · {craftableItems.length} recettes craft</p>
+    <div style={{ position: "relative", zIndex: 1 }}>
+      {/* Magical night background */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 620, pointerEvents: "none",
+        background: "linear-gradient(180deg, #0a0812 0%, #0f0a1a 15%, #1a1228 40%, #1e1630 70%, transparent 100%)",
+        zIndex: -1,
+      }} />
+      {/* Floating magical orbs */}
+      <div className="page-orb" style={{ position:"absolute", top:110, left:"6%", width:10, height:10, borderRadius:"50%",
+        background:"radial-gradient(circle, #ffecb4f0, #e8a53780 40%, transparent 70%)",
+        boxShadow:"0 0 18px #e8a537a0", pointerEvents:"none" }} />
+      <div className="page-orb" style={{ position:"absolute", top:160, right:"8%", width:8, height:8, borderRadius:"50%",
+        background:"radial-gradient(circle, #dcb4ffe6, #a878ff73 40%, transparent 70%)",
+        boxShadow:"0 0 16px #a878ff90", pointerEvents:"none", animationDelay:"3s" }} />
+      <div className="page-orb" style={{ position:"absolute", top:420, right:"4%", width:6, height:6, borderRadius:"50%",
+        background:"radial-gradient(circle, #a5fff0e6, #3dd8c573 40%, transparent 70%)",
+        boxShadow:"0 0 14px #3dd8c590", pointerEvents:"none", animationDelay:"5s" }} />
+
+      <div style={{ padding:"100px 24px 60px", maxWidth:1200, margin:"0 auto" }}>
+        {/* Magical mini-hero */}
+        <div className="page-hero" style={{ textAlign:"center", marginBottom:28, paddingBottom:22, borderBottom:"1px solid rgba(232,165,55,0.12)", position:"relative" }}>
+          <div style={{ fontSize:28, marginBottom:8, filter:"drop-shadow(0 0 16px rgba(232,165,55,0.5))" }}>📖</div>
+          <div style={{ fontFamily:"var(--fd)", fontSize:10, color:"#c9a5ff", letterSpacing:"0.3em", textTransform:"uppercase", marginBottom:6, fontWeight:600 }}>Codex du Royaume</div>
+          <h1 style={{ fontFamily:"var(--fd)", fontSize:34, fontWeight:900, color:"#f0e6d2", margin:"0 0 6px", letterSpacing:2, textShadow:"0 0 24px rgba(232,165,55,0.3)" }}>Wiki</h1>
+          <p style={{ fontFamily:"var(--fd)", fontStyle:"italic", fontSize:13, color:"#a89075", margin:"0 0 10px" }}>« Toute la connaissance du Ciel de Vignis, consignée en ces pages »</p>
+          <p style={{ fontSize:13, color:G.muted, margin:0 }}>{wikiItems.length} objets · {wikiMobs.length} créatures · {wikiRecipes.length} recettes salvage · {craftableItems.length} recettes craft</p>
+        </div>
       {/* Tabs */}
       <div style={{ display:"flex",gap:4,marginBottom:24,borderBottom:"2px solid "+G.border }}>
         {tabs.map(t=><button key={t.id} onClick={()=>switchTab(t.id)} style={{ padding:"12px 24px",borderRadius:"8px 8px 0 0",border:"none",cursor:"pointer",background:wikiTab===t.id?G.card:"transparent",color:wikiTab===t.id?G.teal:G.muted,borderBottom:wikiTab===t.id?"2px solid "+G.teal:"2px solid transparent",fontWeight:700,fontSize:14,fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:8,transition:"color 0.15s" }}><span style={{fontSize:18}}>{t.icon}</span> {t.label} <span style={{fontSize:11,opacity:0.6,background:wikiTab===t.id?G.teal+"12":"transparent",padding:"2px 8px",borderRadius:10}}>{t.count}</span></button>)}
@@ -1515,6 +1538,7 @@ function WikiPage() {
           })()}
         </div>
       </div>}
+      </div>
     </div>
   );
 }

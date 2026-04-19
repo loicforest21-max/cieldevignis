@@ -257,6 +257,15 @@ function GlobalStyles() {
         50% { opacity: 1; }
       }
 
+      /* ═══ PAGE HEROES — magical orbs ═══ */
+      .page-orb {
+        animation: pageOrbFloat 10s ease-in-out infinite;
+      }
+      @keyframes pageOrbFloat {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-12px, -16px); }
+      }
+
       /* ═══ TABS ═══ */
       .tab-btn {
         padding: 10px 16px;
