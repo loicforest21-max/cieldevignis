@@ -87,19 +87,40 @@ function Navbar({ page, setPage }) {
       borderBottom: scrolled ? `1px solid ${G.gold}15` : "none",
       transition: "all 0.4s ease", padding: "0 20px",
     }}>
+      {/* Tricolor magical accent line at top */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 1,
+        background: "linear-gradient(90deg, transparent, #e8a53766, #c9a5ff4d, #3dd8c54d, transparent)",
+        opacity: scrolled || menuOpen ? 1 : 0,
+        transition: "opacity 0.4s ease",
+      }} />
       <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-        <div onClick={() => { setPage("home"); setMenuOpen(false); }} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 8,
-            background: `linear-gradient(135deg, ${G.gold}, ${G.goldD})`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 15, fontWeight: 900, color: G.bg, fontFamily: "var(--fd)",
-            boxShadow: `0 0 16px ${G.gold}25`,
-          }}>C</div>
-          <span className="nav-title" style={{
-            fontSize: 18, fontWeight: 800, fontFamily: "var(--fd)", letterSpacing: 1,
-            color: "#f5f0e8",
-          }}>CielDeVignis</span>
+        <div onClick={() => { setPage("home"); setMenuOpen(false); }} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 38, height: 38, position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{
+              position: "absolute", inset: 0, borderRadius: "50%",
+              background: `radial-gradient(circle, ${G.gold}40 0%, transparent 70%)`,
+              animation: "navLogoGlow 3s ease-in-out infinite",
+            }} />
+            <div style={{
+              width: 34, height: 34, borderRadius: 7,
+              background: `linear-gradient(135deg, ${G.gold}, ${G.goldD})`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 15, fontWeight: 900, color: G.bg, fontFamily: "var(--fd)",
+              boxShadow: `0 0 18px ${G.gold}40`,
+              position: "relative", zIndex: 1,
+            }}>C</div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+            <span className="nav-title" style={{
+              fontSize: 17, fontWeight: 800, fontFamily: "var(--fd)", letterSpacing: 1,
+              color: "#f5f0e8",
+            }}>CielDeVignis</span>
+            <span className="nav-tagline" style={{
+              fontFamily: "var(--fd)", fontSize: 9, color: "#c9a5ff",
+              letterSpacing: 3, textTransform: "uppercase", marginTop: 4, fontWeight: 600,
+            }}>✦ Royaume Hytale</span>
+          </div>
         </div>
         {/* Desktop links */}
         <div className="nav-desktop" style={{ display: "flex", gap: 3 }}>
