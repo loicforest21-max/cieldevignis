@@ -2188,10 +2188,32 @@ function CommunityPage({ setPage, initialCode, onClearInitialCode, onEditInBuild
   const sel = { ...inp, cursor: "pointer", appearance: "auto" };
 
   return (
-    <div style={{ position: "relative", zIndex: 1, padding: "100px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
-      <div style={{ display: "inline-block", padding: "4px 16px", borderRadius: 4, background: G.teal + "10", border: "1px solid " + G.teal + "20", fontSize: 11, fontWeight: 800, color: G.teal, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Partage de builds</div>
-      <h1 style={{ fontSize: 38, fontWeight: 900, color: "#f0e6d2", fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1 }}>Communauté</h1>
-      <p style={{ fontSize: 16, color: G.muted, margin: "0 0 24px" }}>Parcours les builds de la communauté ou partage les tiens.</p>
+    <div style={{ position: "relative", zIndex: 1 }}>
+      {/* Magical night background */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 620, pointerEvents: "none",
+        background: "linear-gradient(180deg, #0a0812 0%, #0f0a1a 15%, #1a1228 40%, #1e1630 70%, transparent 100%)",
+        zIndex: -1,
+      }} />
+      {/* Floating magical orbs */}
+      <div className="page-orb" style={{ position:"absolute", top:110, left:"7%", width:10, height:10, borderRadius:"50%",
+        background:"radial-gradient(circle, #dcb4ffe6, #a878ff80 40%, transparent 70%)",
+        boxShadow:"0 0 18px #a878ffa0", pointerEvents:"none" }} />
+      <div className="page-orb" style={{ position:"absolute", top:170, right:"8%", width:9, height:9, borderRadius:"50%",
+        background:"radial-gradient(circle, #ffecb4f0, #e8a53780 40%, transparent 70%)",
+        boxShadow:"0 0 16px #e8a537a0", pointerEvents:"none", animationDelay:"3s" }} />
+      <div className="page-orb" style={{ position:"absolute", top:450, left:"3%", width:7, height:7, borderRadius:"50%",
+        background:"radial-gradient(circle, #a5fff0e6, #3dd8c580 40%, transparent 70%)",
+        boxShadow:"0 0 14px #3dd8c590", pointerEvents:"none", animationDelay:"5s" }} />
+
+      <div style={{ padding: "100px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
+        {/* Magical mini-hero */}
+        <div className="page-hero" style={{ textAlign:"center", marginBottom:28, paddingBottom:22, borderBottom:"1px solid rgba(168,120,255,0.18)", position:"relative" }}>
+          <div style={{ fontSize:28, marginBottom:8, filter:"drop-shadow(0 0 16px rgba(168,120,255,0.5))" }}>🌍</div>
+          <div style={{ fontFamily:"var(--fd)", fontSize:10, color:"#c9a5ff", letterSpacing:"0.3em", textTransform:"uppercase", marginBottom:6, fontWeight:600 }}>Place des Aventuriers</div>
+          <h1 style={{ fontFamily:"var(--fd)", fontSize:34, fontWeight:900, color:"#f0e6d2", margin:"0 0 6px", letterSpacing:2, textShadow:"0 0 24px rgba(168,120,255,0.3)" }}>Communauté</h1>
+          <p style={{ fontFamily:"var(--fd)", fontStyle:"italic", fontSize:13, color:"#a89075", margin:0 }}>« Partage tes builds avec le royaume, inspire-toi des autres »</p>
+        </div>
 
       <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
         <button onClick={() => setShowPublish(!showPublish)} style={{ padding: "10px 22px", borderRadius: "var(--radius-md)", border: "2px solid " + G.teal, background: showPublish ? G.teal + "20" : G.teal + "10", color: G.teal, fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "var(--fb)", display: "flex", alignItems: "center", gap: 8 }}>{showPublish ? "✕ Annuler" : "📤 Publier un build"}</button>
@@ -2299,6 +2321,7 @@ function CommunityPage({ setPage, initialCode, onClearInitialCode, onEditInBuild
           })}
         </div>
       )}
+      </div>
     </div>
   );
 }
