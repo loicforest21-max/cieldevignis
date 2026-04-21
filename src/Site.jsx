@@ -1580,28 +1580,37 @@ function BuildsPage({ importCode, onClearImportCode, onPublishToCommunity }) {
 
 function MapPage() {
   return (
-    <div style={{ position: "relative", zIndex: 1, padding: "100px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
+    <div style={{ position: "relative", zIndex: 1 }}>
+      {/* Magical night background */}
       <div style={{
-        display: "inline-block", padding: "4px 16px", borderRadius: "var(--radius-sm)",
-        background: `${G.teal}10`, border: `1px solid ${G.teal}20`,
-        fontSize: "var(--text-xs)", fontWeight: "var(--fw-black)", color: G.teal,
-        textTransform: "uppercase", letterSpacing: 2, marginBottom: 12,
-      }}>
-        Exploration
-      </div>
-      <h1 style={{
-        fontSize: 38, fontWeight: "var(--fw-black)", color: "#f0e6d2",
-        fontFamily: "var(--fd)", margin: "0 0 8px", letterSpacing: 1,
-      }}>
-        🗺️ Carte du monde
-      </h1>
-      <p style={{ fontSize: 16, color: G.muted, margin: "0 0 24px" }}>
-        Explore la carte interactive de CielDeVignis — donjons, biomes, points d'intérêt.
-      </p>
+        position: "absolute", top: 0, left: 0, right: 0, height: 620, pointerEvents: "none",
+        background: "linear-gradient(180deg, #0a0812 0%, #0f0a1a 15%, #1a1228 40%, #1e1630 70%, transparent 100%)",
+        zIndex: -1,
+      }} />
+      {/* Floating magical orbs */}
+      <div className="page-orb" style={{ position:"absolute", top:110, left:"7%", width:9, height:9, borderRadius:"50%",
+        background:"radial-gradient(circle, #a5fff0e6, #3dd8c580 40%, transparent 70%)",
+        boxShadow:"0 0 16px #3dd8c5a0", pointerEvents:"none" }} />
+      <div className="page-orb" style={{ position:"absolute", top:170, right:"8%", width:10, height:10, borderRadius:"50%",
+        background:"radial-gradient(circle, #ffecb4f0, #e8a53780 40%, transparent 70%)",
+        boxShadow:"0 0 18px #e8a537a0", pointerEvents:"none", animationDelay:"2.5s" }} />
+      <div className="page-orb" style={{ position:"absolute", top:420, right:"4%", width:7, height:7, borderRadius:"50%",
+        background:"radial-gradient(circle, #dcb4ffe6, #a878ff80 40%, transparent 70%)",
+        boxShadow:"0 0 14px #a878ff90", pointerEvents:"none", animationDelay:"5s" }} />
+
+      <div style={{ padding: "100px 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
+        {/* Magical mini-hero */}
+        <div className="page-hero" style={{ textAlign:"center", marginBottom:28, paddingBottom:22, borderBottom:"1px solid rgba(61,216,197,0.18)", position:"relative" }}>
+          <div style={{ fontSize:28, marginBottom:8, filter:"drop-shadow(0 0 16px rgba(61,216,197,0.5))" }}>🗺️</div>
+          <div style={{ fontFamily:"var(--fd)", fontSize:10, color:"#3dd8c5", letterSpacing:"0.3em", textTransform:"uppercase", marginBottom:6, fontWeight:600 }}>Cartographie du Royaume</div>
+          <h1 style={{ fontFamily:"var(--fd)", fontSize:34, fontWeight:900, color:"#f0e6d2", margin:"0 0 6px", letterSpacing:2, textShadow:"0 0 24px rgba(61,216,197,0.3)" }}>Carte du monde</h1>
+          <p style={{ fontFamily:"var(--fd)", fontStyle:"italic", fontSize:13, color:"#a89075", margin:0 }}>« Explore le monde ouvert du Ciel de Vignis »</p>
+        </div>
+
       <div style={{
-        background: G.card, border: `1px solid ${G.border}`,
+        background: G.card, border: `1px solid rgba(232,165,55,0.3)`,
         borderRadius: "var(--radius-lg)", overflow: "hidden",
-        boxShadow: `0 8px 32px ${G.teal}08`,
+        boxShadow: `0 0 30px rgba(168,120,255,0.15), 0 8px 32px ${G.teal}08`,
       }}>
         <iframe
           src="https://voxl.gg/map/eb48e335930b468ca6d90ad646be808b"
@@ -1628,6 +1637,7 @@ function MapPage() {
             Utilise la molette pour zoomer, clic-glisser pour te déplacer. Clique sur un marqueur pour voir les détails.
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
