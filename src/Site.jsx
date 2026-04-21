@@ -2607,19 +2607,37 @@ function ModsPage() {
   const filteredMods = selectedCat === "all" ? MODS_DATA : MODS_DATA.filter(m => m.category === selectedCat);
 
   return (
-    <div style={{ position:"relative",zIndex:1,padding:"100px 24px 60px",maxWidth:1200,margin:"0 auto" }}>
-      <div style={{ display:"inline-block",padding:"4px 16px",borderRadius:4,background:G.gold+"10",border:"1px solid "+G.gold+"20",fontSize:11,fontWeight:800,color:G.gold,textTransform:"uppercase",letterSpacing:2,marginBottom:12 }}>Serveur</div>
-      <h1 style={{ fontSize:38,fontWeight:900,color:"#f0e6d2",fontFamily:"var(--fd)",margin:"0 0 8px",letterSpacing:1 }}>Mods installés</h1>
-      <p style={{ fontSize:16,color:G.muted,margin:"0 0 32px" }}>{MODS_DATA.length} mod{MODS_DATA.length>1?"s":""} documenté{MODS_DATA.length>1?"s":""}</p>
+    <div style={{ position:"relative", zIndex:1 }}>
+      {/* Magical night background */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 720, pointerEvents: "none",
+        background: "linear-gradient(180deg, #0a0812 0%, #0f0a1a 15%, #1a1228 40%, #1e1630 70%, transparent 100%)",
+        zIndex: -1,
+      }} />
+      {/* Floating magical orbs */}
+      <div className="page-orb" style={{ position:"absolute", top:110, left:"7%", width:10, height:10, borderRadius:"50%",
+        background:"radial-gradient(circle, #ffecb4f0, #e8a53780 40%, transparent 70%)",
+        boxShadow:"0 0 18px #e8a537a0", pointerEvents:"none" }} />
+      <div className="page-orb" style={{ position:"absolute", top:170, right:"8%", width:8, height:8, borderRadius:"50%",
+        background:"radial-gradient(circle, #dcb4ffe6, #a878ff73 40%, transparent 70%)",
+        boxShadow:"0 0 16px #a878ff90", pointerEvents:"none", animationDelay:"3s" }} />
+      <div className="page-orb" style={{ position:"absolute", top:520, right:"4%", width:7, height:7, borderRadius:"50%",
+        background:"radial-gradient(circle, #a5fff0e6, #3dd8c573 40%, transparent 70%)",
+        boxShadow:"0 0 14px #3dd8c590", pointerEvents:"none", animationDelay:"5s" }} />
 
-      <div style={{ display:"flex",gap:6,marginBottom:28,flexWrap:"wrap" }}>
+      <div style={{ padding:"100px 24px 60px", maxWidth:1200, margin:"0 auto" }}>
+        {/* Magical mini-hero */}
+        <div className="page-hero" style={{ textAlign:"center", marginBottom:28, paddingBottom:22, borderBottom:"1px solid rgba(232,165,55,0.18)", position:"relative" }}>
+          <div style={{ fontSize:28, marginBottom:8, filter:"drop-shadow(0 0 16px rgba(232,165,55,0.5))" }}>🧩</div>
+          <div style={{ fontFamily:"var(--fd)", fontSize:10, color:"#e8a537", letterSpacing:"0.3em", textTransform:"uppercase", marginBottom:6, fontWeight:600 }}>Bibliothèque des Arcanes</div>
+          <h1 style={{ fontFamily:"var(--fd)", fontSize:34, fontWeight:900, color:"#f0e6d2", margin:"0 0 6px", letterSpacing:2, textShadow:"0 0 24px rgba(232,165,55,0.3)" }}>Mods</h1>
+          <p style={{ fontFamily:"var(--fd)", fontStyle:"italic", fontSize:13, color:"#a89075", margin:"0 0 8px" }}>« {MODS_DATA.length} enchantement{MODS_DATA.length>1?"s":""} qui façonne{MODS_DATA.length>1?"nt":""} le Ciel de Vignis »</p>
+        </div>
+
+      {/* Category filter chips */}
+      <div style={{ display:"flex",gap:8,marginBottom:28,flexWrap:"wrap" }}>
         {MOD_CATEGORIES.map(c=>(
-          <button key={c.id} onClick={()=>setSelectedCat(c.id)} style={{
-            padding:"8px 18px",borderRadius:20,border:"1px solid "+(selectedCat===c.id?c.color:G.border),
-            background:selectedCat===c.id?c.color+"15":"transparent",color:selectedCat===c.id?c.color:G.muted,
-            fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:6,
-            transition:"all 0.15s",fontFamily:"var(--fb)",
-          }}><span style={{fontSize:14}}>{c.icon}</span> {c.label}</button>
+          <button key={c.id} onClick={()=>setSelectedCat(c.id)} className={"wiki-chip"+(selectedCat===c.id?" active":"")}><span style={{fontSize:14}}>{c.icon}</span> {c.label}</button>
         ))}
       </div>
 
@@ -2629,39 +2647,70 @@ function ModsPage() {
           const catInfo = MOD_CATEGORIES.find(c=>c.id===mod.category) || MOD_CATEGORIES[0];
           const curSection = activeSection || (mod.intro ? "__intro" : mod.sections[0]?.id);
           const sectionData = mod.sections.find(s=>s.id===curSection) || mod.sections[0];
+          const initial = mod.name.charAt(0).toUpperCase();
           return (
-            <div key={mod.id} style={{
-              background:G.card,border:"1px solid "+(isOpen?mod.color+"50":G.border),
-              borderRadius:14,overflow:"hidden",transition:"border-color 0.2s",
+            <div key={mod.id} className="mod-card" style={{
+              background:"linear-gradient(180deg, rgba(26,22,40,0.7), rgba(10,8,18,0.55))",
+              border:"1px solid "+(isOpen?mod.color+"50":"rgba(232,165,55,0.22)"),
+              borderRadius:10,overflow:"hidden",
+              transition:"all 0.25s",
+              "--mod-accent": mod.color,
+              position:"relative",
             }}>
+              {/* Magical accent line on top */}
+              <div style={{position:"absolute",top:0,left:0,right:0,height:2,
+                background:`linear-gradient(90deg, transparent, ${mod.color}, transparent)`,
+                opacity:0.65,pointerEvents:"none"}} />
+
               {/* Header */}
-              <div onClick={()=>{setExpandedMod(isOpen?null:mod.id);setActiveSection(null);}} style={{cursor:"pointer",padding:"20px 24px",display:"flex",alignItems:"center",gap:16}}>
+              <div onClick={()=>{setExpandedMod(isOpen?null:mod.id);setActiveSection(null);}} style={{cursor:"pointer",display:"flex",alignItems:"stretch",gap:0}}>
+                {/* Codex illustration — colored gradient rectangle */}
                 <div style={{
-                  width:56,height:56,borderRadius:12,flexShrink:0,
-                  background:`linear-gradient(135deg, ${mod.color}20, ${mod.color}08)`,
-                  border:"1px solid "+mod.color+"30",
-                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,
-                }}>{catInfo.icon}</div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4,flexWrap:"wrap"}}>
-                    <span style={{fontSize:20,fontWeight:800,color:"#f0e6d2",fontFamily:"var(--fd)"}}>{mod.name}</span>
-                    <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:mod.color+"15",color:mod.color,fontWeight:700}}>v{mod.version}</span>
-                    <span style={{fontSize:10,padding:"3px 10px",borderRadius:10,background:catInfo.color+"15",color:catInfo.color,fontWeight:700}}>{catInfo.icon} {catInfo.label}</span>
-                  </div>
-                  <div style={{fontSize:13,color:G.muted,lineHeight:1.5}}>{mod.description}</div>
-                  <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap",alignItems:"center"}}>
-                    {mod.authors.map(a=>(<span key={a} style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.border,color:G.text,fontWeight:600}}>👤 {a}</span>))}
-                    {mod.links&&mod.links.map(l=>(<a key={l.label} href={l.url} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()} style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:G.teal+"15",color:G.teal,fontWeight:600,textDecoration:"none"}}>{l.icon} {l.label}</a>))}
+                  width:130,flexShrink:0,
+                  background:`linear-gradient(135deg, ${mod.color}, ${mod.color}70)`,
+                  display:"flex",alignItems:"center",justifyContent:"center",
+                  position:"relative",overflow:"hidden",minHeight:130,
+                }}>
+                  {/* Diagonal pattern overlay */}
+                  <div style={{position:"absolute",inset:0,opacity:0.12,
+                    backgroundImage:"repeating-linear-gradient(45deg, transparent 0, transparent 6px, rgba(255,255,255,0.15) 6px, rgba(255,255,255,0.15) 7px)",
+                    pointerEvents:"none"}} />
+                  {/* Dark vignette */}
+                  <div style={{position:"absolute",inset:0,
+                    background:"radial-gradient(ellipse at center, transparent 30%, rgba(10,8,18,0.5) 100%)",
+                    pointerEvents:"none"}} />
+                  <span style={{fontSize:48,zIndex:1,filter:"drop-shadow(0 0 14px rgba(0,0,0,0.5))"}}>{catInfo.icon}</span>
+                </div>
+
+                {/* Content */}
+                <div style={{flex:1,minWidth:0,padding:"18px 22px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
+                  <div style={{display:"flex",alignItems:"flex-start",gap:14,marginBottom:6}}>
+                    {/* Illuminated initial */}
+                    <span style={{fontFamily:"var(--fd)",fontSize:34,color:mod.color,fontWeight:700,lineHeight:0.9,flexShrink:0,filter:`drop-shadow(0 0 10px ${mod.color}60)`}}>{initial}</span>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3,flexWrap:"wrap"}}>
+                        <span style={{fontSize:19,fontWeight:700,color:"#f0e6d2",fontFamily:"var(--fd)",letterSpacing:0.5}}>{mod.name}</span>
+                        <span style={{fontSize:9.5,padding:"2px 8px",borderRadius:3,background:mod.color+"18",color:mod.color,fontWeight:700,letterSpacing:0.1+"em"}}>v{mod.version}</span>
+                        <span style={{fontSize:9.5,padding:"2px 8px",borderRadius:3,background:"rgba(232,165,55,0.12)",color:"#e8a537",fontWeight:700,letterSpacing:0.05+"em",textTransform:"uppercase"}}>{catInfo.icon} {catInfo.label}</span>
+                      </div>
+                      <div style={{fontSize:12.5,color:"#a89075",lineHeight:1.55,marginBottom:8}}>{mod.description}</div>
+                      <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+                        {mod.authors.map(a=>(<span key={a} style={{fontSize:10,padding:"2px 8px",borderRadius:3,background:"rgba(26,22,40,0.6)",border:"1px solid rgba(232,165,55,0.15)",color:"#c9b892",fontWeight:600}}>👤 {a}</span>))}
+                        {mod.links&&mod.links.map(l=>(<a key={l.label} href={l.url} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()} style={{fontSize:10,padding:"2px 8px",borderRadius:3,background:"rgba(61,216,197,0.12)",border:"1px solid rgba(61,216,197,0.3)",color:"#3dd8c5",fontWeight:600,textDecoration:"none"}}>{l.icon} {l.label}</a>))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div style={{display:"flex",gap:12,alignItems:"center",flexShrink:0}}>
+
+                {/* Highlights + chevron */}
+                <div style={{display:"flex",gap:14,alignItems:"center",padding:"0 20px",flexShrink:0,borderLeft:"1px solid rgba(232,165,55,0.1)"}}>
                   {mod.highlights.map(h=>(
-                    <div key={h.label} style={{textAlign:"center",minWidth:48}}>
-                      <div style={{fontSize:20,fontWeight:900,color:h.color,fontFamily:"var(--fd)"}}>{h.value}</div>
-                      <div style={{fontSize:9,color:G.muted,textTransform:"uppercase",letterSpacing:1,fontWeight:700}}>{h.label}</div>
+                    <div key={h.label} style={{textAlign:"center",minWidth:46}}>
+                      <div style={{fontSize:19,fontWeight:700,color:h.color,fontFamily:"var(--fd)"}}>{h.value}</div>
+                      <div style={{fontSize:9,color:"#8a8070",textTransform:"uppercase",letterSpacing:1.2,fontWeight:700,marginTop:2}}>{h.label}</div>
                     </div>
                   ))}
-                  <span style={{fontSize:14,color:G.muted,transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s",marginLeft:8}}>▼</span>
+                  <span style={{fontSize:14,color:"#8a8070",transform:isOpen?"rotate(180deg)":"",transition:"transform 0.2s",marginLeft:8}}>▼</span>
                 </div>
               </div>
 
@@ -2810,9 +2859,10 @@ function ModsPage() {
         })}
       </div>
 
-      <div style={{marginTop:32,padding:"24px",borderRadius:14,border:"1px dashed "+G.border,textAlign:"center"}}>
-        <div style={{fontSize:14,color:G.muted,marginBottom:4}}>🚧 D'autres mods seront ajoutés prochainement</div>
-        <div style={{fontSize:12,color:G.border}}>59 mods au total sur le serveur</div>
+      <div style={{marginTop:32,padding:"24px",borderRadius:14,border:"1px dashed rgba(232,165,55,0.2)",textAlign:"center",background:"rgba(26,22,40,0.35)"}}>
+        <div style={{fontSize:14,color:"#a89075",marginBottom:4,fontStyle:"italic"}}>🚧 D'autres enchantements seront ajoutés prochainement</div>
+        <div style={{fontSize:12,color:"#6a5a45"}}>59 mods au total sur le serveur</div>
+      </div>
       </div>
     </div>
   );

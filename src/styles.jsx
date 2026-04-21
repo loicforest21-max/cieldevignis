@@ -386,6 +386,16 @@ function GlobalStyles() {
         box-shadow: 0 4px 24px rgba(168,120,255,0.15), 0 0 0 1px rgba(232,165,55,0.1) inset !important;
       }
 
+      /* ═══ MOD CARDS (Mods page) ═══ */
+      .mod-card {
+        transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s !important;
+      }
+      .mod-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--mod-accent, #e8a537) !important;
+        box-shadow: 0 10px 32px rgba(168,120,255,0.18), 0 0 0 1px rgba(232,165,55,0.1) inset !important;
+      }
+
       /* ═══ TABS ═══ */
       .tab-btn {
         padding: 10px 16px;
