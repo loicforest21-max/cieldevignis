@@ -3,8 +3,14 @@
 // ═══════════════════════════════════════════════════
 import { initializeApp } from "firebase/app";
 import {
-  getFirestore, collection, addDoc, getDocs, query,
-  orderBy, limit, Timestamp,
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  Timestamp,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -23,7 +29,22 @@ const db = getFirestore(app);
 // CRUD Operations
 // ═══════════════════════════════════════════
 
-async function publishBuild({ code, name, description, author, race, raceEvo, primaryClass, secondaryClass, role, level, prestige, augments, topStats, tags }) {
+async function publishBuild({
+  code,
+  name,
+  description,
+  author,
+  race,
+  raceEvo,
+  primaryClass,
+  secondaryClass,
+  role,
+  level,
+  prestige,
+  augments,
+  topStats,
+  tags,
+}) {
   const doc = await addDoc(collection(db, "builds"), {
     code,
     name: name.trim(),
@@ -46,12 +67,10 @@ async function publishBuild({ code, name, description, author, race, raceEvo, pr
 }
 
 async function fetchBuilds() {
-  const snapshot = await getDocs(query(
-    collection(db, "builds"),
-    orderBy("createdAt", "desc"),
-    limit(200)
-  ));
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const snapshot = await getDocs(
+    query(collection(db, "builds"), orderBy("createdAt", "desc"), limit(200))
+  );
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }
 
 export { db, publishBuild, fetchBuilds };

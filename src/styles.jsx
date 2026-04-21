@@ -3,12 +3,24 @@
 // ═══════════════════════════════════════════════════
 
 const G = {
-  bg: "#12100c", card: "#1a1610", border: "#2a2218", accent: "#e8a537", accent2: "#f5a623",
-  teal: "#3dd8c5", blue: "#4ea8f0", purple: "#845ef7", pink: "#e060a0",
-  orange: "#c45a2d", green: "#51cf66",
-  text: "#f0e6d2", muted: "#8a8070",
-  gold: "#e8a537", goldL: "#f0c06a", goldD: "#c8882a",
-  bg2: "#0e0c08", bg3: "#1e1a14",
+  bg: "#12100c",
+  card: "#1a1610",
+  border: "#2a2218",
+  accent: "#e8a537",
+  accent2: "#f5a623",
+  teal: "#3dd8c5",
+  blue: "#4ea8f0",
+  purple: "#845ef7",
+  pink: "#e060a0",
+  orange: "#c45a2d",
+  green: "#51cf66",
+  text: "#f0e6d2",
+  muted: "#8a8070",
+  gold: "#e8a537",
+  goldL: "#f0c06a",
+  goldD: "#c8882a",
+  bg2: "#0e0c08",
+  bg3: "#1e1a14",
 };
 
 function GlobalStyles() {
