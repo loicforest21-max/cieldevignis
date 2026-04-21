@@ -266,6 +266,126 @@ function GlobalStyles() {
         50% { transform: translate(-12px, -16px); }
       }
 
+      /* ═══ WIKI — magical theme ═══ */
+      /* Tabs — grimoire-style */
+      .wiki-tabs-wrap {
+        display: flex !important;
+        gap: 6px !important;
+        margin-bottom: 22px !important;
+        border-bottom: 1px solid rgba(232,165,55,0.18) !important;
+        padding-bottom: 0 !important;
+        flex-wrap: wrap !important;
+      }
+      .wiki-tab {
+        padding: 9px 16px !important;
+        border-radius: 6px 6px 0 0 !important;
+        background: rgba(26,22,16,0.4) !important;
+        border: 1px solid rgba(232,165,55,0.12) !important;
+        border-bottom: none !important;
+        font-family: var(--fd) !important;
+        font-size: 12px !important;
+        color: #8a8070 !important;
+        cursor: pointer !important;
+        letter-spacing: 0.08em !important;
+        transition: all 0.2s !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+        font-weight: 600 !important;
+        margin-bottom: -1px !important;
+      }
+      .wiki-tab:hover {
+        color: #c9b892 !important;
+        border-color: rgba(232,165,55,0.25) !important;
+        background: rgba(26,22,40,0.5) !important;
+      }
+      .wiki-tab.active {
+        background: rgba(232,165,55,0.1) !important;
+        border-color: rgba(232,165,55,0.5) !important;
+        color: #e8a537 !important;
+        box-shadow: 0 -2px 14px rgba(232,165,55,0.15) !important;
+      }
+      .wiki-tab-count {
+        font-size: 10.5px !important;
+        padding: 2px 7px !important;
+        border-radius: 10px !important;
+        background: rgba(232,165,55,0.1) !important;
+        color: inherit !important;
+        opacity: 0.75 !important;
+        letter-spacing: 0.05em !important;
+      }
+      .wiki-tab.active .wiki-tab-count {
+        background: rgba(232,165,55,0.25) !important;
+        opacity: 1 !important;
+      }
+
+      /* Category chips */
+      .wiki-chip {
+        padding: 7px 14px !important;
+        border-radius: 6px !important;
+        background: rgba(26,22,16,0.5) !important;
+        border: 1px solid rgba(232,165,55,0.18) !important;
+        color: #a89075 !important;
+        font-family: var(--fb) !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        transition: all 0.18s !important;
+        letter-spacing: 0.2px !important;
+      }
+      .wiki-chip:hover {
+        color: #c9b892 !important;
+        border-color: rgba(232,165,55,0.35) !important;
+        background: rgba(26,22,40,0.65) !important;
+      }
+      .wiki-chip.active {
+        background: rgba(232,165,55,0.12) !important;
+        border-color: rgba(232,165,55,0.5) !important;
+        color: #e8a537 !important;
+        box-shadow: 0 0 14px rgba(232,165,55,0.15) !important;
+      }
+
+      /* Wiki input/select — translucent magical */
+      .wiki-input-magic {
+        padding: 9px 14px !important;
+        border-radius: 6px !important;
+        background: rgba(10,8,18,0.55) !important;
+        border: 1px solid rgba(232,165,55,0.25) !important;
+        color: #d9c7a2 !important;
+        font-family: var(--fb) !important;
+        outline: none !important;
+      }
+      .wiki-input-magic:focus {
+        border-color: rgba(232,165,55,0.5) !important;
+        box-shadow: 0 0 14px rgba(232,165,55,0.12) !important;
+      }
+      .wiki-input-magic::placeholder { color: #6a5a45 !important; }
+
+      /* Rows */
+      .wiki-row {
+        background: rgba(26,22,40,0.45) !important;
+        border: 1px solid rgba(42,34,45,0.8) !important;
+        border-left: 3px solid transparent !important;
+      }
+      .wiki-row:hover:not(.wiki-row-open) {
+        background: rgba(42,34,60,0.55) !important;
+        border-color: rgba(232,165,55,0.3) !important;
+        border-left-color: #e8a537 !important;
+        box-shadow: 0 0 20px rgba(232,165,55,0.08) !important;
+      }
+      .wiki-row:nth-child(even):not(.wiki-row-open) {
+        background: rgba(30,22,48,0.35) !important;
+      }
+      .wiki-row-open {
+        background: rgba(30,24,55,0.7) !important;
+        border-color: rgba(232,165,55,0.35) !important;
+        border-left-color: #e8a537 !important;
+        box-shadow: 0 4px 24px rgba(168,120,255,0.15), 0 0 0 1px rgba(232,165,55,0.1) inset !important;
+      }
+
       /* ═══ TABS ═══ */
       .tab-btn {
         padding: 10px 16px;

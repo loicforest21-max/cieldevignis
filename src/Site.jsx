@@ -1081,8 +1081,8 @@ function WikiPage() {
           <p style={{ fontSize:13, color:G.muted, margin:0 }}>{wikiItems.length} objets · {wikiMobs.length} créatures · {wikiRecipes.length} recettes salvage · {craftableItems.length} recettes craft</p>
         </div>
       {/* Tabs */}
-      <div style={{ display:"flex",gap:4,marginBottom:24,borderBottom:"2px solid "+G.border }}>
-        {tabs.map(t=><button key={t.id} onClick={()=>switchTab(t.id)} style={{ padding:"12px 24px",borderRadius:"8px 8px 0 0",border:"none",cursor:"pointer",background:wikiTab===t.id?G.card:"transparent",color:wikiTab===t.id?G.teal:G.muted,borderBottom:wikiTab===t.id?"2px solid "+G.teal:"2px solid transparent",fontWeight:700,fontSize:14,fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:8,transition:"color 0.15s" }}><span style={{fontSize:18}}>{t.icon}</span> {t.label} <span style={{fontSize:11,opacity:0.6,background:wikiTab===t.id?G.teal+"12":"transparent",padding:"2px 8px",borderRadius:10}}>{t.count}</span></button>)}
+      <div className="wiki-tabs-wrap">
+        {tabs.map(t=><button key={t.id} onClick={()=>switchTab(t.id)} className={"wiki-tab"+(wikiTab===t.id?" active":"")}><span style={{fontSize:15}}>{t.icon}</span> {t.label} <span className="wiki-tab-count">{t.count}</span></button>)}
       </div>
       {/* Filters */}
       {/* Category filters */}
@@ -1096,16 +1096,16 @@ function WikiPage() {
         </div>
       :
         <div style={{ display:"flex",gap:6,marginBottom:18,flexWrap:"wrap" }}>
-          <button onClick={()=>{setCat("ALL");setDisplayCount(50);}} style={{ padding:"7px 16px",borderRadius:20,border:"1px solid "+(cat==="ALL"?G.teal:G.border),background:cat==="ALL"?G.teal+"15":"transparent",color:cat==="ALL"?G.teal:G.muted,fontWeight:700,fontSize:12,cursor:"pointer",transition:"all 0.15s" }}>Tous</button>
-          {activeCats.map(c=><button key={c.id} onClick={()=>{setCat(c.id);setDisplayCount(50);}} style={{ padding:"7px 16px",borderRadius:20,border:"1px solid "+(cat===c.id?c.color:G.border),background:cat===c.id?c.color+"15":"transparent",color:cat===c.id?c.color:G.muted,fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5,transition:"all 0.15s" }}><span style={{fontSize:13}}>{c.icon}</span> {c.label}</button>)}
+          <button onClick={()=>{setCat("ALL");setDisplayCount(50);}} className={"wiki-chip"+(cat==="ALL"?" active":"")}>Tous</button>
+          {activeCats.map(c=><button key={c.id} onClick={()=>{setCat(c.id);setDisplayCount(50);}} className={"wiki-chip"+(cat===c.id?" active":"")}><span style={{fontSize:13}}>{c.icon}</span> {c.label}</button>)}
         </div>
       }
       <div style={{ display:"flex",gap:10,marginBottom:18,flexWrap:"wrap",alignItems:"center" }}>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..." style={{ flex:1,minWidth:200,maxWidth:500,padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:"#f0e6d2",fontSize:14,fontFamily:"var(--fb)",outline:"none" }}/>
-        <select value={sort} onChange={e=>setSort(e.target.value)} style={{ padding:"10px 14px",borderRadius:"var(--radius-md)",border:"1px solid "+G.border,background:G.card,color:sort!=="name"?G.teal:G.muted,fontSize:12,fontWeight:700,fontFamily:"var(--fb)",cursor:"pointer",outline:"none",appearance:"auto" }}>
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..." className="wiki-input-magic" style={{ flex:1,minWidth:200,maxWidth:500,fontSize:14 }}/>
+        <select value={sort} onChange={e=>setSort(e.target.value)} className="wiki-input-magic" style={{ fontSize:12,fontWeight:700,cursor:"pointer",color:sort!=="name"?"#e8a537":"#a89075",appearance:"auto" }}>
           {(SORT_OPTIONS[wikiTab]||[]).map(o=><option key={o.id} value={o.id}>{o.label}</option>)}
         </select>
-        <button onClick={()=>setShowFilters(!showFilters)} style={{ padding:"10px 16px",borderRadius:"var(--radius-md)",border:"1px solid "+(showFilters||hasAdvanced?G.teal+60:G.border),background:showFilters||hasAdvanced?G.teal+"12":"transparent",color:showFilters||hasAdvanced?G.teal:G.muted,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"var(--fb)",display:"flex",alignItems:"center",gap:6 }}>
+        <button onClick={()=>setShowFilters(!showFilters)} className="wiki-chip" style={{color:showFilters||hasAdvanced?"#e8a537":"#a89075",background:showFilters||hasAdvanced?"rgba(232,165,55,0.12)":"rgba(26,22,16,0.5)",borderColor:showFilters||hasAdvanced?"rgba(232,165,55,0.5)":"rgba(232,165,55,0.18)"}}>
           <span style={{fontSize:14}}>⚙️</span> Filtres{hasAdvanced?" ●":""}
         </button>
       </div>
