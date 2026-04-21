@@ -413,6 +413,57 @@ function GlobalStyles() {
         border-bottom-color: var(--c-teal);
       }
 
+      /* ═══ BUILD CREATOR — magical theme ═══ */
+      /* Header transparent magique */
+      .build-header-magic {
+        background: transparent !important;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      /* Tabs internes — style grimoire */
+      .build-header-magic .tab-btn,
+      .build-tabs-desktop .tab-btn {
+        padding: 9px 14px !important;
+        border-radius: 6px 6px 0 0 !important;
+        background: rgba(26,22,16,0.4) !important;
+        border: 1px solid rgba(61,216,197,0.15) !important;
+        border-bottom: none !important;
+        font-family: var(--fd) !important;
+        font-size: 12px !important;
+        color: #8a8070 !important;
+        letter-spacing: 0.08em !important;
+        gap: 7px !important;
+        font-weight: 600 !important;
+        margin-bottom: -1px !important;
+        transition: all 0.2s !important;
+      }
+      .build-header-magic .tab-btn:hover,
+      .build-tabs-desktop .tab-btn:hover {
+        color: #c9b892 !important;
+        border-color: rgba(61,216,197,0.3) !important;
+        background: rgba(26,22,40,0.5) !important;
+      }
+      .build-header-magic .tab-btn.active,
+      .build-tabs-desktop .tab-btn.active {
+        background: rgba(61,216,197,0.1) !important;
+        border-color: rgba(61,216,197,0.5) !important;
+        color: #3dd8c5 !important;
+        border-bottom-color: transparent !important;
+        box-shadow: 0 -2px 14px rgba(61,216,197,0.15) !important;
+      }
+      /* Content panels — let magical gradient subtly bleed through */
+      .build-content {
+        background: transparent !important;
+      }
+      .build-content > div > div[style*="radius"] {
+        /* race/class cards — add subtle magical glow on hover */
+        transition: transform 0.2s, box-shadow 0.25s, border-color 0.2s !important;
+      }
+      .build-content > div > div[style*="radius"]:hover {
+        box-shadow: 0 6px 22px rgba(168,120,255,0.15), 0 0 0 1px rgba(232,165,55,0.15) inset !important;
+        transform: translateY(-2px);
+      }
+
       /* ═══ CARDS ═══ */
       .card-interactive {
         transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease, border-color 0.2s ease;

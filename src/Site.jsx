@@ -1548,8 +1548,8 @@ function BuildsPage({ importCode, onClearImportCode, onPublishToCommunity }) {
     <div style={{ position: "relative", zIndex: 1, paddingTop: 72 }}>
       {/* Magical night background */}
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 520, pointerEvents: "none",
-        background: "linear-gradient(180deg, #0a0812 0%, #0f0a1a 15%, #1a1228 40%, #1e1630 70%, transparent 100%)",
+        position: "absolute", top: 0, left: 0, right: 0, height: 900, pointerEvents: "none",
+        background: "linear-gradient(180deg, #0a0812 0%, #0f0a1a 12%, #1a1228 28%, #1e1630 50%, #1a1424 75%, transparent 100%)",
         zIndex: -1,
       }} />
       {/* Floating magical orbs */}

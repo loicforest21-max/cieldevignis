@@ -1440,18 +1440,19 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     level, skillPoints, selectedAugments, augBonus,
   });
   const evoName = selectedEvo && EVOLUTIONS[selectedEvo] ? EVOLUTIONS[selectedEvo].name : null;
-return(<div style={{background:"var(--bg)",color:"#d0d0e0",fontFamily:"var(--fb)"}}>
+return(<div style={{color:"#d0d0e0",fontFamily:"var(--fb)"}}>
 {/* BUILD CREATOR HEADER */}
-<div style={{background:"linear-gradient(180deg,#0e1628,#0b1120)",padding:"12px 20px 0",borderBottom:"2px solid #3dd8c515",position:"relative"}}>
+<div className="build-header-magic" style={{padding:"12px 20px 0",borderBottom:"1px solid rgba(61,216,197,0.2)",position:"relative"}}>
   {/* Top bar: breadcrumb + actions */}
   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10,gap:12}}>
     {/* Build breadcrumb */}
     <div style={{display:"flex",alignItems:"center",gap:6,flex:1,minWidth:0,overflowX:"auto"}}>
-      <span style={{fontSize:14,fontWeight:800,fontFamily:"var(--fd)",color:"#3dd8c5",flexShrink:0,letterSpacing:0.5}}>Build Creator</span>
-      {selectedRace&&<><span style={{color:"#2a2218",flexShrink:0}}>›</span><span style={{fontSize:12,color:selectedRace.color,fontWeight:700,flexShrink:0}}>{selectedRace.emoji} {evoName||selectedRace.name}</span></>}
-      {primaryClass&&<><span style={{color:"#2a2218",flexShrink:0}}>›</span><span style={{fontSize:12,color:primaryClass.color,fontWeight:700,flexShrink:0}}>{primaryClass.emoji} {primaryClass.name}</span></>}
-      {secondaryClass&&<><span style={{color:"#2a2218",flexShrink:0}}>›</span><span style={{fontSize:11,color:secondaryClass.color,fontWeight:600,opacity:0.7,flexShrink:0}}>{secondaryClass.emoji} {secondaryClass.name}</span></>}
-      {level>1&&<><span style={{color:"#2a2218",flexShrink:0}}>›</span><span style={{fontSize:11,color:"#f5a623",fontWeight:700,flexShrink:0}}>Niv.{level}{prestige>0?` P${prestige}`:""}</span></>}
+      {(selectedRace||primaryClass)&&<>
+      {selectedRace&&<span style={{fontSize:12,color:selectedRace.color,fontWeight:700,flexShrink:0}}>{selectedRace.emoji} {evoName||selectedRace.name}</span>}
+      {primaryClass&&<><span style={{color:"rgba(232,165,55,0.3)",flexShrink:0}}>›</span><span style={{fontSize:12,color:primaryClass.color,fontWeight:700,flexShrink:0}}>{primaryClass.emoji} {primaryClass.name}</span></>}
+      {secondaryClass&&<><span style={{color:"rgba(232,165,55,0.3)",flexShrink:0}}>›</span><span style={{fontSize:11,color:secondaryClass.color,fontWeight:600,opacity:0.7,flexShrink:0}}>{secondaryClass.emoji} {secondaryClass.name}</span></>}
+      {level>1&&<><span style={{color:"rgba(232,165,55,0.3)",flexShrink:0}}>›</span><span style={{fontSize:11,color:"#f5a623",fontWeight:700,flexShrink:0}}>Niv.{level}{prestige>0?` P${prestige}`:""}</span></>}
+      </>}
     </div>
     {/* Action buttons */}
     <div style={{display:"flex",gap:6,flexShrink:0}}>
