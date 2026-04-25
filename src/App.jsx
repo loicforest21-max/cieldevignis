@@ -9,11 +9,9 @@ import { HomePage } from "./pages/HomePage.jsx";
 import { WikiPage } from "./pages/WikiPage.jsx";
 import { DungeonsPage } from "./pages/DungeonsPage.jsx";
 import { CommunityPage } from "./pages/CommunityPage.jsx";
-import {
-  BuildsPage,
-  MapPage,
-  ModsPage,
-} from "./Site.jsx";
+import { BuildsPage } from "./pages/BuildsPage.jsx";
+import { MapPage } from "./pages/MapPage.jsx";
+import { ModsPage } from "./pages/ModsPage.jsx";
 
 function SiteApp() {
   const [page, setPage] = useState("home");
