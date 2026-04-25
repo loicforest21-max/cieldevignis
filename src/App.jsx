@@ -7,10 +7,10 @@ import { Particles } from "./components/Particles.jsx";
 import { Navbar } from "./components/Navbar.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 import { WikiPage } from "./pages/WikiPage.jsx";
+import { DungeonsPage } from "./pages/DungeonsPage.jsx";
 import {
   BuildsPage,
   MapPage,
-  DungeonsPage,
   CommunityPage,
   ModsPage,
 } from "./Site.jsx";
