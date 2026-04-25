@@ -15,6 +15,7 @@ const CommunityPage = lazy(() => import("./pages/CommunityPage.jsx"));
 const BuildsPage = lazy(() => import("./pages/BuildsPage.jsx"));
 const MapPage = lazy(() => import("./pages/MapPage.jsx"));
 const ModsPage = lazy(() => import("./pages/ModsPage.jsx"));
+const JoinPage = lazy(() => import("./pages/JoinPage.jsx"));
 
 // ─── Magical loader shown while a page chunk is being fetched ───
 function PageLoader() {
@@ -154,6 +155,7 @@ function SiteApp() {
             {page === "wiki" && <WikiPage />}
             {page === "mods" && <ModsPage />}
             {page === "map" && <MapPage />}
+            {page === "join" && <JoinPage />}
           </Suspense>
         </main>
       </ErrorBoundary>

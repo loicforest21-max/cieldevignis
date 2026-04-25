@@ -20,6 +20,7 @@ function Navbar({ page, setPage }) {
     { id: "wiki", label: "Wiki", icon: "📖" },
     { id: "mods", label: "Mods", icon: "🧩" },
     { id: "map", label: "Carte", icon: "🗺️" },
+    { id: "join", label: "Rejoindre", icon: "🔮" },
     { id: "discord", label: "Discord", icon: "💬" },
   ];
   const go = (id) => {
