@@ -2,7 +2,8 @@
 // COMMUNITY PAGE — Build sharing via Firebase Firestore
 // ═══════════════════════════════════════════════════
 import { useState, useEffect } from "react";
-import { STATS, RACES, CLASSES, AUGMENTS, BUILD_TAGS } from "../data.js";
+import { STATS, RACES, CLASSES, AUGMENTS } from "../data/core.js";
+import { BUILD_TAGS } from "../data/builds.js";
 import { G } from "../styles.jsx";
 import { decodeBuild, computeFullStats } from "../engine.js";
 import { publishBuild, fetchBuilds } from "../firebase.js";

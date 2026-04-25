@@ -2,7 +2,7 @@
 // DUNGEONS PAGE — Tier-organized dungeon catalog with detail panel
 // ═══════════════════════════════════════════════════
 import { useState } from "react";
-import { DUNGEONS, DUNGEON_TIERS } from "../data.js";
+import { DUNGEONS, DUNGEON_TIERS } from "../data/dungeons.js";
 import { G } from "../styles.jsx";
 
 // ─── Coordonnées des donjons sur la carte (viewBox 1000x620) ───

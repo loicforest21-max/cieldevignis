@@ -17,6 +17,8 @@ import {
   SL,
   TABS,
   WEAPON_PRESETS,
+} from "./data/core.js";
+import {
   RECOMMENDED_BUILDS,
   ROLE_META,
   WEAPONS_REAL,
@@ -24,7 +26,7 @@ import {
   RPGMOBS_TIERS,
   SYNERGIES,
   getSynergyScore,
-} from "./data.js";
+} from "./data/builds.js";
 import {
   getActiveRace,
   computeInnates,

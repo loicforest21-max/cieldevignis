@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════
 // ENGINE — Stat computation, encoding, storage
 // ═══════════════════════════════════════════════════
-import { STATS, RACES, CLASSES, AUGMENTS, EVOLUTIONS } from "./data.js";
+import { STATS, RACES, CLASSES, AUGMENTS, EVOLUTIONS } from "./data/core.js";
 
 function getActiveRace(race, evoId) {
   if (!race) return null;

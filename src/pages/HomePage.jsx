@@ -2,7 +2,7 @@
 // HOME PAGE — Landing page with magical hero
 // ═══════════════════════════════════════════════════
 import { useState, useEffect, useRef } from "react";
-import { RACE_PREVIEWS, CLASS_PREVIEWS } from "../data.js";
+import { RACE_PREVIEWS, CLASS_PREVIEWS } from "../data/core.js";
 import { G } from "../styles.jsx";
 import { FeatureCard } from "../components/FeatureCard.jsx";
 import { RacePreview } from "../components/RacePreview.jsx";

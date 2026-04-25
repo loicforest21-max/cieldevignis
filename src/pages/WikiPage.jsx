@@ -7,10 +7,10 @@ import {
   WIKI_MOBS,
   WIKI_RECIPES,
   ITEM_CATS,
-  QUALITY_COLORS,
   MOB_CATS,
   SALVAGE_CATS,
-} from "../data.js";
+} from "../data/wiki.js";
+import { QUALITY_COLORS } from "../data/core.js";
 import { G } from "../styles.jsx";
 import { ItemImg } from "../components/ItemImg.jsx";
 
