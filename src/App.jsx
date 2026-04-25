@@ -8,10 +8,10 @@ import { Navbar } from "./components/Navbar.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 import { WikiPage } from "./pages/WikiPage.jsx";
 import { DungeonsPage } from "./pages/DungeonsPage.jsx";
+import { CommunityPage } from "./pages/CommunityPage.jsx";
 import {
   BuildsPage,
   MapPage,
-  CommunityPage,
   ModsPage,
 } from "./Site.jsx";
 
