@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { G } from "../styles.jsx";
 
-function Navbar({ page, setPage }) {
+function Navbar({ page, setPage, onOpenSearch }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
@@ -155,8 +155,64 @@ function Navbar({ page, setPage }) {
             </span>
           </div>
         </button>
-        {/* Desktop links */}
-        <div className="nav-desktop" style={{ display: "flex", gap: 3 }}>
+        {/* Desktop links — with search button at the start */}
+        <div className="nav-desktop" style={{ display: "flex", gap: 3, alignItems: "center" }}>
+          {onOpenSearch && (
+            <button
+              type="button"
+              onClick={onOpenSearch}
+              aria-label="Ouvrir la recherche (Ctrl+K)"
+              className="nav-search-btn"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "7px 12px",
+                marginRight: 6,
+                background: "rgba(232,165,55,0.06)",
+                border: "1px solid rgba(232,165,55,0.2)",
+                borderRadius: 6,
+                color: "#a89075",
+                fontFamily: "var(--fb)",
+                fontSize: 12,
+                cursor: "pointer",
+                transition: "all 0.18s",
+                letterSpacing: "0.2px",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(232,165,55,0.4)";
+                e.currentTarget.style.color = "#c9b892";
+                e.currentTarget.style.background = "rgba(232,165,55,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(232,165,55,0.2)";
+                e.currentTarget.style.color = "#a89075";
+                e.currentTarget.style.background = "rgba(232,165,55,0.06)";
+              }}
+            >
+              <span style={{ fontSize: 13 }} aria-hidden="true">
+                🔎
+              </span>
+              <span className="nav-search-label">Rechercher</span>
+              <span
+                style={{
+                  fontFamily: "Consolas, Monaco, monospace",
+                  fontSize: 9.5,
+                  padding: "1px 5px",
+                  background: "rgba(232,165,55,0.15)",
+                  border: "1px solid rgba(232,165,55,0.25)",
+                  borderRadius: 3,
+                  color: "#c9b892",
+                  letterSpacing: "0.05em",
+                  fontWeight: 600,
+                  marginLeft: 4,
+                }}
+                aria-hidden="true"
+              >
+                ⌘K
+              </span>
+            </button>
+          )}
           {links.map((l) => (
             <button
               key={l.id}
@@ -171,6 +227,26 @@ function Navbar({ page, setPage }) {
             </button>
           ))}
         </div>
+        {/* Mobile: search icon next to burger */}
+        {onOpenSearch && (
+          <button
+            type="button"
+            className="nav-search-mobile"
+            onClick={onOpenSearch}
+            aria-label="Ouvrir la recherche"
+            style={{
+              display: "none",
+              background: "none",
+              border: "none",
+              color: G.gold,
+              fontSize: 20,
+              cursor: "pointer",
+              padding: 8,
+            }}
+          >
+            🔎
+          </button>
+        )}
         {/* Mobile hamburger */}
         <button
           className="nav-burger"

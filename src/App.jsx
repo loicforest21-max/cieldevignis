@@ -6,6 +6,7 @@ import { G, GlobalStyles } from "./styles.jsx";
 import { Particles } from "./components/Particles.jsx";
 import { Navbar } from "./components/Navbar.jsx";
 import { ErrorBoundary } from "./components/ErrorBoundary.jsx";
+import { CommandPalette } from "./components/CommandPalette.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 
 // Heavy pages are lazy-loaded — only fetched when user opens them
@@ -106,6 +107,8 @@ function SiteApp() {
   const [importCode, setImportCode] = useState("");
   // Cross-page: code to pre-fill in CommunityPage publish form
   const [communityCode, setCommunityCode] = useState("");
+  // Global Ctrl+K command palette
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   const goToBuilderWithCode = (code) => {
     setImportCode(code);
@@ -115,6 +118,29 @@ function SiteApp() {
     setCommunityCode(code);
     setPage("community");
   };
+
+  // Handle navigation from the command palette
+  const handlePaletteNavigate = (result) => {
+    if (result.page) setPage(result.page);
+    // Future: pass `result.payload` to the destination page so it can
+    // pre-select the right item/race/dungeon. For now, just navigates.
+  };
+
+  // Global keyboard shortcut: Ctrl+K / Cmd+K / "/" opens the palette
+  useEffect(() => {
+    const onKey = (e) => {
+      const isCmdK = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k";
+      const isSlash =
+        e.key === "/" &&
+        !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
+      if (isCmdK || isSlash) {
+        e.preventDefault();
+        setPaletteOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -128,7 +154,13 @@ function SiteApp() {
         Aller au contenu principal
       </a>
       <Particles />
-      <Navbar page={page} setPage={setPage} />
+      <Navbar page={page} setPage={setPage} onOpenSearch={() => setPaletteOpen(true)} />
+      {/* Global Ctrl+K command palette */}
+      <CommandPalette
+        isOpen={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onNavigate={handlePaletteNavigate}
+      />
       {/* ErrorBoundary keyed by page = it auto-resets when user navigates */}
       <ErrorBoundary key={page} onReset={() => setPage("home")}>
         <main id="main-content">

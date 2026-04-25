@@ -706,6 +706,11 @@ function GlobalStyles() {
         .nav-burger { display: block !important; }
         .nav-mobile-menu { display: flex !important; }
         .nav-tagline { display: none !important; }
+        .nav-search-mobile { display: flex !important; align-items: center; }
+      }
+      /* On medium screens, show search button but hide its label */
+      @media (max-width: 1024px) and (min-width: 769px) {
+        .nav-search-label { display: none !important; }
       }
       @media (min-width: 769px) {
         .nav-burger { display: none !important; }
