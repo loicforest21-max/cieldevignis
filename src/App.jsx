@@ -5,6 +5,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { G, GlobalStyles } from "./styles.jsx";
 import { Particles } from "./components/Particles.jsx";
 import { Navbar } from "./components/Navbar.jsx";
+import { Footer } from "./components/Footer.jsx";
 import { ErrorBoundary } from "./components/ErrorBoundary.jsx";
 import { CommandPalette } from "./components/CommandPalette.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
@@ -17,6 +18,19 @@ const BuildsPage = lazy(() => import("./pages/BuildsPage.jsx"));
 const MapPage = lazy(() => import("./pages/MapPage.jsx"));
 const ModsPage = lazy(() => import("./pages/ModsPage.jsx"));
 const JoinPage = lazy(() => import("./pages/JoinPage.jsx"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage.jsx"));
+
+// All known page ids — anything outside this list shows the 404 page
+const KNOWN_PAGES = new Set([
+  "home",
+  "builds",
+  "community",
+  "dungeons",
+  "wiki",
+  "mods",
+  "map",
+  "join",
+]);
 
 // ─── Magical loader shown while a page chunk is being fetched ───
 function PageLoader() {
@@ -188,9 +202,17 @@ function SiteApp() {
             {page === "mods" && <ModsPage />}
             {page === "map" && <MapPage />}
             {page === "join" && <JoinPage />}
+            {/* Fallback: any unknown page id shows the 404 */}
+            {!KNOWN_PAGES.has(page) && (
+              <NotFoundPage
+                setPage={setPage}
+                onOpenSearch={() => setPaletteOpen(true)}
+              />
+            )}
           </Suspense>
         </main>
       </ErrorBoundary>
+      <Footer setPage={setPage} />
     </div>
   );
 }
