@@ -136,4 +136,4 @@ function BuildsPage({ importCode, onClearImportCode, onPublishToCommunity }) {
   );
 }
 
-export { BuildsPage };
+export default BuildsPage;

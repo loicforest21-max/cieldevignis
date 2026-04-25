@@ -3250,4 +3250,4 @@ function WikiPage() {
   );
 }
 
-export { WikiPage };
+export default WikiPage;

@@ -176,4 +176,4 @@ function MapPage() {
   );
 }
 
-export { MapPage };
+export default MapPage;

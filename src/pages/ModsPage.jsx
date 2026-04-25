@@ -1898,4 +1898,4 @@ function ModsPage() {
   );
 }
 
-export { ModsPage };
+export default ModsPage;

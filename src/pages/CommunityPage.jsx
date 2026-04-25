@@ -954,4 +954,4 @@ function CommunityPage({ setPage, initialCode, onClearInitialCode, onEditInBuild
   );
 }
 
-export { CommunityPage };
+export default CommunityPage;

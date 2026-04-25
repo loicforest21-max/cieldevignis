@@ -830,4 +830,4 @@ function DungeonDetails({ d, tm, fmtAug, onClose }) {
 // COMMUNITY PAGE — Browse & share builds
 // ═══════════════════════════════════════════════════
 
-export { DungeonsPage };
+export default DungeonsPage;
