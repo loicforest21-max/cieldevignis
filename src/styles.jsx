@@ -829,6 +829,58 @@ function GlobalStyles() {
         .cdv-map-hint { display: block; }
       }
 
+      /* ═══ ACCESSIBILITY ═══ */
+      /* Visible focus ring for keyboard navigation — gold magical accent */
+      :focus-visible {
+        outline: 2px solid #e8a537 !important;
+        outline-offset: 2px !important;
+        border-radius: 4px;
+      }
+      /* No outline on click (mouse users) — only when navigating via keyboard */
+      :focus:not(:focus-visible) {
+        outline: none;
+      }
+
+      /* Skip link — appears when tabbing in, lets keyboard users jump past navbar */
+      .skip-to-main {
+        position: absolute;
+        top: -40px;
+        left: 8px;
+        z-index: 9999;
+        background: #e8a537;
+        color: #12100c;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-family: var(--fd);
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 13px;
+        transition: top 0.2s;
+      }
+      .skip-to-main:focus { top: 8px; }
+
+      /* Respect reduced motion preference (accessibility for vestibular disorders) */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
+      /* Screen-reader-only utility class */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
 
       div::-webkit-scrollbar { height: 0; }
     `}</style>

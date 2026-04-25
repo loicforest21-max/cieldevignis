@@ -66,12 +66,24 @@ function Navbar({ page, setPage }) {
           height: 64,
         }}
       >
-        <div
+        <button
+          type="button"
           onClick={() => {
             setPage("home");
             setMenuOpen(false);
           }}
-          style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}
+          aria-label="CielDeVignis — Retour à l'accueil"
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            color: "inherit",
+            fontFamily: "inherit",
+          }}
         >
           <div
             style={{
@@ -141,7 +153,7 @@ function Navbar({ page, setPage }) {
               ✦ Royaume Hytale
             </span>
           </div>
-        </div>
+        </button>
         {/* Desktop links */}
         <div className="nav-desktop" style={{ display: "flex", gap: 3 }}>
           {links.map((l) => (
@@ -149,8 +161,11 @@ function Navbar({ page, setPage }) {
               key={l.id}
               onClick={() => go(l.id)}
               className={`nav-link${page === l.id ? " active" : ""}`}
+              aria-current={page === l.id ? "page" : undefined}
             >
-              <span style={{ fontSize: 15 }}>{l.icon}</span>
+              <span style={{ fontSize: 15 }} aria-hidden="true">
+                {l.icon}
+              </span>
               {l.label}
             </button>
           ))}
@@ -159,6 +174,9 @@ function Navbar({ page, setPage }) {
         <button
           className="nav-burger"
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
           style={{
             display: "none",
             background: "none",
@@ -175,6 +193,7 @@ function Navbar({ page, setPage }) {
       {/* Mobile menu */}
       {menuOpen && (
         <div
+          id="mobile-menu"
           className="nav-mobile-menu"
           style={{
             display: "none",
@@ -190,9 +209,12 @@ function Navbar({ page, setPage }) {
               key={l.id}
               onClick={() => go(l.id)}
               className={`nav-link${page === l.id ? " active" : ""}`}
+              aria-current={page === l.id ? "page" : undefined}
               style={{ width: "100%", textAlign: "left", fontSize: 15, gap: 10 }}
             >
-              <span style={{ fontSize: 18 }}>{l.icon}</span>
+              <span style={{ fontSize: 18 }} aria-hidden="true">
+                {l.icon}
+              </span>
               {l.label}
             </button>
           ))}
