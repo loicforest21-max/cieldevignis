@@ -5,6 +5,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { G, GlobalStyles } from "./styles.jsx";
 import { Particles } from "./components/Particles.jsx";
 import { Navbar } from "./components/Navbar.jsx";
+import { ErrorBoundary } from "./components/ErrorBoundary.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 
 // Heavy pages are lazy-loaded — only fetched when user opens them
@@ -123,30 +124,33 @@ function SiteApp() {
       <GlobalStyles />
       <Particles />
       <Navbar page={page} setPage={setPage} />
-      {/* Home stays eager — first page everyone sees */}
-      {page === "home" && <HomePage setPage={setPage} />}
-      {/* All other pages are lazy-loaded */}
-      <Suspense fallback={<PageLoader />}>
-        {page === "builds" && (
-          <BuildsPage
-            importCode={importCode}
-            onClearImportCode={() => setImportCode("")}
-            onPublishToCommunity={goToCommunityWithCode}
-          />
-        )}
-        {page === "community" && (
-          <CommunityPage
-            setPage={setPage}
-            initialCode={communityCode}
-            onClearInitialCode={() => setCommunityCode("")}
-            onEditInBuilder={goToBuilderWithCode}
-          />
-        )}
-        {page === "dungeons" && <DungeonsPage />}
-        {page === "wiki" && <WikiPage />}
-        {page === "mods" && <ModsPage />}
-        {page === "map" && <MapPage />}
-      </Suspense>
+      {/* ErrorBoundary keyed by page = it auto-resets when user navigates */}
+      <ErrorBoundary key={page} onReset={() => setPage("home")}>
+        {/* Home stays eager — first page everyone sees */}
+        {page === "home" && <HomePage setPage={setPage} />}
+        {/* All other pages are lazy-loaded */}
+        <Suspense fallback={<PageLoader />}>
+          {page === "builds" && (
+            <BuildsPage
+              importCode={importCode}
+              onClearImportCode={() => setImportCode("")}
+              onPublishToCommunity={goToCommunityWithCode}
+            />
+          )}
+          {page === "community" && (
+            <CommunityPage
+              setPage={setPage}
+              initialCode={communityCode}
+              onClearInitialCode={() => setCommunityCode("")}
+              onEditInBuilder={goToBuilderWithCode}
+            />
+          )}
+          {page === "dungeons" && <DungeonsPage />}
+          {page === "wiki" && <WikiPage />}
+          {page === "mods" && <ModsPage />}
+          {page === "map" && <MapPage />}
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }
