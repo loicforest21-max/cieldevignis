@@ -6,8 +6,8 @@ import { G, GlobalStyles } from "./styles.jsx";
 import { Particles } from "./components/Particles.jsx";
 import { Navbar } from "./components/Navbar.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
+import { WikiPage } from "./pages/WikiPage.jsx";
 import {
-  WikiPage,
   BuildsPage,
   MapPage,
   DungeonsPage,
