@@ -5,8 +5,8 @@ import { useState, useEffect } from "react";
 import { G, GlobalStyles } from "./styles.jsx";
 import { Particles } from "./components/Particles.jsx";
 import { Navbar } from "./components/Navbar.jsx";
+import { HomePage } from "./pages/HomePage.jsx";
 import {
-  HomePage,
   WikiPage,
   BuildsPage,
   MapPage,
