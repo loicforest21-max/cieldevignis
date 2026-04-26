@@ -8,6 +8,7 @@ import { Navbar } from "./components/Navbar.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { ErrorBoundary } from "./components/ErrorBoundary.jsx";
 import { CommandPalette } from "./components/CommandPalette.jsx";
+import { ServerLiveStatsStyles } from "./components/ServerLiveStats.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 
 // Heavy pages are lazy-loaded — only fetched when user opens them
@@ -163,6 +164,7 @@ function SiteApp() {
   return (
     <div style={{ minHeight: "100vh", background: G.bg, color: G.text, fontFamily: "var(--fb)" }}>
       <GlobalStyles />
+      <ServerLiveStatsStyles />
       {/* Skip link for keyboard users — jumps past navbar */}
       <a href="#main-content" className="skip-to-main">
         Aller au contenu principal

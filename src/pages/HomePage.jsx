@@ -6,6 +6,7 @@ import { RACE_PREVIEWS, CLASS_PREVIEWS } from "../data/core.js";
 import { G } from "../styles.jsx";
 import { FeatureCard } from "../components/FeatureCard.jsx";
 import { RacePreview } from "../components/RacePreview.jsx";
+import { ServerLiveStats } from "../components/ServerLiveStats.jsx";
 
 function HomePage({ setPage }) {
   const heroRef = useRef(null);
@@ -1120,6 +1121,11 @@ function HomePage({ setPage }) {
             <div style={{ width: 3, height: 8, borderRadius: 2, background: "#e8a53780" }} />
           </div>
         </div>
+      </section>
+
+      {/* LIVE SERVER STATUS — between hero and stats bar */}
+      <section style={{ padding: "0 24px", maxWidth: 720, margin: "0 auto" }}>
+        <ServerLiveStats />
       </section>
 
       {/* STATS BAR */}

@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════
 import { useState } from "react";
 import { G } from "../styles.jsx";
+import { ServerLiveStats } from "../components/ServerLiveStats.jsx";
 
 const SERVER_ADDRESS = "game10.helloserv.fr:5500";
 const HYTALE_VERSION = "2026.03.26-89796e57b";
@@ -183,39 +184,9 @@ function JoinPage() {
           </p>
         </div>
 
-        {/* Status pill */}
+        {/* Status pill — live data via voxl.gg proxy */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 28 }}>
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "7px 18px",
-              background: "rgba(46,213,115,0.1)",
-              border: "1px solid rgba(46,213,115,0.4)",
-              borderRadius: 30,
-              fontFamily: "var(--fd)",
-              fontSize: 12,
-              color: "#2ed573",
-              letterSpacing: "0.5px",
-              fontWeight: 600,
-            }}
-            role="status"
-            aria-label="Serveur en ligne, ouvert à tous"
-          >
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                background: "#2ed573",
-                borderRadius: "50%",
-                boxShadow: "0 0 10px #2ed573",
-                animation: "joinPulse 2s ease-in-out infinite",
-              }}
-              aria-hidden="true"
-            />
-            SERVEUR EN LIGNE · OUVERT À TOUS
-          </span>
+          <ServerLiveStats variant="compact" />
         </div>
 
         {/* Server coordinates card */}
@@ -597,13 +568,9 @@ function JoinPage() {
         </div>
       </div>
 
-      {/* Local keyframes & responsive */}
+      {/* Local responsive styles */}
       <style>
         {`
-        @keyframes joinPulse {
-          0%, 100% { opacity: 1; }
-          50%      { opacity: 0.5; }
-        }
         @media (max-width: 720px) {
           .join-server-grid { grid-template-columns: 1fr !important; }
           .join-rules-grid  { grid-template-columns: 1fr !important; }
