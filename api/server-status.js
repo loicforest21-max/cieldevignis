@@ -30,7 +30,10 @@ export default async function handler(req, res) {
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
     const response = await fetch(VOXL_API_URL, {
-      headers: { Accept: "application/json" },
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "CielDeVignis/1.0 (+https://cieldevignis.vercel.app)",
+      },
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
@@ -58,6 +61,12 @@ export default async function handler(req, res) {
     const isTimeout = err.name === "AbortError";
     res.status(503).json({
       error: isTimeout ? "upstream_timeout" : "upstream_unreachable",
+      // Debug info — remove these fields once the issue is fixed
+      _debug: {
+        name: err.name,
+        message: err.message,
+        cause: err.cause ? String(err.cause) : null,
+      },
     });
   }
 }
