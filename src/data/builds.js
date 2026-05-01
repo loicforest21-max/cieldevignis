@@ -115,7 +115,7 @@ const RECOMMENDED_BUILDS = [
       discipline: 0,
     },
     augments: ["vampirism", "conqueror", "titans_might"],
-    tips: "True Edge + Ravenous Strike = sustain massif. Monte Force en priorité car True Edge scale dessus. Titan's Might convertit ta VIT en Force bonus.",
+    tips: "True Edge + Ravenous Strike = sustain massif. Monte Force en priorité car True Edge scale dessus. Titan's Might ajoute 4% de ta VIT max en Force (cap +150% dégâts physiques) et coûte -30% Hâte.",
     pros: [
       "Excellent sustain en combat prolongé",
       "True Damage ignore la défense ennemie",
@@ -154,7 +154,7 @@ const RECOMMENDED_BUILDS = [
       discipline: 0,
     },
     augments: ["overdrive", "blood_frenzy", "fleet_footwork"],
-    tips: "Blade Dance stack +10% AS par coup (5x). Avec Swiftness (+14%/kill ×8) tu deviens incontrôlable. Focus Hâte > Force > Férocité.",
+    tips: "Blade Dance stack +10% AS par coup (5×). Avec Swiftness Vastaya (+18%/kill, max 5× = +90%) tu deviens incontrôlable. Note v8.5.1 : l'innate haste du Duelist a été nerfé de 50%, donc compense via SP Hâte. Focus Hâte > Force > Férocité.",
     pros: ["Vitesse d'attaque la plus haute", "Scaling infini avec les stacks", "Très fun à jouer"],
     cons: ["Dégâts par coup modérés", "Besoin de ramp-up", "Vulnérable aux burst"],
   },
@@ -222,7 +222,7 @@ const RECOMMENDED_BUILDS = [
       discipline: 0,
     },
     augments: ["titans_wisdom", "mana_infusion", "goliath"],
-    tips: "Arcane Dominance ajoute 4% de ta VIT totale en SOR (flat après race mult). Titan's Wisdom ajoute 15% VIT → SOR. Monte VIT en priorité = double scaling.",
+    tips: "Arcane Dominance ajoute 4% de ta VIT totale en SOR (flat après race mult, cumulé par tier). Titan's Wisdom ajoute 4% VIT → SOR (cap +150% dégâts magiques) au prix de -30% Hâte. Monte VIT en priorité = double scaling.",
     pros: [
       "Très tanky pour un mage",
       "Double scaling VIT→SOR",
@@ -334,7 +334,7 @@ const RECOMMENDED_BUILDS = [
       discipline: 0,
     },
     augments: ["titans_might", "conqueror", "goliath"],
-    tips: "Primal Dominance + Titan's Might = ta VIT feed ta Force massivement. Dragonborn Guardian a ×1.22 DEF + Second Wind. L'équilibre parfait tank/DPS.",
+    tips: "Primal Dominance (4% VIT → FOR par tier) + Titan's Might (4% VIT max → FOR, cap +150% dmg, -30% Hâte) = ta VIT alimente ta Force. Dragonborn Guardian a ×1.22 DEF + Second Wind. L'équilibre parfait tank/DPS.",
     pros: [
       "Bon DPS malgré la tankiness",
       "Scaling VIT→FOR excellent",
@@ -2022,6 +2022,84 @@ const SYNERGIES = {
     score: 4,
     reason: "+50% XP Human + +35% XP Adventurer = leveling 2× accéléré.",
     tags: ["XP", "Leveling"],
+    role: "support",
+  },
+  // ─── v8.5.1 — NOUVELLES CLASSES ───
+  yordle_priest: {
+    score: 5,
+    reason:
+      "Flow massif Yordle Sprout (45+ base) + Healing Touch tier-based + Healing Aura. Le soigneur le plus efficace : ses skills scale sur Endurance + Mana, Yordle excelle aux deux.",
+    tags: ["Healing", "Mana", "Group Support"],
+    role: "support",
+  },
+  yordle_magistrate: {
+    score: 5,
+    reason:
+      "Flow Yordle + Magistrate Shielding/Buffing Aura + nouveaux passifs tier Elite (Mana Regen, Healing Bonus, Special Charge). Buffer/protector polyvalent #1.",
+    tags: ["Buffer", "Shield", "Mana"],
+    role: "support",
+  },
+  watcher_priest: {
+    score: 5,
+    reason:
+      "Flow Watcher (le plus haut du jeu, jusqu'à 80+ avec Arbiter) + Healing Aura scale sur Mana. Soigneur AoE le plus puissant.",
+    tags: ["Healing", "Flow Max", "AoE"],
+    role: "support",
+  },
+  human_magistrate: {
+    score: 4,
+    reason:
+      "+85% XP Human Explorer + Magistrate Buffing Aura. Boost le groupe en dégâts ET en XP — combo de farm idéal.",
+    tags: ["Buffer", "XP", "Team Carry"],
+    role: "support",
+  },
+  vastaya_bard: {
+    score: 5,
+    reason:
+      "Vastaya Sorcery + Stamina + Bard innates Stamina (jusqu'à 3.25 Master) et Sorcery. Healing Aura + Buffing Aura scale Endurance — Vastaya est l'équilibre parfait.",
+    tags: ["Hybrid Support", "Aura", "Stamina"],
+    role: "support",
+  },
+  watcher_bard: {
+    score: 4,
+    reason:
+      "Flow Watcher + Bard auras. Mana profond pour soutenir les auras longues durées + Sorcery Watcher pour dps secondaire.",
+    tags: ["Mana", "Aura", "Hybrid"],
+    role: "support",
+  },
+  golem_paladin: {
+    score: 5,
+    reason:
+      "195 PV base Golem + DEF×1.11 + Paladin Healing Touch + Taunt Aura + Knockback Resist 80%. Tank-soigneur quasi indestructible qui tient toute l'aggro.",
+    tags: ["Pure Tank", "Heal", "Taunt"],
+    role: "tank",
+  },
+  dragonborn_paladin: {
+    score: 4,
+    reason:
+      "VIT 114 Dragonborn + Paladin Healing Touch (1→3 par tier) + Taunt Aura. Tank-bruiser qui se soigne en première ligne.",
+    tags: ["Tank Heal", "Taunt", "Bruiser"],
+    role: "tank",
+  },
+  iceborn_paladin: {
+    score: 4,
+    reason:
+      "VIT 94 Iceborn + Berzerker (+14% sous 35%) + Paladin Healing Touch + Knockback Resist. Tank qui frappe plus fort blessé puis se soigne.",
+    tags: ["Tank Heal", "Berzerker"],
+    role: "tank",
+  },
+  voidborn_magistrate: {
+    score: 4,
+    reason:
+      "VIT solide Voidborn + Sorcery + Magistrate Shielding Aura (scale Endurance) + Buffing Aura. Support tanky qui scale sur la VIT pour booster les boucliers.",
+    tags: ["Shield", "Buffer", "Tanky Support"],
+    role: "support",
+  },
+  celestial_priest: {
+    score: 4,
+    reason:
+      "SOR×1.11 Celestial + Flow + Priest Healing Aura. Soigneur qui peut aussi taper en magic — utile en groupe restreint.",
+    tags: ["Hybrid Heal", "SOR", "Mana"],
     role: "support",
   },
 };
