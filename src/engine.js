@@ -186,6 +186,7 @@ function computeAugMultipliers(selectedAugments) {
     const d = aug.dpsImpact;
     if (d.strMult) mult.strength = (mult.strength || 1) * d.strMult;
     if (d.sorMult) mult.sorcery = (mult.sorcery || 1) * d.sorMult;
+    if (d.staminaMult) mult.stamina = (mult.stamina || 1) * d.staminaMult;
     if (d.precLock) lock.precision = 0;
   });
   return { mult, lock };
