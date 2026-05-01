@@ -645,6 +645,148 @@ const DUNGEONS = [
     emoji: "🌀",
     color: "#8854d0",
   },
+  // === EXTERNAL MODS (mod-tier dungeons configured server-side) ===
+  {
+    id: "voxel_dungeon",
+    tier: "endgame",
+    name: "Voxel Dungeon",
+    desc: "Donjon procédural à 4 biomes. Les Ruines (Sthony), Le Temple (Camelot), Les Cavernes, Le Creuset (Yeeti). 3 boss successifs à vaincre, niveau de difficulté qui s'adapte au nombre de joueurs.",
+    source: "Voxel Dungeon (mod externe par Spinelyx)",
+    levels: "75-90",
+    tiered: true,
+    levelsPerTier: 20,
+    scaling: {
+      hp: { base: 2.0, perLv: 0.05 },
+      dmg: { base: 1.2, perLv: 0.03 },
+      def: { negMax: 0.4, posMax: 0.9, belowNeg: 0, abovePos: 0.95 },
+    },
+    mobs: [],
+    boss: {
+      name: "Yeeti, the Penguin Overlord",
+      hp: 5000,
+      level: 100,
+      augments: ["rebirth", "frozen_domain", "blood_surge"],
+      scaling: {
+        hp: { base: 1.0, perLv: 0.08 },
+        dmg: { base: 1.2, perLv: 0.05 },
+        def: { negMax: 0.45, posMax: 0.92, belowNeg: 0, abovePos: 0.97 },
+      },
+    },
+    bosses: [
+      {
+        name: "Sthony, the Guardian of the Ruins",
+        hp: 5000,
+        level: 90,
+        augments: ["rebirth"],
+        scaling: {
+          hp: { base: 1.0, perLv: 0.07 },
+          dmg: { base: 1.1, perLv: 0.05 },
+          def: { negMax: 0.4, posMax: 0.9, belowNeg: 0, abovePos: 0.95 },
+        },
+      },
+      {
+        name: "Camelot, the Slumbering Guardian",
+        hp: 5000,
+        level: 95,
+        augments: ["rebirth", "blood_surge"],
+        scaling: {
+          hp: { base: 1.0, perLv: 0.075 },
+          dmg: { base: 1.15, perLv: 0.05 },
+          def: { negMax: 0.42, posMax: 0.91, belowNeg: 0, abovePos: 0.96 },
+        },
+      },
+      {
+        name: "Yeeti, the Penguin Overlord",
+        hp: 5000,
+        level: 100,
+        augments: ["rebirth", "frozen_domain", "blood_surge"],
+        scaling: {
+          hp: { base: 1.0, perLv: 0.08 },
+          dmg: { base: 1.2, perLv: 0.05 },
+          def: { negMax: 0.45, posMax: 0.92, belowNeg: 0, abovePos: 0.97 },
+        },
+      },
+    ],
+    loot: ["Voxel Drops", "Boss-specific items"],
+    emoji: "🧱",
+    color: "#9c88ff",
+  },
+  {
+    id: "echo_of_icarus",
+    tier: "endgame",
+    name: "Echo of Icarus",
+    desc: 'Labyrinthe à 4 tiers gardé par les guerriers déchus de Daedalus. Progresse à travers les étages successifs (Tier 0 → Tier 4) jusqu\'aux boss. "Nous fûmes les premiers à résister et les premiers à tomber." Le Wraith Echo Tier 3 est l\'ultime garde.',
+    source: "Echo of Icarus (mod externe par Jonas/bblessed/None_Demon/Vulleris)",
+    levels: "95-110",
+    tiered: true,
+    levelsPerTier: 20,
+    scaling: {
+      hp: { base: 2.0, perLv: 0.05 },
+      dmg: { base: 1.2, perLv: 0.03 },
+      def: { negMax: 0.4, posMax: 0.9, belowNeg: 0, abovePos: 0.95 },
+    },
+    mobs: [],
+    boss: {
+      name: "Wraith Echo Tier 3",
+      hp: 5000,
+      level: 135,
+      augments: ["rebirth", "vampirism", "bloodthirster"],
+      scaling: {
+        hp: { base: 1.0, perLv: 0.1 },
+        dmg: { base: 1.25, perLv: 0.06 },
+        def: { negMax: 0.5, posMax: 0.92, belowNeg: 0, abovePos: 0.98 },
+      },
+    },
+    bosses: [
+      {
+        name: "Skeleton Echo Tier 1 Group",
+        hp: 5000,
+        level: 105,
+        augments: [],
+        scaling: {
+          hp: { base: 1.0, perLv: 0.07 },
+          dmg: { base: 1.05, perLv: 0.05 },
+          def: { negMax: 0.4, posMax: 0.9, belowNeg: 0, abovePos: 0.95 },
+        },
+      },
+      {
+        name: "Skeleton Burnt Echo Tier 2 Group",
+        hp: 5000,
+        level: 115,
+        augments: ["blood_surge"],
+        scaling: {
+          hp: { base: 1.0, perLv: 0.08 },
+          dmg: { base: 1.1, perLv: 0.05 },
+          def: { negMax: 0.42, posMax: 0.91, belowNeg: 0, abovePos: 0.96 },
+        },
+      },
+      {
+        name: "Skeleton Incandescent Echo Tier 3 Group",
+        hp: 5000,
+        level: 125,
+        augments: ["rebirth", "blood_surge"],
+        scaling: {
+          hp: { base: 1.0, perLv: 0.09 },
+          dmg: { base: 1.15, perLv: 0.055 },
+          def: { negMax: 0.45, posMax: 0.92, belowNeg: 0, abovePos: 0.97 },
+        },
+      },
+      {
+        name: "Wraith Echo Tier 3",
+        hp: 5000,
+        level: 135,
+        augments: ["rebirth", "vampirism", "bloodthirster"],
+        scaling: {
+          hp: { base: 1.0, perLv: 0.1 },
+          dmg: { base: 1.25, perLv: 0.06 },
+          def: { negMax: 0.5, posMax: 0.92, belowNeg: 0, abovePos: 0.98 },
+        },
+      },
+    ],
+    loot: ["Echo Tier Drops (Tier 0 → 4)", "Artifacts", "Echo Weapons"],
+    emoji: "🏛️",
+    color: "#3a94a7",
+  },
 ];
 
 const DUNGEON_TIERS = [
