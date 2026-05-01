@@ -905,11 +905,11 @@ const CLASSES = [
     weapons: ["Dague", "Épée", "Arc"],
     defCap: 45,
     innateByTier: [
-      { haste: 0.28, ferocity: 0.84 },
-      { haste: 0.34, ferocity: 1.02 },
-      { haste: 0.4, ferocity: 1.2 },
-      { haste: 0.46, ferocity: 1.38 },
-      { haste: 0.52, ferocity: 1.56 },
+      { haste: 0.14, ferocity: 0.84 },
+      { haste: 0.17, ferocity: 1.02 },
+      { haste: 0.2, ferocity: 1.2 },
+      { haste: 0.23, ferocity: 1.38 },
+      { haste: 0.26, ferocity: 1.56 },
     ],
     passives: [
       {
@@ -918,6 +918,28 @@ const CLASSES = [
         icon: "🎯",
         color: "#e74c3c",
       },
+    ],
+  },
+  {
+    id: "bard",
+    name: "Bard",
+    roles: ["Support"],
+    dmg: "Magic",
+    range: "mêlée",
+    color: "#f39c12",
+    emoji: "🎵",
+    weapons: ["Arc", "Bâton"],
+    defCap: 50,
+    innateByTier: [
+      { stamina: 1.75, sorcery: 0.7 },
+      { stamina: 2.125, sorcery: 0.85 },
+      { stamina: 2.5, sorcery: 1 },
+      { stamina: 2.875, sorcery: 1.15 },
+      { stamina: 3.25, sorcery: 1.3 },
+    ],
+    passives: [
+      { name: "Healing Aura", desc: "Soin AoE passif. R5", icon: "🌿", color: "#2ed573" },
+      { name: "Buffing Aura", desc: "Buff dmg alliés +100% max", icon: "⬆️", color: "#f5a623" },
     ],
   },
   {
@@ -988,11 +1010,11 @@ const CLASSES = [
     weapons: ["Épée", "Lance", "Dague"],
     defCap: 65,
     innateByTier: [
-      { haste: 0.28, strength: 0.91, life_force: 1.05 },
-      { haste: 0.34, strength: 1.105, life_force: 1.275 },
-      { haste: 0.4, strength: 1.3, life_force: 1.5 },
-      { haste: 0.46, strength: 1.495, life_force: 1.725 },
-      { haste: 0.52, strength: 1.69, life_force: 1.95 },
+      { haste: 0.14, strength: 0.91, life_force: 1.05 },
+      { haste: 0.17, strength: 1.105, life_force: 1.275 },
+      { haste: 0.2, strength: 1.3, life_force: 1.5 },
+      { haste: 0.23, strength: 1.495, life_force: 1.725 },
+      { haste: 0.26, strength: 1.69, life_force: 1.95 },
     ],
     passives: [
       {
@@ -1004,8 +1026,8 @@ const CLASSES = [
     ],
   },
   {
-    id: "healer",
-    name: "Healer",
+    id: "priest",
+    name: "Priest",
     roles: ["Support"],
     dmg: "Magic",
     range: "distance",
@@ -1023,7 +1045,7 @@ const CLASSES = [
     passives: [
       {
         name: "Healing Touch",
-        desc: "50% soin allié. Scale END. R10",
+        desc: "Soin allié. Scale END. Valeur 5→7.5→10→12.5→15 (par tier)",
         icon: "🤲",
         color: "#55efc4",
       },
@@ -1115,8 +1137,41 @@ const CLASSES = [
     ],
   },
   {
-    id: "oracle",
-    name: "Oracle",
+    id: "paladin",
+    name: "Paladin",
+    roles: ["Vanguard"],
+    dmg: "Hybrid",
+    range: "mêlée",
+    color: "#fed330",
+    emoji: "🛡️",
+    weapons: ["Masse", "Bouclier", "Marteau", "Hache"],
+    defCap: 80,
+    innateByTier: [
+      { defense: 0.245, life_force: 1.575 },
+      { defense: 0.297, life_force: 1.912 },
+      { defense: 0.35, life_force: 2.25 },
+      { defense: 0.402, life_force: 2.587 },
+      { defense: 0.455, life_force: 2.925 },
+    ],
+    passives: [
+      {
+        name: "Healing Touch",
+        desc: "Soin allié. Valeur 1→1.5→2→2.5→3 (par tier)",
+        icon: "🤲",
+        color: "#55efc4",
+      },
+      { name: "Taunt Aura", desc: "Provoque les ennemis proches", icon: "🎯", color: "#e74c3c" },
+      {
+        name: "Knockback Resistance",
+        desc: "+80% résistance au knockback",
+        icon: "🛡️",
+        color: "#54a0ff",
+      },
+    ],
+  },
+  {
+    id: "magistrate",
+    name: "Magistrate",
     roles: ["Support"],
     dmg: "Magic",
     range: "distance",
@@ -1134,6 +1189,24 @@ const CLASSES = [
     passives: [
       { name: "Shielding Aura", desc: "Bouclier 45+20%END. CD 25s", icon: "🛡️", color: "#54a0ff" },
       { name: "Buffing Aura", desc: "Buff dmg alliés +100% max", icon: "⬆️", color: "#f5a623" },
+      {
+        name: "Mana Regen",
+        desc: "Régénération mana (Elite+). 6.4→7.5→8.6→9.8% par tier",
+        icon: "💎",
+        color: "#45aaf2",
+      },
+      {
+        name: "Healing Bonus",
+        desc: "+42.5→50→57.5→65% efficacité de soin (Elite+)",
+        icon: "✚",
+        color: "#2ed573",
+      },
+      {
+        name: "Special Charge",
+        desc: "+63.7→75→86.2→97.5% charge spéciale (Elite+)",
+        icon: "⚡",
+        color: "#f5a623",
+      },
     ],
   },
   {
