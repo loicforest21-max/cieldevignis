@@ -719,11 +719,11 @@ function StatsTab({
           <input
             type="number"
             min={1}
-            max={200}
+            max={250}
             value={level}
             onChange={(e) => {
               const v = parseInt(e.target.value) || 1;
-              setLevel(Math.max(1, Math.min(200, v)));
+              setLevel(Math.max(1, Math.min(250, v)));
             }}
             style={{
               width: 64,
@@ -1374,7 +1374,7 @@ function SummaryTab({ state: s, onPublishToCommunity }) {
     augBonus: manualAug,
   } = s;
   const race = getActiveRace(race0, sEvo || race0?.id);
-  const totalSP = 12 + (level - 1) * 5;
+  const totalSP = 10 + (level - 1) * 4 + prestige * 2;
   const usedSP = Object.values(sp).reduce((a, b) => a + b, 0);
   const inn = computeInnates(race, c1, t1, c2, t2, level);
   const flatAug = computeAugBonuses(sa, manualAug);
@@ -2556,10 +2556,10 @@ function DpsTab({ computedStats, selectedRace, primaryClass, selectedEvo, select
               <input
                 type="number"
                 min={1}
-                max={200}
+                max={250}
                 value={enemyLevel}
                 onChange={(e) =>
-                  setEnemyLevel(Math.max(1, Math.min(200, parseInt(e.target.value) || 1)))
+                  setEnemyLevel(Math.max(1, Math.min(250, parseInt(e.target.value) || 1)))
                 }
                 style={{ ...inp, width: 55, color: "#f5a623" }}
                 title="Niveau"
@@ -4893,7 +4893,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     }
   }, [initialCode]);
 
-  const totalSP = 12 + (level - 1) * 5;
+  const totalSP = 10 + (level - 1) * 4 + prestige * 2;
   const usedSP = Object.values(skillPoints).reduce((a, b) => a + b, 0);
   const handleImport = (d) => {
     setSelectedRace(d.selectedRace);
