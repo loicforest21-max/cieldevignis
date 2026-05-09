@@ -1,9 +1,48 @@
 // ═══════════════════════════════════════════════════
-// ENGINE — Stat computation, encoding, storage
+// ENGINE v9 — Stat computation, encoding, storage
+// ═══════════════════════════════════════════════════
+// Mise à jour majeure pour EndlessLeveling 9.0.0 :
+//   - Race attrs sont désormais TOUS flat (plus de multiplicateurs)
+//     ex. v7 strength 1.11×, v9 strength 25 (flat)
+//   - Haste a une baseline de 100 (race=100 → +0%, race=121 → +21%)
+//   - SP = 10 + (lvl-1) × 4 (vs 12 + (lvl-1) × 5 en v7)
+//   - per_level par stat ajusté (strength 0.5→0.75, haste 0.75→0.25, etc.)
+//
+// Pipeline (4 passes, identique à v7 dans la STRUCTURE, mais arithmétique simplifiée) :
+//   Pass 1 : stats de base (race + innates × niveau + SP + flat aug)
+//   Pass 2 : augments à scaling (Titan's Might → STR depuis MAX_HP, etc.)
+//   Pass 3 : class passive scaling (Arcane/Primal Dominance : x% PV → SOR/STR)
+//   Pass 4 : multiplicateurs d'augments (Brute Force ×2.5 STR/SOR, Precision lock)
+//   Pass 5 : Fates (réservé pour Phase 5 ; stub neutre en Phase 1)
 // ═══════════════════════════════════════════════════
 import { STATS, RACES, CLASSES, AUGMENTS, EVOLUTIONS } from "./data/core.js";
 
-function getActiveRace(race, evoId) {
+// ─── Constantes EL 9.0 (depuis leveling.json + config.json) ───
+export const BASE_SP = 10;
+export const SP_PER_LEVEL = 4;
+export const PLAYER_LEVEL_CAP = 50;        // soft-cap niveau
+export const ABSOLUTE_LEVEL_CAP = 250;     // cap absolu avec prestige
+export const HASTE_BASELINE = 100;         // race haste 100 = +0%, 121 = +21%
+export const OFF_CLASS_WEAPON_PENALTY = -0.40; // -40% dmg si arme hors-classe
+export const DEF_CAPS_BY_ROLE = {
+  Mage: 40, Marksman: 40, Assassin: 45, Support: 50, Diver: 55,
+  Skirmisher: 65, BattleMage: 65, Juggernaut: 80, Vanguard: 80,
+};
+
+// ─── Helpers ───
+export function spForLevel(level) { return BASE_SP + (level - 1) * SP_PER_LEVEL; }
+export function defCapForClass(c) {
+  if (!c?.roles) return 50;
+  const role = c.roles[0];
+  if (DEF_CAPS_BY_ROLE[role] != null) return DEF_CAPS_BY_ROLE[role];
+  // Insensible à la casse (necromancer.json : "Battlemage")
+  for (const k of Object.keys(DEF_CAPS_BY_ROLE))
+    if (k.toLowerCase() === String(role).toLowerCase()) return DEF_CAPS_BY_ROLE[k];
+  return 50;
+}
+
+// Récupère la forme active d'une race (base ou évoluée)
+export function getActiveRace(race, evoId) {
   if (!race) return null;
   const evo = evoId && EVOLUTIONS[evoId];
   if (evo)
@@ -15,7 +54,10 @@ function getActiveRace(race, evoId) {
       activeName: evo.name,
       activeDesc: evo.desc,
       activeStage: evo.stage,
+      activePath: evo.path,
       activePrestige: evo.prestige,
+      activeMinSk: evo.minSk || {},
+      activeMinAnySk: evo.minAnySk || [],
       evoId: evoId,
     };
   const base = EVOLUTIONS[race.id];
@@ -28,15 +70,20 @@ function getActiveRace(race, evoId) {
       activeName: base.name,
       activeDesc: base.desc,
       activeStage: "base",
+      activePath: base.path || "none",
       activePrestige: 0,
+      activeMinSk: {},
+      activeMinAnySk: [],
       evoId: race.id,
     };
   return race;
 }
 
-// STAT COMPUTATION — CORRECTED FORMULAS
-// ═══════════════════════════════════════════
-function computeInnates(activeRace, c1, t1, c2, t2, level) {
+// ─── Innates (per-level scaling) ─────────────────────
+// Race contribue (typiquement) via life_force innate
+// Classe primaire : 100% des innateByTier[t]
+// Classe secondaire : 50% des innateByTier[t]
+export function computeInnates(activeRace, c1, t1, c2, t2, level) {
   const inn = {};
   const c1inn = c1?.innateByTier?.[t1] || {};
   const c2inn = c2?.innateByTier?.[t2] || {};
@@ -50,27 +97,26 @@ function computeInnates(activeRace, c1, t1, c2, t2, level) {
   return inn;
 }
 
-function computeAugBonuses(selectedAugments, manualAugBonus, baseStats) {
+// ─── Augments — bonus flats + scaling ─────────────────
+// Si baseStats fourni : 2e passe avec scaling (Titan's Might etc.)
+export function computeAugBonuses(selectedAugments, manualAugBonus, baseStats) {
   const total = {};
-  STATS.forEach((s) => {
-    total[s.key] = manualAugBonus[s.key] || 0;
-  });
-  // Pass 1: flat bonuses from augments
-  selectedAugments.forEach((aug) => {
-    if (aug.bonuses) {
+  STATS.forEach((s) => { total[s.key] = manualAugBonus?.[s.key] || 0; });
+  // Pass 1 : bonus flats
+  (selectedAugments || []).forEach((aug) => {
+    if (aug?.bonuses) {
       Object.entries(aug.bonuses).forEach(([key, val]) => {
         if (STATS.find((s) => s.key === key)) total[key] = (total[key] || 0) + val;
       });
     }
   });
-  // Pass 2: scaling bonuses (needs base stats computed without scaling)
+  // Pass 2 : bonus de scaling (nécessite les stats de base déjà calculées)
   if (baseStats) {
-    selectedAugments.forEach((aug) => {
-      if (aug.scaling) {
+    (selectedAugments || []).forEach((aug) => {
+      if (aug?.scaling) {
         aug.scaling.forEach((sc) => {
           const sourceVal = baseStats[sc.source] || 0;
-          const bonus = sourceVal * sc.ratio;
-          total[sc.target] = (total[sc.target] || 0) + bonus;
+          total[sc.target] = (total[sc.target] || 0) + sourceVal * sc.ratio;
         });
       }
     });
@@ -78,76 +124,49 @@ function computeAugBonuses(selectedAugments, manualAugBonus, baseStats) {
   return total;
 }
 
-function computeStat(stat, race, innates, sp, augBonus, postBonus) {
-  const spVal = (sp[stat.key] || 0) * stat.per_level;
-  const innVal = innates[stat.key]?.total || 0;
-  const aug = augBonus[stat.key] || 0;
-  const rawRaceAttr = race?.attrs[stat.key];
+// ─── computeStat — calcul individuel d'une stat ───────
+// EL 9.0 : tout est désormais ADDITIF (race attrs sont des flats).
+// Le seul cas particulier reste haste (baseline 100) pour l'affichage.
+export function computeStat(stat, race, innates, sp, augBonus, postBonus) {
+  const spVal = (sp?.[stat.key] || 0) * stat.per_level;
+  const innVal = innates?.[stat.key]?.total || 0;
+  const aug = augBonus?.[stat.key] || 0;
+  const raceAttr = race?.attrs?.[stat.key] || 0;
   const post = postBonus?.[stat.key] || 0;
 
   if (stat.mode === "haste") {
-    // For haste: 0 or undefined = 1.0 (no modifier)
-    const raceAttr = rawRaceAttr === undefined || rawRaceAttr === 0 ? 1.0 : rawRaceAttr;
-    const raceOffset = (raceAttr - 1.0) * 100;
-    const gains = innVal + spVal + aug;
-    const multiplied = gains * raceAttr;
+    // Race haste de 100 = neutre (+0%). Race haste de 121 = +21%.
+    const raceOffset = raceAttr - HASTE_BASELINE;
     return {
-      total: raceOffset + multiplied + post,
+      total: raceOffset + innVal + spVal + aug + post,
       base: raceOffset,
       raceEffect: `${raceAttr} (${raceOffset >= 0 ? "+" : ""}${raceOffset.toFixed(0)}% base)`,
       fromSP: spVal,
       fromInn: innVal,
       fromAug: aug,
       fromPost: post,
-      formula: `(${raceAttr}-1)×100 + (${innVal.toFixed(1)}+${spVal.toFixed(1)}${aug ? `+${aug}` : ""})×${raceAttr}${post ? ` + ${post.toFixed(1)} passive` : ""}`,
-    };
-  } else if (stat.mode === "mult") {
-    // For mult: 0 or undefined = 1.0 (no race modifier)
-    const raceAttr = rawRaceAttr === undefined || rawRaceAttr === 0 ? 1.0 : rawRaceAttr;
-    const gains = innVal + spVal + aug;
-    const multiplied = gains * raceAttr;
-    return {
-      total: multiplied + post,
-      base: 0,
-      raceEffect: raceAttr === 1.0 ? "×1.0 (aucun)" : `×${raceAttr}`,
-      fromSP: spVal,
-      fromInn: innVal,
-      fromAug: aug,
-      fromPost: post,
-      formula: `(${innVal.toFixed(1)}+${spVal.toFixed(1)}${aug ? `+${aug}` : ""})×${raceAttr}${post ? ` + ${post.toFixed(1)} passive` : ""}`,
-    };
-  } else if (stat.mode === "add%") {
-    const raceAttr = rawRaceAttr || 0;
-    return {
-      total: raceAttr + innVal + spVal + aug + post,
-      base: raceAttr,
-      raceEffect: `+${raceAttr}%`,
-      fromSP: spVal,
-      fromInn: innVal,
-      fromAug: aug,
-      fromPost: post,
-      formula: `${raceAttr}+${innVal.toFixed(1)}+${spVal.toFixed(1)}${aug ? `+${aug}` : ""}${post ? `+${post.toFixed(1)}` : ""}`,
-    };
-  } else {
-    const raceAttr = rawRaceAttr || 0;
-    return {
-      total: raceAttr + innVal + spVal + aug + post,
-      base: raceAttr,
-      raceEffect: `+${raceAttr}`,
-      fromSP: spVal,
-      fromInn: innVal,
-      fromAug: aug,
-      fromPost: post,
-      formula: `${raceAttr}+${innVal.toFixed(1)}+${spVal.toFixed(1)}${aug ? `+${aug}` : ""}${post ? `+${post.toFixed(1)}` : ""}`,
+      formula: `${raceAttr}-${HASTE_BASELINE} + ${innVal.toFixed(1)} + ${spVal.toFixed(1)}${aug ? `+${aug}` : ""}${post ? ` + ${post.toFixed(1)} passive` : ""}`,
     };
   }
+
+  // Tous les autres modes ("flat", "mult", "add%") : addition pure
+  // mode est conservé uniquement pour l'AFFICHAGE (% suffix vs entier).
+  return {
+    total: raceAttr + innVal + spVal + aug + post,
+    base: raceAttr,
+    raceEffect: stat.mode === "flat" ? `+${raceAttr}` : `+${raceAttr}%`,
+    fromSP: spVal,
+    fromInn: innVal,
+    fromAug: aug,
+    fromPost: post,
+    formula: `${raceAttr}+${innVal.toFixed(1)}+${spVal.toFixed(1)}${aug ? `+${aug}` : ""}${post ? `+${post.toFixed(1)}` : ""}`,
+  };
 }
 
-// Compute class passive scaling (Arcane Dominance, Primal Dominance) — flat additions AFTER race multiplier
-// Now supports per-tier scaling via passiveScalingByTier
-function computeClassPassiveScaling(c1, t1, c2, t2, baseStats) {
+// ─── Class passive scaling (Arcane/Primal Dominance) ──
+// Ajout flat APRÈS toutes les autres passes — supporte par-tier
+export function computeClassPassiveScaling(c1, t1, c2, t2, baseStats) {
   const post = {};
-  // Primary class scaling
   if (c1?.passiveScalingByTier) {
     const sc = c1.passiveScalingByTier[t1 || 0];
     if (sc) {
@@ -160,7 +179,7 @@ function computeClassPassiveScaling(c1, t1, c2, t2, baseStats) {
       post[sc.target] = (post[sc.target] || 0) + sourceVal * sc.ratio;
     });
   }
-  // Secondary class scaling (50%)
+  // Classe secondaire = 50% du scaling
   if (c2?.passiveScalingByTier) {
     const sc = c2.passiveScalingByTier[t2 || 0];
     if (sc) {
@@ -176,13 +195,12 @@ function computeClassPassiveScaling(c1, t1, c2, t2, baseStats) {
   return post;
 }
 
-// Pass 4: augment stat multipliers (ex: Brute Force ×2.5 FOR/SOR, PRÉ→0)
-// Applied AFTER all other passes on the final stat totals
-function computeAugMultipliers(selectedAugments) {
+// ─── Pass 4 : multiplicateurs d'augments (Brute Force, Precision lock) ─
+export function computeAugMultipliers(selectedAugments) {
   const mult = {}; // { stat_key: multiplier }
   const lock = {}; // { stat_key: forced_value }
   (selectedAugments || []).forEach((aug) => {
-    if (!aug.dpsImpact) return;
+    if (!aug?.dpsImpact) return;
     const d = aug.dpsImpact;
     if (d.strMult) mult.strength = (mult.strength || 1) * d.strMult;
     if (d.sorMult) mult.sorcery = (mult.sorcery || 1) * d.sorMult;
@@ -192,18 +210,26 @@ function computeAugMultipliers(selectedAugments) {
   return { mult, lock };
 }
 
-function fmt(val, mode) {
+// ─── Pass 5 : Fates (Phase 5) — STUB neutre en Phase 1 ─
+// Sera activé en Phase 5 (EndlessFates 0.1.0)
+// Format prévu : fates = [{ setId, slot, mainStat, mainValue, substats: [...] }, ...]
+// Avec un compteur par set (pour proc 2pc/4pc)
+export function computeFateBonuses(fates) {
+  return { flat: {}, mult: {} }; // stub : pas d'effet
+}
+
+// ─── Format & utilitaires ─────────────────────────────
+export function fmt(val, mode) {
   if (mode === "mult" || mode === "add%" || mode === "haste")
     return val === 0 ? "0%" : (val > 0 ? "+" : "") + val.toFixed(1) + "%";
   return Math.round(val).toString();
 }
 
-// ═══════════════════════════════════════════
-// ENCODE/DECODE
-
-function encodeBuild(s) {
+// ─── Encode/decode (encodage compact, partage URL) ────
+export function encodeBuild(s) {
   return btoa(
     JSON.stringify({
+      v: 9, // version du format
       r: s.selectedRace?.id || "",
       e: s.selectedEvo || "",
       c1: s.primaryClass?.id || "",
@@ -215,10 +241,11 @@ function encodeBuild(s) {
       sp: s.skillPoints,
       a: s.selectedAugments.map((a) => a.id),
       ab: s.augBonus,
+      // f: s.fates — réservé Phase 5
     })
   );
 }
-function decodeBuild(str) {
+export function decodeBuild(str) {
   try {
     const d = JSON.parse(atob(str));
     return {
@@ -239,83 +266,67 @@ function decodeBuild(str) {
   }
 }
 
-// STORAGE HELPERS (persistent across sessions)
-// ═══════════════════════════════════════════
-
-async function loadSavedBuilds() {
+// ─── Persistance locale (saved-builds) ────────────────
+export async function loadSavedBuilds() {
   try {
     const result = await window.storage.get("saved-builds");
     return result ? JSON.parse(result.value) : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
-async function saveBuildsList(builds) {
-  try {
-    await window.storage.set("saved-builds", JSON.stringify(builds));
-  } catch (e) {
-    console.error(e);
-  }
+export async function saveBuildsList(builds) {
+  try { await window.storage.set("saved-builds", JSON.stringify(builds)); }
+  catch (e) { console.error(e); }
 }
 
-// ═══════════════════════════════════════════
-// FULL STAT PIPELINE — centralized 4-pass computation
-// Avoids duplicating this logic across multiple components
-// ═══════════════════════════════════════════
-function computeFullStats({
-  race,
-  evoId,
-  c1,
-  t1,
-  c2,
-  t2,
-  level,
-  skillPoints,
-  selectedAugments,
-  augBonus: manualAug,
+// ═══════════════════════════════════════════════════════
+// Pipeline complet — 4 passes + stub Fates
+// ═══════════════════════════════════════════════════════
+export function computeFullStats({
+  race, evoId, c1, t1, c2, t2, level, skillPoints,
+  selectedAugments, augBonus: manualAug, fates,
 }) {
   const activeRace = getActiveRace(race, evoId || race?.id);
   const inn = computeInnates(activeRace, c1, t1, c2, t2, level);
-  // Pass 1: flat aug bonuses only
+
+  // Pass 1 : bonus flats des augments
   const flatAug = computeAugBonuses(selectedAugments, manualAug);
   const baseStats = {};
   STATS.forEach((s) => {
     baseStats[s.key] = computeStat(s, activeRace, inn, skillPoints, flatAug).total;
   });
-  // Pass 2: scaling augments (needs base stats)
+
+  // Pass 2 : augments avec scaling (ont besoin des stats de base)
   const totalAug = computeAugBonuses(selectedAugments, manualAug, baseStats);
   const baseStats2 = {};
   STATS.forEach((s) => {
     baseStats2[s.key] = computeStat(s, activeRace, inn, skillPoints, totalAug).total;
   });
-  // Pass 3: class passive scaling (Arcane/Primal Dominance)
+
+  // Pass 3 : class passive scaling (Arcane/Primal Dominance)
   const postBonus = computeClassPassiveScaling(c1, t1, c2, t2, baseStats2);
-  // Pass 4: augment multipliers (Brute Force etc.)
+
+  // Pass 4 : multiplicateurs d'augments (Brute Force etc.)
   const { mult: augMult, lock: augLock } = computeAugMultipliers(selectedAugments);
+
+  // Pass 5 : Fates (stub Phase 1 — neutre)
+  const fateBonus = computeFateBonuses(fates || []);
+
   const finalStats = {};
   const details = {};
   STATS.forEach((s) => {
     const raw = computeStat(s, activeRace, inn, skillPoints, totalAug, postBonus);
     let total = raw.total;
+    // Ajouts flat des fates
+    total += fateBonus.flat?.[s.key] || 0;
+    // Multiplicateurs des augments
     if (augMult[s.key] != null) total *= augMult[s.key];
+    // Multiplicateurs des fates
+    if (fateBonus.mult?.[s.key] != null) total *= fateBonus.mult[s.key];
+    // Lock (Brute Force precLock)
     if (augLock[s.key] != null) total = augLock[s.key];
     finalStats[s.key] = total;
     details[s.key] = { ...raw, total };
   });
-  return { activeRace, inn, totalAug, postBonus, augMult, augLock, finalStats, details };
-}
 
-export {
-  getActiveRace,
-  computeInnates,
-  computeAugBonuses,
-  computeStat,
-  computeClassPassiveScaling,
-  computeAugMultipliers,
-  computeFullStats,
-  fmt,
-  encodeBuild,
-  decodeBuild,
-  loadSavedBuilds,
-  saveBuildsList,
-};
+  return { activeRace, inn, totalAug, postBonus, augMult, augLock, fateBonus, finalStats, details };
+}
