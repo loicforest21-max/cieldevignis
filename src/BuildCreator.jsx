@@ -34,6 +34,7 @@ import {
   mainstatValue,
   substatValue,
 } from "./data/fates.js";
+import { PATH_META, getPathMeta } from "./data/paths.js";
 import {
   RECOMMENDED_BUILDS,
   ROLE_META,
@@ -115,6 +116,65 @@ const bs = (c, sm) => ({
   justifyContent: "center",
   padding: 0,
 });
+
+// ─── PathLegend : lit les paths présents dans l'arbre d'une race et les affiche ──
+function PathLegend({ race }) {
+  if (!race?.tree) return null;
+  // Collecte les paths uniques (hors none) parmi les nœuds de l'arbre
+  const pathsSeen = [];
+  const seen = new Set();
+  for (const n of race.tree) {
+    const evo = EVOLUTIONS[n.id];
+    if (!evo?.path || evo.path === "none") continue;
+    if (seen.has(evo.path)) continue;
+    seen.add(evo.path);
+    pathsSeen.push(evo.path);
+  }
+  if (pathsSeen.length === 0) return null;
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 6,
+        marginBottom: 8,
+        padding: "6px 10px",
+        background: "rgba(255,255,255,0.02)",
+        border: "1px solid rgba(255,255,255,0.05)",
+        borderRadius: "var(--radius-md)",
+        alignItems: "center",
+      }}
+    >
+      <span style={{ fontSize: 9, color: "#888", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginRight: 4 }}>
+        Paths :
+      </span>
+      {pathsSeen.map((p) => {
+        const m = getPathMeta(p);
+        return (
+          <span
+            key={p}
+            title={m.desc}
+            style={{
+              fontSize: 10,
+              color: m.color,
+              background: m.color + "12",
+              border: "1px solid " + m.color + "44",
+              padding: "2px 7px",
+              borderRadius: "var(--radius-sm)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 3,
+              fontWeight: 600,
+            }}
+          >
+            <span style={{ fontSize: 11 }}>{m.icon}</span>
+            <span>{m.label}</span>
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 // ═══════════════════════════════════════════
 // TAB: RACE
@@ -209,6 +269,8 @@ function EvoTree({ race, selectedEvo, setSelectedEvo, skillPoints, prestige }) {
               const unlock = evaluateEvoUnlock(evo, skillPoints, prestige);
               const isLocked = !unlock.unlocked;
               const tooltip = evoTooltip(evo, unlock);
+              const pathMeta = getPathMeta(evo?.path);
+              const showPathIcon = evo?.path && evo.path !== "none";
               return (
                 <div
                   key={n.id}
@@ -231,6 +293,30 @@ function EvoTree({ race, selectedEvo, setSelectedEvo, skillPoints, prestige }) {
                     position: "relative",
                   }}
                 >
+                  {/* Path icon badge — top-right corner */}
+                  {showPathIcon && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -6,
+                        right: -6,
+                        background: pathMeta.color,
+                        color: "#fff",
+                        fontSize: 9,
+                        width: 18,
+                        height: 18,
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1.5px solid #1a1610",
+                        boxShadow: "0 1px 3px " + pathMeta.color + "66",
+                      }}
+                      title={`Path : ${pathMeta.label}`}
+                    >
+                      {pathMeta.icon}
+                    </div>
+                  )}
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
                     {isLocked && <span style={{ fontSize: 10, opacity: 0.85 }}>🔒</span>}
                     <span>{evo?.name || n.name}</span>
@@ -253,10 +339,12 @@ function EvoDetails({ evoId, raceColor, skillPoints, prestige }) {
   const evo = EVOLUTIONS[evoId];
   if (!evo) return null;
   const unlock = evaluateEvoUnlock(evo, skillPoints, prestige);
+  const pathMeta = getPathMeta(evo.path);
+  const showPath = evo.path && evo.path !== "none";
   return (
     <div style={{ marginTop: 10 }}>
-      <div style={{ fontSize: 12, fontWeight: 700, color: raceColor, marginBottom: 6 }}>
-        {evo.name}{" "}
+      <div style={{ fontSize: 12, fontWeight: 700, color: raceColor, marginBottom: 6, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+        <span>{evo.name}</span>
         <span
           style={{
             fontSize: 10,
@@ -264,12 +352,31 @@ function EvoDetails({ evoId, raceColor, skillPoints, prestige }) {
             background: SC[evo.stage] + "15",
             padding: "2px 8px",
             borderRadius: "var(--radius-md)",
-            marginLeft: 6,
           }}
         >
           {SL[evo.stage]}
           {evo.prestige > 0 ? ` P${evo.prestige}` : ""}
         </span>
+        {/* Badge path */}
+        {showPath && (
+          <span
+            title={pathMeta.desc}
+            style={{
+              fontSize: 10,
+              color: pathMeta.color,
+              background: pathMeta.color + "15",
+              border: "1px solid " + pathMeta.color + "44",
+              padding: "2px 8px",
+              borderRadius: "var(--radius-md)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            <span>{pathMeta.icon}</span>
+            <span>{pathMeta.label}</span>
+          </span>
+        )}
         {/* Badge unlock status */}
         {(evo.minSk || evo.prestige > 0) && (
           <span
@@ -278,7 +385,6 @@ function EvoDetails({ evoId, raceColor, skillPoints, prestige }) {
               fontWeight: 800,
               padding: "2px 8px",
               borderRadius: "var(--radius-md)",
-              marginLeft: 6,
               background: unlock.unlocked ? "#2ed57315" : "#e74c3c15",
               color: unlock.unlocked ? "#2ed573" : "#e74c3c",
               border: "1px solid " + (unlock.unlocked ? "#2ed57344" : "#e74c3c44"),
@@ -612,6 +718,7 @@ function RaceTab({ selectedRace: sr, setSelectedRace: set, selectedEvo, setSelec
               </div>
             </div>
           </div>
+          <PathLegend race={sr} />
           <EvoTree race={sr} selectedEvo={selectedEvo || sr.id} setSelectedEvo={setSelectedEvo} skillPoints={skillPoints} prestige={prestige} />
           <EvoDetails evoId={selectedEvo || sr.id} raceColor={sr.color} skillPoints={skillPoints} prestige={prestige} />
         </div>
