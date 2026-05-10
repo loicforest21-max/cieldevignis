@@ -298,7 +298,7 @@ const RECOMMENDED_BUILDS = [
       discipline: 0,
     },
     augments: ["tank_engine", "fortress", "goliath"],
-    tips: "DEF cap Vanguard = 80%. Avec Golem Sentinel (×1.55 DEF) tu y arrives vite. Tank Engine = +PV en combat. Focus VIT > DEF > Endurance.",
+    tips: "DEF cap Vanguard = 80%. Avec Golem Sentinel (+88 DEF flat) tu y arrives vite. Tank Engine = +PV en combat. Focus VIT > DEF > Endurance.",
     pros: [
       "Défense la plus élevée possible",
       "Triple survie (Second Wind + Absorb + Retaliation)",
@@ -334,7 +334,7 @@ const RECOMMENDED_BUILDS = [
       discipline: 0,
     },
     augments: ["titans_might", "conqueror", "goliath"],
-    tips: "Primal Dominance (4% VIT → FOR par tier) + Titan's Might (4% VIT max → FOR, cap +150% dmg, -30% Hâte) = ta VIT alimente ta Force. Dragonborn Guardian a ×1.22 DEF + Second Wind. L'équilibre parfait tank/DPS.",
+    tips: "Primal Dominance (4% VIT → FOR par tier) + Titan's Might (4% VIT max → FOR, cap +150% dmg, -30% Hâte) = ta VIT alimente ta Force. Dragonborn Guardian a +88 DEF flat + Second Wind. L'équilibre parfait tank/DPS.",
     pros: [
       "Bon DPS malgré la tankiness",
       "Scaling VIT→FOR excellent",
@@ -1892,13 +1892,13 @@ const SYNERGIES = {
   darkin_slayer: {
     score: 5,
     reason:
-      "Ravenous Strike (lifesteal) + True Edge (vrai dégât) + FOR×1.11. Sustain DPS physique le plus solide.",
+      "Ravenous Strike (lifesteal) + True Edge (vrai dégât) + +25 FOR flat (Darkin). Sustain DPS physique le plus solide.",
     tags: ["Lifesteal", "True Damage"],
     role: "dps_phys",
   },
   darkin_juggernaut: {
     score: 5,
-    reason: "FOR×1.11 + Primal Dominance (4% VIT→FOR). Monte VIT = monte FOR exponentiellement.",
+    reason: "+25 FOR flat (Darkin) + Primal Dominance (4% VIT→FOR par tier). Monte VIT = monte FOR exponentiellement.",
     tags: ["Scaling", "Tank DPS"],
     role: "tank",
   },
@@ -1910,19 +1910,19 @@ const SYNERGIES = {
   },
   celestial_mage: {
     score: 5,
-    reason: "SOR×1.11 + Flow Celestial + Mana Regen + Arcane Wisdom +20% magic. Caster DPS #1.",
+    reason: "+25 SOR flat (Celestial) + Flow Celestial + Mana Regen + Arcane Wisdom +20% magic. Caster DPS #1.",
     tags: ["SOR Max", "Mana", "Caster"],
     role: "dps_mag",
   },
   celestial_arcanist: {
     score: 4,
-    reason: "SOR×1.11 + Final Incantation exec magique. Exécutions dévastatrices.",
+    reason: "+25 SOR flat (Celestial) + Final Incantation exec magique. Exécutions dévastatrices.",
     tags: ["Magic", "Execute"],
     role: "dps_mag",
   },
   celestial_battlemage: {
     score: 4,
-    reason: "SOR×1.11 + Arcane Dominance VIT→SOR. Double synergie SOR.",
+    reason: "+25 SOR flat (Celestial) + Arcane Dominance (4% VIT→SOR par tier). Double synergie SOR.",
     tags: ["SOR", "Hybrid"],
     role: "dps_mag",
   },
@@ -1947,7 +1947,7 @@ const SYNERGIES = {
   },
   golem_vanguard: {
     score: 5,
-    reason: "DEF×1.11 + Second Wind Vanguard + Absorb. DEF maximale, quasi immortel.",
+    reason: "+40 DEF flat (Golem) + Second Wind Vanguard + Absorb. DEF maximale, quasi immortel.",
     tags: ["DEF", "Immortel"],
     role: "tank",
   },
@@ -1965,7 +1965,7 @@ const SYNERGIES = {
   },
   dragonborn_juggernaut: {
     score: 4,
-    reason: "VIT 114 + FOR×1.02 + Primal Dominance. Tanky équilibré.",
+    reason: "VIT 114 + bonus FOR léger + Primal Dominance (4% VIT→FOR par tier). Tanky équilibré.",
     tags: ["Tank DPS", "Balanced"],
     role: "tank",
   },
@@ -2002,7 +2002,7 @@ const SYNERGIES = {
   },
   iceborn_juggernaut: {
     score: 4,
-    reason: "FOR×1.06 + VIT 94 + Primal Dominance. Bon ratio VIT→FOR.",
+    reason: "Bonus FOR léger + VIT 94 + Primal Dominance (4% VIT→FOR par tier). Bon ratio VIT→FOR.",
     tags: ["Tank DPS"],
     role: "tank",
   },
@@ -2070,7 +2070,7 @@ const SYNERGIES = {
   golem_paladin: {
     score: 5,
     reason:
-      "195 PV base Golem + DEF×1.11 + Paladin Healing Touch + Taunt Aura + Knockback Resist 80%. Tank-soigneur quasi indestructible qui tient toute l'aggro.",
+      "195 PV base Golem + +40 DEF flat (Golem) + Paladin Healing Touch + Taunt Aura + Knockback Resist 80%. Tank-soigneur quasi indestructible qui tient toute l'aggro.",
     tags: ["Pure Tank", "Heal", "Taunt"],
     role: "tank",
   },
@@ -2098,7 +2098,7 @@ const SYNERGIES = {
   celestial_priest: {
     score: 4,
     reason:
-      "SOR×1.11 Celestial + Flow + Priest Healing Aura. Soigneur qui peut aussi taper en magic — utile en groupe restreint.",
+      "+25 SOR flat (Celestial) + Flow + Priest Healing Aura. Soigneur qui peut aussi taper en magic — utile en groupe restreint.",
     tags: ["Hybrid Heal", "SOR", "Mana"],
     role: "support",
   },
