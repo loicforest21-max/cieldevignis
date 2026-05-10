@@ -3520,6 +3520,7 @@ const TABS = [
   { id: "class", label: "Classe", emoji: "⚔️" },
   { id: "stats", label: "Stats", emoji: "📊" },
   { id: "augments", label: "Augments", emoji: "💠" },
+  { id: "fates", label: "Fates", emoji: "🌟" },
   { id: "dps", label: "DPS", emoji: "⚡" },
   { id: "synergie", label: "Synergies", emoji: "🔗" },
   { id: "guide", label: "Guides", emoji: "📚" },

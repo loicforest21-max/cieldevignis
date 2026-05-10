@@ -19,6 +19,10 @@ import {
   WEAPON_PRESETS,
 } from "./data/core.js";
 import {
+  FATE_SETS,
+  FATE_S_UNLOCK_PRESTIGE,
+} from "./data/fates.js";
+import {
   RECOMMENDED_BUILDS,
   ROLE_META,
   WEAPONS_REAL,
@@ -1801,6 +1805,229 @@ function SummaryTab({ state: s, onPublishToCommunity }) {
         ⚠️ Formules : Stats multiplicatives (FOR, DEF, SOR) = (innate + SP + aug) × race. Hâte =
         (race - 1.0)×100 + (innate + SP + aug) × race. Stats additives (PRE, FER, DIS) = base race +
         innate + SP + aug. Stats flat (VIT, END, FLOW) = base race + innate + SP + aug.
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// TAB: FATES — EndlessFates 0.1.0 (UI hybride simple : compteur 0/2/4 par set)
+// ═══════════════════════════════════════════
+
+function FatesTab({ selectedFateSets, setSelectedFateSets, prestige }) {
+  const totalPieces = Object.values(selectedFateSets || {}).reduce((a, b) => a + (b || 0), 0);
+  const overEquipped = totalPieces > 5;
+
+  const setCount = (setId, count) => {
+    setSelectedFateSets((prev) => {
+      const next = { ...(prev || {}) };
+      if (count === 0) delete next[setId];
+      else next[setId] = count;
+      return next;
+    });
+  };
+
+  const ROLE_COLORS = {
+    "DPS Physique": "#e74c3c",
+    "DPS Magique": "#a55eea",
+    "Crit DPS": "#c0392b",
+    "Bruiser HP": "#e67e22",
+    "Hybride": "#9b59b6",
+    "XP / Discipline": "#f1c40f",
+    "Tank": "#34495e",
+    "Crit / Hâte": "#16a085",
+    "Tank / Endurance": "#27ae60",
+    "DPS Mobile": "#3498db",
+  };
+
+  return (
+    <div>
+      {/* HEADER : compteur de pièces équipées */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 16,
+          padding: "10px 14px",
+          background: overEquipped ? "rgba(231,76,60,0.10)" : "rgba(232,165,55,0.08)",
+          border: "1px solid " + (overEquipped ? "#e74c3c" : "rgba(232,165,55,0.4)"),
+          borderRadius: "var(--radius-md)",
+          flexWrap: "wrap",
+          gap: 10,
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: overEquipped ? "#e74c3c" : "#e8a537" }}>
+            🌟 Fates équipées : {totalPieces}/5
+          </div>
+          <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+            5 slots maximum (HEART, EDGE, RELIC, SIGIL, CROWN). Les bonus 2-pièces s'activent dès 2 pièces du même set,
+            les bonus 4-pièces dès 4.
+          </div>
+        </div>
+        {totalPieces > 0 && (
+          <button
+            onClick={() => setSelectedFateSets({})}
+            style={{
+              padding: "6px 12px",
+              background: "rgba(231,76,60,0.15)",
+              border: "1px solid #e74c3c",
+              borderRadius: "var(--radius-md)",
+              color: "#e74c3c",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            ✕ Tout retirer
+          </button>
+        )}
+      </div>
+
+      {overEquipped && (
+        <div
+          style={{
+            padding: "8px 12px",
+            marginBottom: 12,
+            background: "rgba(231,76,60,0.10)",
+            border: "1px solid #e74c3c",
+            borderRadius: "var(--radius-md)",
+            color: "#e74c3c",
+            fontSize: 12,
+          }}
+        >
+          ⚠ Plus de 5 pièces équipées — impossible en jeu. Réduis pour rester réaliste.
+        </div>
+      )}
+
+      {prestige < FATE_S_UNLOCK_PRESTIGE && (
+        <div
+          style={{
+            padding: "8px 12px",
+            marginBottom: 12,
+            background: "rgba(232,165,55,0.06)",
+            border: "1px solid rgba(232,165,55,0.3)",
+            borderRadius: "var(--radius-md)",
+            color: "#888",
+            fontSize: 11,
+          }}
+        >
+          ℹ Tier S débloqué à partir du prestige {FATE_S_UNLOCK_PRESTIGE}. Niveau actuel : prestige {prestige}.
+        </div>
+      )}
+
+      {/* GRILLE des 10 sets */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
+          gap: 10,
+        }}
+      >
+        {FATE_SETS.map((set) => {
+          const count = selectedFateSets?.[set.id] || 0;
+          const has2pc = count >= 2;
+          const has4pc = count >= 4;
+          return (
+            <div
+              key={set.id}
+              style={{
+                padding: 12,
+                background: count > 0 ? set.color + "0d" : "rgba(255,255,255,0.02)",
+                border: "1px solid " + (count > 0 ? set.color + "55" : "var(--brd)"),
+                borderRadius: "var(--radius-md)",
+                transition: "all 0.15s",
+              }}
+            >
+              {/* Header : icon + name + role */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                <span style={{ fontSize: 24 }}>{set.icon}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: set.color }}>
+                    {set.nameShort}
+                  </div>
+                  <div style={{ fontSize: 10, color: "#888" }}>
+                    {set.role}
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div style={{ fontSize: 11, color: "#a0a0b0", marginBottom: 10, lineHeight: 1.4 }}>
+                {set.desc}
+              </div>
+
+              {/* 2pc bonus */}
+              <div
+                style={{
+                  padding: "6px 10px",
+                  background: has2pc ? "rgba(138,223,158,0.10)" : "rgba(255,255,255,0.02)",
+                  border: "1px solid " + (has2pc ? "#8adf9e44" : "rgba(255,255,255,0.05)"),
+                  borderRadius: "var(--radius-sm)",
+                  marginBottom: 6,
+                  opacity: has2pc ? 1 : 0.55,
+                }}
+              >
+                <div style={{ fontSize: 10, fontWeight: 700, color: has2pc ? "#8adf9e" : "#666", marginBottom: 2 }}>
+                  2 PIÈCES {has2pc && "✓"}
+                </div>
+                <div style={{ fontSize: 11, color: has2pc ? "#d0d0e0" : "#777" }}>
+                  {set.twoPieceDesc}
+                </div>
+              </div>
+
+              {/* 4pc bonus */}
+              <div
+                style={{
+                  padding: "6px 10px",
+                  background: has4pc ? "rgba(232,165,55,0.10)" : "rgba(255,255,255,0.02)",
+                  border: "1px solid " + (has4pc ? "#e8a53744" : "rgba(255,255,255,0.05)"),
+                  borderRadius: "var(--radius-sm)",
+                  marginBottom: 10,
+                  opacity: has4pc ? 1 : 0.55,
+                }}
+              >
+                <div style={{ fontSize: 10, fontWeight: 700, color: has4pc ? "#e8a537" : "#666", marginBottom: 2 }}>
+                  4 PIÈCES {has4pc && "✓"}
+                </div>
+                <div style={{ fontSize: 11, color: has4pc ? "#d0d0e0" : "#777", lineHeight: 1.4 }}>
+                  {set.fourPiece.desc}
+                </div>
+                <div style={{ fontSize: 10, color: has4pc ? "#e8a537cc" : "#666", marginTop: 4, fontStyle: "italic" }}>
+                  → {set.fourPiece.passiveDesc}
+                </div>
+              </div>
+
+              {/* Sélecteur 0 / 2 / 4 */}
+              <div style={{ display: "flex", gap: 6 }}>
+                {[0, 2, 4].map((n) => {
+                  const active = count === n;
+                  return (
+                    <button
+                      key={n}
+                      onClick={() => setCount(set.id, n)}
+                      style={{
+                        flex: 1,
+                        padding: "6px 0",
+                        background: active ? set.color : "rgba(255,255,255,0.03)",
+                        color: active ? "#fff" : "#888",
+                        border: "1px solid " + (active ? set.color : "var(--brd)"),
+                        borderRadius: "var(--radius-sm)",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        transition: "all 0.1s",
+                      }}
+                    >
+                      {n} pièce{n > 1 ? "s" : ""}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -4863,6 +5090,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
   const [skillPoints, setSkillPoints] = useState({});
   const [selectedAugments, setSelectedAugments] = useState([]);
   const [augBonus, setAugBonus] = useState({});
+  const [selectedFateSets, setSelectedFateSets] = useState({}); // { setId: pieceCount (0/2/4) }
   const [showImport, setShowImport] = useState(false);
   const [showShareCard, setShowShareCard] = useState(false);
   const [savedBuilds, setSavedBuilds] = useState([]);
@@ -4887,6 +5115,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
         setSkillPoints(d.skillPoints);
         setSelectedAugments(d.selectedAugments);
         setAugBonus(d.augBonus || {});
+        setSelectedFateSets(d.selectedFateSets || {});
         setTab("summary");
       }
       if (onClearInitialCode) onClearInitialCode();
@@ -4907,6 +5136,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     setSkillPoints(d.skillPoints);
     setSelectedAugments(d.selectedAugments);
     setAugBonus(d.augBonus || {});
+    setSelectedFateSets(d.selectedFateSets || {});
     setTab("summary");
   };
   const handleSaveBuild = (name) => {
@@ -4922,6 +5152,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
       sp: skillPoints,
       a: selectedAugments.map((a) => a.id),
       ab: augBonus,
+      f: selectedFateSets,
     };
     const newBuilds = [...savedBuilds, { name, data: d, date: Date.now() }];
     setSavedBuilds(newBuilds);
@@ -4940,6 +5171,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     setSkillPoints(d.sp || {});
     setSelectedAugments((d.a || []).map((id) => AUGMENTS.find((a) => a.id === id)).filter(Boolean));
     setAugBonus(d.ab || {});
+    setSelectedFateSets(d.f || {});
     setTab("summary");
   };
   const handleDeleteBuild = (idx) => {
@@ -4960,6 +5192,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     skillPoints,
     selectedAugments,
     augBonus,
+    selectedFateSets,
   };
   // Centralized stat computation
   const {
@@ -4969,6 +5202,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     postBonus,
     augMult,
     augLock,
+    fateBonus,
     finalStats: finalComputedStats,
   } = computeFullStats({
     race: selectedRace,
@@ -4981,6 +5215,7 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     skillPoints,
     selectedAugments,
     augBonus,
+    selectedFateSets,
   });
   const evoName = selectedEvo && EVOLUTIONS[selectedEvo] ? EVOLUTIONS[selectedEvo].name : null;
   return (
@@ -5200,6 +5435,13 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
             setSelectedAugments={setSelectedAugments}
             augBonus={augBonus}
             setAugBonus={setAugBonus}
+          />
+        )}
+        {tab === "fates" && (
+          <FatesTab
+            selectedFateSets={selectedFateSets}
+            setSelectedFateSets={setSelectedFateSets}
+            prestige={prestige}
           />
         )}
         {tab === "dps" && (
