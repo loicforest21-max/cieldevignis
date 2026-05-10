@@ -2102,22 +2102,142 @@ const SYNERGIES = {
     tags: ["Hybrid Heal", "SOR", "Mana"],
     role: "support",
   },
+  // ──────────────────────────────────────
+  // Phase 4-E : 106 nouvelles entrées EL9 (score ≥ 3)
+  // Auto-générées avec scoring race × classe + path/innate
+  // ──────────────────────────────────────
+  ascended_arcanist: { score: 3, reason: "Ascended + Mage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "dps_mag" },
+  ascended_assassin: { score: 3, reason: "Ascended + Assassin/Diver : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Burst"], role: "dps_phys" },
+  ascended_bard: { score: 3, reason: "Ascended + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  ascended_battlemage: { score: 3, reason: "Ascended + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Hybrid Tank-Mage"], role: "dps_mag" },
+  ascended_brawler: { score: 3, reason: "Ascended + Skirmisher/Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  ascended_duelist: { score: 3, reason: "Ascended + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  ascended_juggernaut: { score: 3, reason: "Ascended + Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  ascended_mage: { score: 3, reason: "Ascended + Mage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "dps_mag" },
+  ascended_magistrate: { score: 3, reason: "Ascended + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  ascended_necromancer: { score: 3, reason: "Ascended + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "unknown" },
+  ascended_priest: { score: 3, reason: "Ascended + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  ascended_slayer: { score: 3, reason: "Ascended + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  celestial_adventurer: { score: 3, reason: "Celestial + Skirmisher Hybrid : profil hybrid-friendly, combo viable.", tags: [], role: "dps_phys" },
+  celestial_bard: { score: 4, reason: "Celestial (+25 SOR base) + Support (Stamina-heavy sustain, Sorcery sub). Synergie naturelle Sorcellerie/Magic. Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  celestial_magistrate: { score: 4, reason: "Celestial (+25 SOR base) + Support (Flow+Stamina, court-justice utility). Synergie naturelle Sorcellerie/Magic. Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  celestial_necromancer: { score: 4, reason: "Celestial (+25 SOR base, SOR base 25) + BattleMage (VIT+Flow+Sorcery, summons & DoT). Synergie naturelle Sorcellerie/Magic.", tags: ["Magic"], role: "unknown" },
+  celestial_paladin: { score: 3, reason: "Celestial + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  celestial_vanguard: { score: 3, reason: "Celestial + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  darkin_adventurer: { score: 3, reason: "Darkin + Skirmisher Hybrid : profil hybrid-friendly, combo viable.", tags: [], role: "dps_phys" },
+  darkin_arcanist: { score: 4, reason: "Darkin (+20 SOR base, SOR base 20) + Mage (Sorcery+Flow innates, mana-regen sustain). Synergie naturelle Sorcellerie/Magic.", tags: ["Magic"], role: "dps_mag" },
+  darkin_assassin: { score: 5, reason: "Darkin (+25 STR base) + Assassin/Diver (Ferocity+Haste burst, gap-close & exec). Synergie naturelle Force/Physique.", tags: ["Physical", "Burst"], role: "dps_phys" },
+  darkin_bard: { score: 4, reason: "Darkin (+20 SOR base) + Support (Stamina-heavy sustain, Sorcery sub). Synergie naturelle Sorcellerie/Magic. Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  darkin_battlemage: { score: 4, reason: "Darkin (+20 SOR base, SOR base 20) + BattleMage (Arcane Dominance (4% VIT→SOR par tier), VIT-magic hybride). Synergie naturelle Sorcellerie/Magic. Arcane Dominance (VIT→SOR par tier) + base SOR = double scaling magique.", tags: ["Magic", "Hybrid Tank-Mage"], role: "dps_mag" },
+  darkin_duelist: { score: 4, reason: "Darkin (+25 STR base, STR base 25) + Skirmisher (Strength+Haste duel, Riposte parry). Synergie naturelle Force/Physique.", tags: ["Physical"], role: "dps_phys" },
+  darkin_mage: { score: 4, reason: "Darkin (+20 SOR base, SOR base 20) + Mage (Flow+Sorcery, Mana Regen, gros DPS magique). Synergie naturelle Sorcellerie/Magic.", tags: ["Magic"], role: "dps_mag" },
+  darkin_magistrate: { score: 4, reason: "Darkin (+20 SOR base) + Support (Flow+Stamina, court-justice utility). Synergie naturelle Sorcellerie/Magic. Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  darkin_marksman: { score: 4, reason: "Darkin (+25 STR base) + Marksman (Precision+Ferocity, range crit DPS). Synergie naturelle Force/Physique.", tags: ["Physical", "Range"], role: "dps_phys" },
+  darkin_necromancer: { score: 4, reason: "Darkin (+20 SOR base, SOR base 20) + BattleMage (VIT+Flow+Sorcery, summons & DoT). Synergie naturelle Sorcellerie/Magic.", tags: ["Magic"], role: "unknown" },
+  darkin_paladin: { score: 3, reason: "Darkin + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  darkin_priest: { score: 4, reason: "Darkin (+20 SOR base) + Support (Flow+Stamina, Healing Aura tank-soigneur). Synergie naturelle Sorcellerie/Magic. Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  darkin_vanguard: { score: 3, reason: "Darkin + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  dragonborn_adventurer: { score: 3, reason: "Dragonborn + Skirmisher Hybrid : profil hybrid-friendly, combo viable.", tags: [], role: "dps_phys" },
+  dragonborn_assassin: { score: 4, reason: "Dragonborn (+20 STR base) + Assassin/Diver (Ferocity+Haste burst, gap-close & exec). Synergie naturelle Force/Physique.", tags: ["Physical", "Burst"], role: "dps_phys" },
+  dragonborn_battlemage: { score: 3, reason: "Dragonborn + BattleMage : VIT base 114 + class VIT innate 1.75/lvl, combo viable.", tags: ["Magic", "Hybrid Tank-Mage"], role: "dps_mag" },
+  dragonborn_brawler: { score: 5, reason: "Dragonborn (+20 STR base, VIT base 114 + class VIT innate 1.75/lvl) + Skirmisher/Juggernaut (Retaliation, lifesteal sur hits). Synergie naturelle Force/Physique. Primal Dominance amplifie le scaling VIT→FOR.", tags: ["Physical", "Tank"], role: "tank" },
+  dragonborn_duelist: { score: 4, reason: "Dragonborn (+20 STR base, STR base 20) + Skirmisher (Strength+Haste duel, Riposte parry). Synergie naturelle Force/Physique.", tags: ["Physical"], role: "dps_phys" },
+  dragonborn_marksman: { score: 4, reason: "Dragonborn (+20 STR base) + Marksman (Precision+Ferocity, range crit DPS). Synergie naturelle Force/Physique.", tags: ["Physical", "Range"], role: "dps_phys" },
+  dragonborn_necromancer: { score: 3, reason: "Dragonborn + BattleMage : VIT base 114 + class VIT innate 1.575/lvl, combo viable.", tags: ["Magic"], role: "unknown" },
+  dragonborn_slayer: { score: 5, reason: "Dragonborn (+20 STR base, STR base 20) + Skirmisher (Strength+VIT+DEF, True Damage executes). Synergie naturelle Force/Physique.", tags: ["Physical"], role: "dps_phys" },
+  golem_assassin: { score: 3, reason: "Golem + Assassin/Diver : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Burst"], role: "dps_phys" },
+  golem_duelist: { score: 3, reason: "Golem + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  golem_marksman: { score: 3, reason: "Golem + Marksman : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Range"], role: "dps_phys" },
+  golem_slayer: { score: 4, reason: "Golem (+15 STR base, VIT base 195 + class VIT innate 1.575/lvl) + Skirmisher (Strength+VIT+DEF, True Damage executes). Synergie naturelle Force/Physique.", tags: ["Physical"], role: "dps_phys" },
+  human_assassin: { score: 4, reason: "Humain (+15 STR base) + Assassin/Diver (Ferocity+Haste burst, gap-close & exec). Synergie naturelle Force/Physique.", tags: ["Physical", "Burst"], role: "dps_phys" },
+  human_brawler: { score: 3, reason: "Humain + Skirmisher/Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  human_duelist: { score: 3, reason: "Humain + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  human_juggernaut: { score: 3, reason: "Humain + Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  human_marksman: { score: 3, reason: "Humain + Marksman : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Range"], role: "dps_phys" },
+  human_slayer: { score: 3, reason: "Humain + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  iceborn_adventurer: { score: 3, reason: "Iceborn + Skirmisher Hybrid : profil hybrid-friendly, combo viable.", tags: [], role: "dps_phys" },
+  iceborn_arcanist: { score: 3, reason: "Iceborn + Mage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "dps_mag" },
+  iceborn_assassin: { score: 4, reason: "Iceborn (+20 STR base) + Assassin/Diver (Ferocity+Haste burst, gap-close & exec). Synergie naturelle Force/Physique.", tags: ["Physical", "Burst"], role: "dps_phys" },
+  iceborn_bard: { score: 3, reason: "Iceborn + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  iceborn_battlemage: { score: 3, reason: "Iceborn + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Hybrid Tank-Mage"], role: "dps_mag" },
+  iceborn_duelist: { score: 4, reason: "Iceborn (+20 STR base, STR base 20) + Skirmisher (Strength+Haste duel, Riposte parry). Synergie naturelle Force/Physique.", tags: ["Physical"], role: "dps_phys" },
+  iceborn_mage: { score: 3, reason: "Iceborn + Mage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "dps_mag" },
+  iceborn_magistrate: { score: 3, reason: "Iceborn + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  iceborn_marksman: { score: 4, reason: "Iceborn (+20 STR base) + Marksman (Precision+Ferocity, range crit DPS). Synergie naturelle Force/Physique.", tags: ["Physical", "Range"], role: "dps_phys" },
+  iceborn_necromancer: { score: 3, reason: "Iceborn + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "unknown" },
+  iceborn_priest: { score: 3, reason: "Iceborn + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  iceborn_slayer: { score: 4, reason: "Iceborn (+20 STR base, STR base 20) + Skirmisher (Strength+VIT+DEF, True Damage executes). Synergie naturelle Force/Physique.", tags: ["Physical"], role: "dps_phys" },
+  iceborn_vanguard: { score: 3, reason: "Iceborn + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  vastaya_arcanist: { score: 3, reason: "Vastaya + Mage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "dps_mag" },
+  vastaya_battlemage: { score: 3, reason: "Vastaya + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Hybrid Tank-Mage"], role: "dps_mag" },
+  vastaya_brawler: { score: 3, reason: "Vastaya + Skirmisher/Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  vastaya_juggernaut: { score: 3, reason: "Vastaya + Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  vastaya_mage: { score: 3, reason: "Vastaya + Mage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "dps_mag" },
+  vastaya_magistrate: { score: 3, reason: "Vastaya + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  vastaya_marksman: { score: 4, reason: "Vastaya (+15 STR base) + Marksman (Precision+Ferocity, range crit DPS). Synergie naturelle Force/Physique.", tags: ["Physical", "Range"], role: "dps_phys" },
+  vastaya_necromancer: { score: 3, reason: "Vastaya + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "unknown" },
+  vastaya_priest: { score: 3, reason: "Vastaya + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  vastaya_slayer: { score: 3, reason: "Vastaya + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  voidborn_adventurer: { score: 3, reason: "Voidborn + Skirmisher Hybrid : profil hybrid-friendly, combo viable.", tags: [], role: "dps_phys" },
+  voidborn_arcanist: { score: 5, reason: "Voidborn (+20 SOR base, Flow base 28) + Mage (Sorcery+Flow innates, mana-regen sustain). Synergie naturelle Sorcellerie/Magic.", tags: ["Magic"], role: "dps_mag" },
+  voidborn_assassin: { score: 3, reason: "Voidborn + Assassin/Diver : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Burst"], role: "dps_phys" },
+  voidborn_bard: { score: 4, reason: "Voidborn (+20 SOR base) + Support (Stamina-heavy sustain, Sorcery sub). Synergie naturelle Sorcellerie/Magic. Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  voidborn_brawler: { score: 3, reason: "Voidborn + Skirmisher/Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  voidborn_duelist: { score: 3, reason: "Voidborn + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  voidborn_mage: { score: 5, reason: "Voidborn (+20 SOR base, Flow base 28) + Mage (Flow+Sorcery, Mana Regen, gros DPS magique). Synergie naturelle Sorcellerie/Magic.", tags: ["Magic"], role: "dps_mag" },
+  voidborn_marksman: { score: 3, reason: "Voidborn + Marksman : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Range"], role: "dps_phys" },
+  voidborn_necromancer: { score: 4, reason: "Voidborn (+20 SOR base, Flow base 28) + BattleMage (VIT+Flow+Sorcery, summons & DoT). Synergie naturelle Sorcellerie/Magic.", tags: ["Magic"], role: "unknown" },
+  voidborn_paladin: { score: 3, reason: "Voidborn + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  voidborn_priest: { score: 4, reason: "Voidborn (+20 SOR base, Flow base 28) + Support (Flow+Stamina, Healing Aura tank-soigneur). Synergie naturelle Sorcellerie/Magic. Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  voidborn_slayer: { score: 3, reason: "Voidborn + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  voidborn_vanguard: { score: 3, reason: "Voidborn + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  watcher_adventurer: { score: 3, reason: "Watcher + Skirmisher Hybrid : profil hybrid-friendly, combo viable.", tags: [], role: "dps_phys" },
+  watcher_battlemage: { score: 5, reason: "Watcher (+25 SOR base, SOR base 25) + BattleMage (Arcane Dominance (4% VIT→SOR par tier), VIT-magic hybride). Synergie naturelle Sorcellerie/Magic. Arcane Dominance (VIT→SOR par tier) + base SOR = double scaling magique.", tags: ["Magic", "Hybrid Tank-Mage"], role: "dps_mag" },
+  watcher_magistrate: { score: 4, reason: "Watcher (+25 SOR base, Flow base 35) + Support (Flow+Stamina, court-justice utility). Synergie naturelle Sorcellerie/Magic. Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  watcher_necromancer: { score: 4, reason: "Watcher (+25 SOR base, Flow base 35) + BattleMage (VIT+Flow+Sorcery, summons & DoT). Synergie naturelle Sorcellerie/Magic.", tags: ["Magic"], role: "unknown" },
+  watcher_paladin: { score: 3, reason: "Watcher + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  watcher_vanguard: { score: 3, reason: "Watcher + Vanguard : profil hybrid-friendly, combo viable.", tags: ["Tank"], role: "tank" },
+  wraith_arcanist: { score: 3, reason: "Wraith + Mage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "dps_mag" },
+  wraith_bard: { score: 3, reason: "Wraith + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  wraith_battlemage: { score: 3, reason: "Wraith + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Hybrid Tank-Mage"], role: "dps_mag" },
+  wraith_brawler: { score: 3, reason: "Wraith + Skirmisher/Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  wraith_juggernaut: { score: 3, reason: "Wraith + Juggernaut : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical", "Tank"], role: "tank" },
+  wraith_mage: { score: 3, reason: "Wraith + Mage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "dps_mag" },
+  wraith_magistrate: { score: 3, reason: "Wraith + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  wraith_necromancer: { score: 3, reason: "Wraith + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "unknown" },
+  wraith_priest: { score: 3, reason: "Wraith + Support : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic", "Heal"], role: "support" },
+  wraith_slayer: { score: 3, reason: "Wraith + Skirmisher : +15 STR base, combo viable. Bon ratio attaque/défense.", tags: ["Physical"], role: "dps_phys" },
+  yordle_arcanist: { score: 4, reason: "Yordle (+15 SOR base, Flow base 31.5) + Mage (Sorcery+Flow innates, mana-regen sustain).", tags: ["Magic"], role: "dps_mag" },
+  yordle_bard: { score: 4, reason: "Yordle (+15 SOR base) + Support (Stamina-heavy sustain, Sorcery sub). Flow-pool & sustain healer-friendly.", tags: ["Magic", "Heal"], role: "support" },
+  yordle_battlemage: { score: 4, reason: "Yordle (+15 SOR base) + BattleMage (Arcane Dominance (4% VIT→SOR par tier), VIT-magic hybride). Arcane Dominance (VIT→SOR par tier) + base SOR = double scaling magique.", tags: ["Magic", "Hybrid Tank-Mage"], role: "dps_mag" },
+  yordle_mage: { score: 4, reason: "Yordle (+15 SOR base, Flow base 31.5) + Mage (Flow+Sorcery, Mana Regen, gros DPS magique).", tags: ["Magic"], role: "dps_mag" },
+  yordle_necromancer: { score: 3, reason: "Yordle + BattleMage : +15 SOR base, combo viable. Sorcellerie native suffisante.", tags: ["Magic"], role: "unknown" },
+
 };
 
 function getSynergyScore(raceId, classId) {
   const key = `${raceId}_${classId}`;
   if (SYNERGIES[key]) return SYNERGIES[key];
+  // EL9 fallback : compute score from FLAT race attrs vs class profile
   const race = RACES.find((r) => r.id === raceId);
   const cls = CLASSES.find((c) => c.id === classId);
   if (!race || !cls) return { score: 2, reason: "Combo non analysé.", tags: [], role: "unknown" };
-  const strB = race.attrs?.strength || 1;
-  const sorB = race.attrs?.sorcery || 1;
+  const a = race.attrs || {};
+  const str = a.strength || 0;
+  const sor = a.sorcery || 0;
   let score = 2;
-  if (cls.dmg === "Physical" && strB >= 1.05) score = 3;
-  if (cls.dmg === "Magic" && sorB >= 1.05) score = 3;
-  if (cls.dmg === "Physical" && strB >= 1.1) score = 4;
-  if (cls.dmg === "Magic" && sorB >= 1.1) score = 4;
-  return { score, reason: "Compatibilité estimée automatiquement.", tags: [], role: "unknown" };
+  // Race + dmg type alignment (EL9 : flat values, not multipliers)
+  // Threshold values calibrated against Phase 4-E generator
+  if (cls.dmg === "Physical") {
+    if (str >= 20) score = 3;
+    else if (str >= 15) score = 2;
+    else if (str === 0) score = 1; // races without STR clash with phys classes
+  } else if (cls.dmg === "Magic") {
+    if (sor >= 20) score = 3;
+    else if (sor >= 15) score = 2;
+    else if (sor === 0) score = 1; // golem clashes with magic classes
+  }
+  return { score, reason: "Compatibilité estimée automatiquement (combo non documenté).", tags: [], role: "unknown" };
 }
 
 export {
