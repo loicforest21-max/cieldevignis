@@ -1,15 +1,16 @@
 // ═══════════════════════════════════════════════════
 // FATES — EndlessFates 0.1.0 (10 sets, Genshin-style)
 // ═══════════════════════════════════════════════════
-// Phase 3a (UI hybride simple) : compteur 0/2/4 pièces par set.
-// Phase 3b (à venir) : éditeur complet 5 slots × mainstat × 4 substats.
+// Phase 3a : compteur 0/2/4 pièces par set (mode rapide).
+// Phase 3b : éditeur 5 slots avec mainstat + tier + substats (mode précis).
 //
 // Slots EL : HEART (Cœur), EDGE (Tranchant), RELIC (Relique),
 //            SIGIL (Sigil), CROWN (Couronne).
 // Aliases visuels (Genshin-like) : Fleur / Plume / Sablier / Gantelet / Casque.
 //
-// Système de drops : tiers E/D/C/B/A/S, S débloqué à prestige 10+.
-// Substats : 4 par fate, upgradeables via essence COMMON/ELITE/MYTHIC.
+// Tiers E/D/C/B/A/S (S débloqué à prestige 10).
+// Mainstat scale : valeur réelle = base × [1.0 .. 1.5]  (roll 0% à 100%)
+// Substat scale  : valeur réelle = base × [1.0 .. 1.4]  (le jeu permet 8 upgrades)
 // ═══════════════════════════════════════════════════
 
 // ─── 5 slots ───
@@ -21,17 +22,14 @@ const FATE_SLOTS = [
   { id: "CROWN",  name: "Couronne", alias: "Casque",   icon: "👑" },
 ];
 
-// ─── Tiers (E low → S top) ───
+// ─── Tiers ───
 const FATE_TIERS = ["E", "D", "C", "B", "A", "S"];
 const FATE_TIER_COLORS = {
   E: "#7c8db5", D: "#6ab04c", C: "#4ea8f0", B: "#9b59b6", A: "#f39c12", S: "#e74c3c",
 };
-// S est gated derrière prestige 10
 const FATE_S_UNLOCK_PRESTIGE = 10;
 
 // ─── Mainstat pools par slot (extraits du JAR FateMainStatPools) ───
-// HEART : seulement LIFE_FORCE_FLAT.
-// Les autres : ouvert à plusieurs stats.
 const FATE_MAINSTAT_POOLS = {
   HEART: ["LIFE_FORCE_FLAT"],
   EDGE:  ["STRENGTH_FLAT", "SORCERY_FLAT"],
@@ -40,39 +38,52 @@ const FATE_MAINSTAT_POOLS = {
   CROWN: ["STRENGTH_PCT", "SORCERY_PCT", "DEFENSE_PCT", "PRECISION_PCT", "FEROCITY_PCT", "LIFE_FORCE_PCT"],
 };
 
-// ─── Fourchettes de mainstat par tier (extraites du JAR StatRollRanges) ───
-// Valeur = mainstat à ce tier (à ce moment, l'arrondi du jeu est ignoré pour simplification).
-const FATE_MAINSTAT_RANGES = {
-  LIFE_FORCE_FLAT:        { E: 60,   D: 120,  C: 200,  B: 320,  A: 500,  S: 800  },
-  STRENGTH_FLAT:          { E: 8,    D: 16,   C: 28,   B: 44,   A: 68,   S: 100  },
-  SORCERY_FLAT:           { E: 8,    D: 16,   C: 28,   B: 44,   A: 68,   S: 100  },
-  STRENGTH_PCT:           { E: 0.04, D: 0.07, C: 0.11, B: 0.15, A: 0.20, S: 0.26 },
-  SORCERY_PCT:            { E: 0.04, D: 0.07, C: 0.11, B: 0.15, A: 0.20, S: 0.26 },
-  DEFENSE_PCT:            { E: 0.05, D: 0.08, C: 0.12, B: 0.17, A: 0.22, S: 0.28 },
-  HASTE_PCT:              { E: 0.05, D: 0.08, C: 0.12, B: 0.17, A: 0.22, S: 0.28 },
-  LIFE_FORCE_PCT:         { E: 0.05, D: 0.08, C: 0.12, B: 0.17, A: 0.22, S: 0.28 },
-  DISCIPLINE_PCT:         { E: 0.05, D: 0.08, C: 0.12, B: 0.17, A: 0.22, S: 0.28 },
-  PRECISION_PCT:          { E: 0.03, D: 0.05, C: 0.08, B: 0.12, A: 0.16, S: 0.21 },
-  FEROCITY_PCT:           { E: 0.06, D: 0.09, C: 0.16, B: 0.21, A: 0.26, S: 0.34 },
-  WEAPON_BONUS_DAMAGE_PCT:{ E: 0.04, D: 0.07, C: 0.11, B: 0.15, A: 0.20, S: 0.26 },
+// ─── Mainstat base value at each tier (extraits exacts du JAR StatRollRanges) ───
+// Valeur réelle = base × (1.0 + 0.5 × rollPct/100)
+const FATE_MAINSTAT_BASE = {
+  LIFE_FORCE_FLAT:         { E: 60,    D: 120,   C: 200,   B: 320,   A: 500,   S: 800   },
+  STRENGTH_FLAT:           { E: 8,     D: 16,    C: 28,    B: 44,    A: 68,    S: 100   },
+  SORCERY_FLAT:            { E: 8,     D: 16,    C: 28,    B: 44,    A: 68,    S: 100   },
+  STRENGTH_PCT:            { E: 0.04,  D: 0.07,  C: 0.11,  B: 0.15,  A: 0.20,  S: 0.26  },
+  SORCERY_PCT:             { E: 0.04,  D: 0.07,  C: 0.11,  B: 0.15,  A: 0.20,  S: 0.26  },
+  DEFENSE_PCT:             { E: 0.05,  D: 0.08,  C: 0.12,  B: 0.17,  A: 0.22,  S: 0.28  },
+  HASTE_PCT:               { E: 0.04,  D: 0.06,  C: 0.09,  B: 0.12,  A: 0.16,  S: 0.20  },
+  STAMINA_PCT:             { E: 0.05,  D: 0.08,  C: 0.12,  B: 0.17,  A: 0.22,  S: 0.28  },
+  LIFE_FORCE_PCT:          { E: 0.05,  D: 0.08,  C: 0.12,  B: 0.17,  A: 0.22,  S: 0.28  },
+  WEAPON_BONUS_DAMAGE_PCT: { E: 0.03,  D: 0.05,  C: 0.08,  B: 0.12,  A: 0.16,  S: 0.21  },
+  PRECISION_FLAT:          { E: 3,     D: 5,     C: 8,     B: 12,    A: 16,    S: 22    },
+  FEROCITY_FLAT:           { E: 3,     D: 5,     C: 8,     B: 12,    A: 16,    S: 22    },
+  FLOW_FLAT:               { E: 3,     D: 5,     C: 8,     B: 12,    A: 16,    S: 22    },
+  DISCIPLINE_FLAT:         { E: 3,     D: 5,     C: 8,     B: 12,    A: 16,    S: 22    },
+  PRECISION_PCT:           { E: 0.03,  D: 0.05,  C: 0.08,  B: 0.12,  A: 0.16,  S: 0.21  },
+  FEROCITY_PCT:            { E: 0.06,  D: 0.09,  C: 0.16,  B: 0.21,  A: 0.26,  S: 0.34  },
+  DISCIPLINE_PCT:          { E: 0.05,  D: 0.08,  C: 0.12,  B: 0.17,  A: 0.22,  S: 0.28  },
 };
 
-// ─── 21 stat options possibles (mainstat + substat) ───
-const FATE_STAT_OPTIONS = [
-  "LIFE_FORCE_FLAT", "LIFE_FORCE_PCT",
-  "STRENGTH_FLAT", "STRENGTH_PCT",
-  "SORCERY_FLAT", "SORCERY_PCT",
-  "DEFENSE_FLAT", "DEFENSE_PCT",
-  "HASTE_FLAT", "HASTE_PCT",
-  "PRECISION_FLAT", "PRECISION_PCT",
-  "FEROCITY_FLAT", "FEROCITY_PCT",
-  "STAMINA_FLAT", "STAMINA_PCT",
-  "FLOW_FLAT", "FLOW_PCT",
-  "DISCIPLINE_FLAT", "DISCIPLINE_PCT",
-  "WEAPON_BONUS_DAMAGE_PCT",
-];
+// ─── Substat base value at each tier (extraits exacts du JAR) ───
+// Valeur réelle = base × (1.0 + 0.4 × upgrades/8)
+const FATE_SUBSTAT_BASE = {
+  LIFE_FORCE_FLAT: { E: 12,    D: 20,    C: 32,    B: 48,    A: 70,    S: 100   },
+  STRENGTH_FLAT:   { E: 1,     D: 2,     C: 3,     B: 5,     A: 8,     S: 12    },
+  SORCERY_FLAT:    { E: 1,     D: 2,     C: 3,     B: 5,     A: 8,     S: 12    },
+  PRECISION_FLAT:  { E: 1,     D: 1,     C: 2,     B: 3,     A: 4,     S: 5     },
+  FEROCITY_FLAT:   { E: 1,     D: 1,     C: 2,     B: 3,     A: 4,     S: 5     },
+  FLOW_FLAT:       { E: 1,     D: 1,     C: 2,     B: 3,     A: 4,     S: 5     },
+  STRENGTH_PCT:    { E: 0.008, D: 0.012, C: 0.018, B: 0.024, A: 0.032, S: 0.042 },
+  SORCERY_PCT:     { E: 0.008, D: 0.012, C: 0.018, B: 0.024, A: 0.032, S: 0.042 },
+  DEFENSE_PCT:     { E: 0.010, D: 0.015, C: 0.022, B: 0.030, A: 0.040, S: 0.050 },
+  HASTE_PCT:       { E: 0.008, D: 0.012, C: 0.016, B: 0.020, A: 0.026, S: 0.034 },
+  STAMINA_PCT:     { E: 0.010, D: 0.015, C: 0.022, B: 0.030, A: 0.040, S: 0.050 },
+  LIFE_FORCE_PCT:  { E: 0.010, D: 0.015, C: 0.022, B: 0.030, A: 0.040, S: 0.050 },
+};
+const FATE_MAINSTAT_MAX_RATIO = 1.5;
+const FATE_SUBSTAT_MAX_RATIO = 1.4;
 
-// Stat label FR pour affichage UI
+// ─── Liste des stats possibles pour les substats (12 options) ───
+// Note : WEAPON_BONUS_DAMAGE_PCT n'est PAS dans le pool de substats (mainstat-only via SIGIL).
+const FATE_SUBSTAT_POOL = Object.keys(FATE_SUBSTAT_BASE);
+
+// ─── Toutes les stats (display) ───
 const FATE_STAT_LABELS = {
   LIFE_FORCE_FLAT: "Vitalité (flat)",   LIFE_FORCE_PCT: "Vitalité %",
   STRENGTH_FLAT: "Force (flat)",         STRENGTH_PCT: "Force %",
@@ -87,19 +98,26 @@ const FATE_STAT_LABELS = {
   WEAPON_BONUS_DAMAGE_PCT: "Dégâts d'arme %",
 };
 
-// ─── 10 SETS (depuis fates/sets/*.json + foundation passive du fourPieceDescription) ───
-// twoPiece et fourPiece.passive sont consommés par computeFateBonuses() de l'engine.
-// L'effet 4pc réel (proc) est purement descriptif ; la valeur passive donnée
-// dans 'foundation' du mod sert d'approximation chiffrée.
+// ─── Helpers de calcul de valeur ───
+function mainstatValue(stat, tier, rollPct) {
+  const base = FATE_MAINSTAT_BASE[stat]?.[tier];
+  if (base == null) return 0;
+  const r = Math.max(0, Math.min(100, rollPct ?? 100)) / 100;
+  return base * (1 + (FATE_MAINSTAT_MAX_RATIO - 1) * r);
+}
+function substatValue(stat, tier, upgrades) {
+  const base = FATE_SUBSTAT_BASE[stat]?.[tier];
+  if (base == null) return 0;
+  const u = Math.max(0, Math.min(8, upgrades ?? 0)) / 8;
+  return base * (1 + (FATE_SUBSTAT_MAX_RATIO - 1) * u);
+}
+
+// ─── 10 SETS ───
 const FATE_SETS = [
   {
-    id: "warborn",
-    name: "Fate of the Warborn",
-    nameShort: "Warborn",
+    id: "warborn", name: "Fate of the Warborn", nameShort: "Warborn",
     desc: "Set DPS physique pour playstyles à coups soutenus.",
-    role: "DPS Physique",
-    color: "#e74c3c",
-    icon: "⚔️",
+    role: "DPS Physique", color: "#e74c3c", icon: "⚔️",
     twoPiece: [{ stat: "STRENGTH_PCT", value: 0.18 }],
     twoPieceDesc: "+18% Force",
     fourPiece: {
@@ -109,13 +127,9 @@ const FATE_SETS = [
     },
   },
   {
-    id: "arcanist",
-    name: "Fate of the Arcanist",
-    nameShort: "Arcanist",
+    id: "arcanist", name: "Fate of the Arcanist", nameShort: "Arcanist",
     desc: "Set DPS mage focalisé sur dégâts magiques et regen Intelligence.",
-    role: "DPS Magique",
-    color: "#a55eea",
-    icon: "🔮",
+    role: "DPS Magique", color: "#a55eea", icon: "🔮",
     twoPiece: [{ stat: "SORCERY_PCT", value: 0.18 }],
     twoPieceDesc: "+18% Sorcellerie",
     fourPiece: {
@@ -125,29 +139,21 @@ const FATE_SETS = [
     },
   },
   {
-    id: "bloodreaver",
-    name: "Fate of the Bloodreaver",
-    nameShort: "Bloodreaver",
+    id: "bloodreaver", name: "Fate of the Bloodreaver", nameShort: "Bloodreaver",
     desc: "Build crit-damage qui punit les critiques par bleed.",
-    role: "Crit DPS",
-    color: "#c0392b",
-    icon: "🩸",
-    twoPiece: [{ stat: "FEROCITY_FLAT", value: 20.0 }],
+    role: "Crit DPS", color: "#c0392b", icon: "🩸",
+    twoPiece: [{ stat: "FEROCITY_FLAT", value: 20 }],
     twoPieceDesc: "+20 Férocité (flat)",
     fourPiece: {
       desc: "Coups critiques appliquent un bleed scalant avec la Férocité.",
-      passive: [{ stat: "FEROCITY_FLAT", value: 8.0 }],
+      passive: [{ stat: "FEROCITY_FLAT", value: 8 }],
       passiveDesc: "+8 Férocité (approx. proc passif)",
     },
   },
   {
-    id: "colossus",
-    name: "Fate of the Colossus",
-    nameShort: "Colossus",
+    id: "colossus", name: "Fate of the Colossus", nameShort: "Colossus",
     desc: "Set bruiser-HP convertissant la Vitalité max en bonus dégâts.",
-    role: "Bruiser HP",
-    color: "#e67e22",
-    icon: "💪",
+    role: "Bruiser HP", color: "#e67e22", icon: "💪",
     twoPiece: [{ stat: "LIFE_FORCE_PCT", value: 0.20 }],
     twoPieceDesc: "+20% PV maximum",
     fourPiece: {
@@ -157,13 +163,9 @@ const FATE_SETS = [
     },
   },
   {
-    id: "duality",
-    name: "Fate of Duality",
-    nameShort: "Duality",
+    id: "duality", name: "Fate of Duality", nameShort: "Duality",
     desc: "Set hybride scalant les dégâts physiques et magiques en alternance.",
-    role: "Hybride",
-    color: "#9b59b6",
-    icon: "☯️",
+    role: "Hybride", color: "#9b59b6", icon: "☯️",
     twoPiece: [
       { stat: "STRENGTH_PCT", value: 0.12 },
       { stat: "SORCERY_PCT", value: 0.12 },
@@ -179,29 +181,21 @@ const FATE_SETS = [
     },
   },
   {
-    id: "endless_growth",
-    name: "Fate of Endless Growth",
-    nameShort: "Endless Growth",
+    id: "endless_growth", name: "Fate of Endless Growth", nameShort: "Endless Growth",
     desc: "Set XP-scaling récompensant le combat soutenu par des stacks d'XP.",
-    role: "XP / Discipline",
-    color: "#f1c40f",
-    icon: "📈",
-    twoPiece: [{ stat: "DISCIPLINE_FLAT", value: 20.0 }],
+    role: "XP / Discipline", color: "#f1c40f", icon: "📈",
+    twoPiece: [{ stat: "DISCIPLINE_FLAT", value: 20 }],
     twoPieceDesc: "+20 Discipline (flat)",
     fourPiece: {
       desc: "Bonus XP cumulatif pendant le combat (reset à la sortie ou la mort).",
-      passive: [{ stat: "DISCIPLINE_FLAT", value: 5.0 }],
+      passive: [{ stat: "DISCIPLINE_FLAT", value: 5 }],
       passiveDesc: "+5 Discipline (approx. proc passif)",
     },
   },
   {
-    id: "iron_bastion",
-    name: "Fate of the Iron Bastion",
-    nameShort: "Iron Bastion",
+    id: "iron_bastion", name: "Fate of the Iron Bastion", nameShort: "Iron Bastion",
     desc: "Set tank construit autour du stack de défense.",
-    role: "Tank",
-    color: "#34495e",
-    icon: "🛡️",
+    role: "Tank", color: "#34495e", icon: "🛡️",
     twoPiece: [{ stat: "DEFENSE_PCT", value: 0.18 }],
     twoPieceDesc: "+18% Défense",
     fourPiece: {
@@ -211,14 +205,10 @@ const FATE_SETS = [
     },
   },
   {
-    id: "relentless_hunt",
-    name: "Fate of the Relentless Hunt",
-    nameShort: "Relentless Hunt",
+    id: "relentless_hunt", name: "Fate of the Relentless Hunt", nameShort: "Relentless Hunt",
     desc: "Build crit-speed exploitant Précision et bursts de Hâte.",
-    role: "Crit / Hâte",
-    color: "#16a085",
-    icon: "🏹",
-    twoPiece: [{ stat: "PRECISION_FLAT", value: 12.0 }],
+    role: "Crit / Hâte", color: "#16a085", icon: "🏹",
+    twoPiece: [{ stat: "PRECISION_FLAT", value: 12 }],
     twoPieceDesc: "+12 Précision (flat)",
     fourPiece: {
       desc: "Coups critiques accordent de la Hâte pour une courte durée.",
@@ -227,13 +217,9 @@ const FATE_SETS = [
     },
   },
   {
-    id: "unyielding_will",
-    name: "Fate of the Unyielding Will",
-    nameShort: "Unyielding Will",
+    id: "unyielding_will", name: "Fate of the Unyielding Will", nameShort: "Unyielding Will",
     desc: "Set sustain-Endurance récompensant l'usage actif d'Endurance par réduction de dégâts.",
-    role: "Tank / Endurance",
-    color: "#27ae60",
-    icon: "💚",
+    role: "Tank / Endurance", color: "#27ae60", icon: "💚",
     twoPiece: [{ stat: "STAMINA_PCT", value: 0.20 }],
     twoPieceDesc: "+20% Endurance",
     fourPiece: {
@@ -243,13 +229,9 @@ const FATE_SETS = [
     },
   },
   {
-    id: "windstrider",
-    name: "Fate of the Windstrider",
-    nameShort: "Windstrider",
+    id: "windstrider", name: "Fate of the Windstrider", nameShort: "Windstrider",
     desc: "Set DPS mobilité récompensant le déplacement actif et les esquives.",
-    role: "DPS Mobile",
-    color: "#3498db",
-    icon: "💨",
+    role: "DPS Mobile", color: "#3498db", icon: "💨",
     twoPiece: [{ stat: "HASTE_PCT", value: 0.15 }],
     twoPieceDesc: "+15% Hâte",
     fourPiece: {
@@ -263,37 +245,32 @@ const FATE_SETS = [
   },
 ];
 
-// ─── Helper : Convertit un FateStat (clé du JAR) vers nom de stat de base + type ───
-// Retourne { stat: 'strength', kind: 'flat' | 'pct' | 'mult' } ou null
-//
-// Conventions v9 :
-//   - Stats flat-mode (life_force, stamina, flow) : _PCT = MULTIPLICATEUR du total final
-//                                                    _FLAT = ADDITION au total
-//   - Stats pct-mode (strength, sorcery, defense, haste, precision, ferocity, discipline) :
-//     Toutes les valeurs sont des points de % additifs au total.
-//     _PCT signifie "points de %" ; _FLAT n'a pas vraiment de sens (rarement utilisé), traité comme additif.
-//   - WEAPON_BONUS_DAMAGE_PCT : mappé sur dpsImpact.dmgMult (côté UI), pas sur les stats de base.
-//
+// ─── Routing FateStat → stat de base + type ───
 const FLAT_MODE_STATS = new Set(["life_force", "stamina", "flow"]);
 const PCT_MODE_STATS  = new Set(["strength","sorcery","defense","haste","precision","ferocity","discipline"]);
 
 function resolveFateStat(fateStat) {
-  // WEAPON_BONUS_DAMAGE_PCT : pas une stat de base
-  if (fateStat === "WEAPON_BONUS_DAMAGE_PCT") {
-    return { stat: "weapon_dmg", kind: "weapon_dmg" };
-  }
-  // Match _FLAT or _PCT
+  if (fateStat === "WEAPON_BONUS_DAMAGE_PCT") return { stat: "weapon_dmg", kind: "weapon_dmg" };
   const m = fateStat.match(/^([A-Z_]+?)(_FLAT|_PCT)?$/);
   if (!m) return null;
   const base = m[1].toLowerCase();
   const suffix = m[2] || "";
   if (!FLAT_MODE_STATS.has(base) && !PCT_MODE_STATS.has(base)) return null;
   if (suffix === "_PCT") {
-    if (FLAT_MODE_STATS.has(base)) return { stat: base, kind: "mult" };  // ex: LIFE_FORCE_PCT 0.20 → ×1.20
-    return { stat: base, kind: "pct_additive" };  // ex: STRENGTH_PCT 0.18 → +18 pts au total
+    if (FLAT_MODE_STATS.has(base)) return { stat: base, kind: "mult" };
+    return { stat: base, kind: "pct_additive" };
   }
-  // _FLAT or no suffix : ajout direct
   return { stat: base, kind: "flat" };
+}
+
+// ─── Réduit un loadout précis (5 slots détaillés) en compteur de set ───
+function loadoutToSetCounts(loadout) {
+  const counts = {};
+  if (!loadout) return counts;
+  for (const slot of Object.values(loadout)) {
+    if (slot?.set) counts[slot.set] = (counts[slot.set] || 0) + 1;
+  }
+  return counts;
 }
 
 export {
@@ -302,11 +279,17 @@ export {
   FATE_TIER_COLORS,
   FATE_S_UNLOCK_PRESTIGE,
   FATE_MAINSTAT_POOLS,
-  FATE_MAINSTAT_RANGES,
-  FATE_STAT_OPTIONS,
+  FATE_MAINSTAT_BASE,
+  FATE_SUBSTAT_BASE,
+  FATE_MAINSTAT_MAX_RATIO,
+  FATE_SUBSTAT_MAX_RATIO,
+  FATE_SUBSTAT_POOL,
   FATE_STAT_LABELS,
   FATE_SETS,
   FLAT_MODE_STATS,
   PCT_MODE_STATS,
   resolveFateStat,
+  mainstatValue,
+  substatValue,
+  loadoutToSetCounts,
 };

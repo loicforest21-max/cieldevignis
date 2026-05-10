@@ -20,7 +20,19 @@ import {
 } from "./data/core.js";
 import {
   FATE_SETS,
+  FATE_SLOTS,
+  FATE_TIERS,
+  FATE_TIER_COLORS,
   FATE_S_UNLOCK_PRESTIGE,
+  FATE_MAINSTAT_POOLS,
+  FATE_MAINSTAT_BASE,
+  FATE_SUBSTAT_BASE,
+  FATE_MAINSTAT_MAX_RATIO,
+  FATE_SUBSTAT_MAX_RATIO,
+  FATE_SUBSTAT_POOL,
+  FATE_STAT_LABELS,
+  mainstatValue,
+  substatValue,
 } from "./data/fates.js";
 import {
   RECOMMENDED_BUILDS,
@@ -1811,14 +1823,21 @@ function SummaryTab({ state: s, onPublishToCommunity }) {
 }
 
 // ═══════════════════════════════════════════
-// TAB: FATES — EndlessFates 0.1.0 (UI hybride simple : compteur 0/2/4 par set)
+// TAB: FATES — EndlessFates 0.1.0
+//   Mode "quick"   = compteur 0/2/4 par set (rapide)
+//   Mode "precise" = éditeur 5 slots avec mainstat + tier + roll % + 4 substats
 // ═══════════════════════════════════════════
 
-function FatesTab({ selectedFateSets, setSelectedFateSets, prestige }) {
-  const totalPieces = Object.values(selectedFateSets || {}).reduce((a, b) => a + (b || 0), 0);
-  const overEquipped = totalPieces > 5;
-
-  const setCount = (setId, count) => {
+function FatesTab({
+  selectedFateSets, setSelectedFateSets,
+  fateLoadout, setFateLoadout,
+  fateMode, setFateMode,
+  prestige,
+}) {
+  // ─── Mode QUICK ──────────────────────────
+  const totalPiecesQuick = Object.values(selectedFateSets || {}).reduce((a, b) => a + (b || 0), 0);
+  const overEquippedQuick = totalPiecesQuick > 5;
+  const setCountQuick = (setId, count) => {
     setSelectedFateSets((prev) => {
       const next = { ...(prev || {}) };
       if (count === 0) delete next[setId];
@@ -1827,207 +1846,608 @@ function FatesTab({ selectedFateSets, setSelectedFateSets, prestige }) {
     });
   };
 
-  const ROLE_COLORS = {
-    "DPS Physique": "#e74c3c",
-    "DPS Magique": "#a55eea",
-    "Crit DPS": "#c0392b",
-    "Bruiser HP": "#e67e22",
-    "Hybride": "#9b59b6",
-    "XP / Discipline": "#f1c40f",
-    "Tank": "#34495e",
-    "Crit / Hâte": "#16a085",
-    "Tank / Endurance": "#27ae60",
-    "DPS Mobile": "#3498db",
+  // ─── Mode PRECISE ────────────────────────
+  const slotsFilled = Object.values(fateLoadout || {}).filter(Boolean).length;
+  const setSlot = (slotId, patch) => {
+    setFateLoadout((prev) => {
+      const next = { ...(prev || {}) };
+      if (patch === null) {
+        delete next[slotId];
+      } else {
+        next[slotId] = { ...(next[slotId] || {}), ...patch };
+      }
+      return next;
+    });
   };
+  // Compteur de sets équipés
+  const setCountsPrecise = {};
+  for (const slot of Object.values(fateLoadout || {})) {
+    if (slot?.set) setCountsPrecise[slot.set] = (setCountsPrecise[slot.set] || 0) + 1;
+  }
+  const activeBonuses = []; // { setId, count, bonuses: ['2pc','4pc'] }
+  for (const [setId, count] of Object.entries(setCountsPrecise)) {
+    const set = FATE_SETS.find(s => s.id === setId);
+    if (!set || count < 2) continue;
+    activeBonuses.push({
+      set, count,
+      twoPc: count >= 2, fourPc: count >= 4,
+    });
+  }
 
   return (
     <div>
-      {/* HEADER : compteur de pièces équipées */}
+      {/* ─── HEADER : toggle mode ───────────── */}
       <div
         style={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 16,
-          padding: "10px 14px",
-          background: overEquipped ? "rgba(231,76,60,0.10)" : "rgba(232,165,55,0.08)",
-          border: "1px solid " + (overEquipped ? "#e74c3c" : "rgba(232,165,55,0.4)"),
+          gap: 8,
+          marginBottom: 14,
+          padding: "6px 8px",
+          background: "rgba(255,255,255,0.02)",
+          border: "1px solid var(--brd)",
           borderRadius: "var(--radius-md)",
+          alignItems: "center",
           flexWrap: "wrap",
-          gap: 10,
         }}
       >
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: overEquipped ? "#e74c3c" : "#e8a537" }}>
-            🌟 Fates équipées : {totalPieces}/5
-          </div>
-          <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
-            5 slots maximum (HEART, EDGE, RELIC, SIGIL, CROWN). Les bonus 2-pièces s'activent dès 2 pièces du même set,
-            les bonus 4-pièces dès 4.
-          </div>
-        </div>
-        {totalPieces > 0 && (
+        <span style={{ fontSize: 11, color: "#888", marginRight: 4 }}>Mode :</span>
+        {[
+          { id: "quick",   label: "Rapide",   icon: "⚡", desc: "Compteur de pièces par set" },
+          { id: "precise", label: "Précis",   icon: "🎯", desc: "Mainstats, tiers, substats" },
+        ].map((m) => (
           <button
-            onClick={() => setSelectedFateSets({})}
+            key={m.id}
+            onClick={() => setFateMode(m.id)}
+            title={m.desc}
             style={{
-              padding: "6px 12px",
-              background: "rgba(231,76,60,0.15)",
-              border: "1px solid #e74c3c",
+              padding: "8px 14px",
               borderRadius: "var(--radius-md)",
-              color: "#e74c3c",
+              border: "1px solid " + (fateMode === m.id ? "#e8a537" : "var(--brd)"),
+              background: fateMode === m.id ? "rgba(232,165,55,0.10)" : "transparent",
+              color: fateMode === m.id ? "#e8a537" : "#888",
+              fontWeight: 700,
               fontSize: 12,
-              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 6,
+            }}
+          >
+            <span>{m.icon}</span>
+            <span>{m.label}</span>
+          </button>
+        ))}
+        <span style={{ flex: 1 }} />
+        {prestige < FATE_S_UNLOCK_PRESTIGE && (
+          <span style={{ fontSize: 10, color: "#888" }}>
+            ℹ Tier S débloqué à prestige {FATE_S_UNLOCK_PRESTIGE} (actuel : {prestige})
+          </span>
+        )}
+      </div>
+
+      {/* ════════════════════════════════════════
+          MODE QUICK — vue d'ensemble par set
+          ════════════════════════════════════════ */}
+      {fateMode === "quick" && (
+        <>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 12,
+              padding: "8px 14px",
+              background: overEquippedQuick ? "rgba(231,76,60,0.10)" : "rgba(232,165,55,0.06)",
+              border: "1px solid " + (overEquippedQuick ? "#e74c3c" : "rgba(232,165,55,0.3)"),
+              borderRadius: "var(--radius-md)",
+              flexWrap: "wrap",
+              gap: 10,
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: overEquippedQuick ? "#e74c3c" : "#e8a537" }}>
+                🌟 Fates équipées : {totalPiecesQuick}/5
+              </div>
+              <div style={{ fontSize: 10, color: "#888", marginTop: 2 }}>
+                Compteur par set (mode rapide). Pour mainstats/substats individuels, passe en mode Précis.
+              </div>
+            </div>
+            {totalPiecesQuick > 0 && (
+              <button
+                onClick={() => setSelectedFateSets({})}
+                style={{
+                  padding: "5px 10px",
+                  background: "rgba(231,76,60,0.15)",
+                  border: "1px solid #e74c3c",
+                  borderRadius: "var(--radius-sm)",
+                  color: "#e74c3c",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                ✕ Tout retirer
+              </button>
+            )}
+          </div>
+
+          {overEquippedQuick && (
+            <div
+              style={{
+                padding: "6px 12px",
+                marginBottom: 12,
+                background: "rgba(231,76,60,0.10)",
+                border: "1px solid #e74c3c",
+                borderRadius: "var(--radius-sm)",
+                color: "#e74c3c",
+                fontSize: 11,
+              }}
+            >
+              ⚠ Plus de 5 pièces équipées — impossible en jeu.
+            </div>
+          )}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
+              gap: 10,
+            }}
+          >
+            {FATE_SETS.map((set) => {
+              const count = selectedFateSets?.[set.id] || 0;
+              const has2pc = count >= 2;
+              const has4pc = count >= 4;
+              return (
+                <div
+                  key={set.id}
+                  style={{
+                    padding: 12,
+                    background: count > 0 ? set.color + "0d" : "rgba(255,255,255,0.02)",
+                    border: "1px solid " + (count > 0 ? set.color + "55" : "var(--brd)"),
+                    borderRadius: "var(--radius-md)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                    <span style={{ fontSize: 24 }}>{set.icon}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: set.color }}>
+                        {set.nameShort}
+                      </div>
+                      <div style={{ fontSize: 10, color: "#888" }}>{set.role}</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#a0a0b0", marginBottom: 10, lineHeight: 1.4 }}>
+                    {set.desc}
+                  </div>
+                  <div
+                    style={{
+                      padding: "6px 10px",
+                      background: has2pc ? "rgba(138,223,158,0.10)" : "rgba(255,255,255,0.02)",
+                      border: "1px solid " + (has2pc ? "#8adf9e44" : "rgba(255,255,255,0.05)"),
+                      borderRadius: "var(--radius-sm)",
+                      marginBottom: 6,
+                      opacity: has2pc ? 1 : 0.55,
+                    }}
+                  >
+                    <div style={{ fontSize: 10, fontWeight: 700, color: has2pc ? "#8adf9e" : "#666", marginBottom: 2 }}>
+                      2 PIÈCES {has2pc && "✓"}
+                    </div>
+                    <div style={{ fontSize: 11, color: has2pc ? "#d0d0e0" : "#777" }}>
+                      {set.twoPieceDesc}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      padding: "6px 10px",
+                      background: has4pc ? "rgba(232,165,55,0.10)" : "rgba(255,255,255,0.02)",
+                      border: "1px solid " + (has4pc ? "#e8a53744" : "rgba(255,255,255,0.05)"),
+                      borderRadius: "var(--radius-sm)",
+                      marginBottom: 10,
+                      opacity: has4pc ? 1 : 0.55,
+                    }}
+                  >
+                    <div style={{ fontSize: 10, fontWeight: 700, color: has4pc ? "#e8a537" : "#666", marginBottom: 2 }}>
+                      4 PIÈCES {has4pc && "✓"}
+                    </div>
+                    <div style={{ fontSize: 11, color: has4pc ? "#d0d0e0" : "#777", lineHeight: 1.4 }}>
+                      {set.fourPiece.desc}
+                    </div>
+                    <div style={{ fontSize: 10, color: has4pc ? "#e8a537cc" : "#666", marginTop: 4, fontStyle: "italic" }}>
+                      → {set.fourPiece.passiveDesc}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {[0, 2, 4].map((n) => {
+                      const active = count === n;
+                      return (
+                        <button
+                          key={n}
+                          onClick={() => setCountQuick(set.id, n)}
+                          style={{
+                            flex: 1, padding: "6px 0",
+                            background: active ? set.color : "rgba(255,255,255,0.03)",
+                            color: active ? "#fff" : "#888",
+                            border: "1px solid " + (active ? set.color : "var(--brd)"),
+                            borderRadius: "var(--radius-sm)",
+                            fontSize: 12, fontWeight: 700, cursor: "pointer",
+                          }}
+                        >
+                          {n} pièce{n > 1 ? "s" : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {/* ════════════════════════════════════════
+          MODE PRECISE — éditeur 5 slots
+          ════════════════════════════════════════ */}
+      {fateMode === "precise" && (
+        <>
+          {/* Header counter + bonus actifs */}
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              marginBottom: 14,
+              flexWrap: "wrap",
+              alignItems: "stretch",
+            }}
+          >
+            <div
+              style={{
+                flex: "0 0 240px",
+                padding: "10px 14px",
+                background: "rgba(232,165,55,0.06)",
+                border: "1px solid rgba(232,165,55,0.3)",
+                borderRadius: "var(--radius-md)",
+              }}
+            >
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#e8a537" }}>
+                🎯 Slots remplis : {slotsFilled}/5
+              </div>
+              <div style={{ fontSize: 10, color: "#888", marginTop: 2 }}>
+                Cliquez sur un slot pour le configurer (set, mainstat, tier, substats).
+              </div>
+              {slotsFilled > 0 && (
+                <button
+                  onClick={() => setFateLoadout({})}
+                  style={{
+                    marginTop: 8,
+                    padding: "4px 10px",
+                    background: "rgba(231,76,60,0.15)",
+                    border: "1px solid #e74c3c",
+                    borderRadius: "var(--radius-sm)",
+                    color: "#e74c3c",
+                    fontSize: 10,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  ✕ Vider tous les slots
+                </button>
+              )}
+            </div>
+
+            {activeBonuses.length > 0 && (
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 240,
+                  padding: "10px 14px",
+                  background: "rgba(138,223,158,0.06)",
+                  border: "1px solid rgba(138,223,158,0.3)",
+                  borderRadius: "var(--radius-md)",
+                }}
+              >
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#8adf9e", marginBottom: 6 }}>
+                  ✓ BONUS DE SET ACTIFS
+                </div>
+                {activeBonuses.map(({ set, count, twoPc, fourPc }) => (
+                  <div key={set.id} style={{ fontSize: 11, color: "#d0d0e0", marginBottom: 4 }}>
+                    <span style={{ color: set.color, fontWeight: 700 }}>{set.icon} {set.nameShort}</span>
+                    <span style={{ color: "#888" }}> ({count} pièces)</span>
+                    <span style={{ color: "#888" }}> · {twoPc ? "2pc ✓" : "—"} · {fourPc ? "4pc ✓" : "—"}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 5 slots */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(420px, 1fr))",
+              gap: 12,
+            }}
+          >
+            {FATE_SLOTS.map((slot) => (
+              <FateSlotEditor
+                key={slot.id}
+                slot={slot}
+                data={fateLoadout?.[slot.id]}
+                onChange={(patch) => setSlot(slot.id, patch)}
+                prestige={prestige}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Sous-composant : éditeur d'un slot précis ──────
+function FateSlotEditor({ slot, data, onChange, prestige }) {
+  const isFilled = !!data?.set;
+  const set = data?.set ? FATE_SETS.find(s => s.id === data.set) : null;
+  const mainstatPool = FATE_MAINSTAT_POOLS[slot.id] || [];
+  const sCanUse = prestige >= FATE_S_UNLOCK_PRESTIGE;
+
+  // Valeur calculée pour affichage
+  const mainVal = data?.mainstat && data?.tier
+    ? mainstatValue(data.mainstat, data.tier, data.mainRollPct ?? 100)
+    : 0;
+  const isPctMain = data?.mainstat && (data.mainstat.endsWith("_PCT") || data?.mainstat === "WEAPON_BONUS_DAMAGE_PCT");
+  const fmtMain = (v) => isPctMain ? `+${(v * 100).toFixed(1)}%` : `+${v.toFixed(0)}`;
+
+  return (
+    <div
+      style={{
+        padding: 12,
+        background: isFilled ? (set?.color || "#e8a537") + "0a" : "rgba(255,255,255,0.02)",
+        border: "1px solid " + (isFilled ? (set?.color || "#e8a537") + "55" : "var(--brd)"),
+        borderRadius: "var(--radius-md)",
+      }}
+    >
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+        <span style={{ fontSize: 24 }}>{slot.icon}</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#e8a537" }}>{slot.name}</div>
+          <div style={{ fontSize: 10, color: "#888" }}>{slot.alias}</div>
+        </div>
+        {isFilled && (
+          <button
+            onClick={() => onChange(null)}
+            title="Vider ce slot"
+            style={{
+              padding: "4px 8px",
+              background: "rgba(231,76,60,0.15)",
+              border: "1px solid #e74c3c44",
+              borderRadius: "var(--radius-sm)",
+              color: "#e74c3c",
+              fontSize: 10,
               cursor: "pointer",
             }}
           >
-            ✕ Tout retirer
+            ✕
           </button>
         )}
       </div>
 
-      {overEquipped && (
-        <div
-          style={{
-            padding: "8px 12px",
-            marginBottom: 12,
-            background: "rgba(231,76,60,0.10)",
-            border: "1px solid #e74c3c",
-            borderRadius: "var(--radius-md)",
-            color: "#e74c3c",
-            fontSize: 12,
-          }}
-        >
-          ⚠ Plus de 5 pièces équipées — impossible en jeu. Réduis pour rester réaliste.
-        </div>
-      )}
-
-      {prestige < FATE_S_UNLOCK_PRESTIGE && (
-        <div
-          style={{
-            padding: "8px 12px",
-            marginBottom: 12,
-            background: "rgba(232,165,55,0.06)",
-            border: "1px solid rgba(232,165,55,0.3)",
-            borderRadius: "var(--radius-md)",
-            color: "#888",
-            fontSize: 11,
-          }}
-        >
-          ℹ Tier S débloqué à partir du prestige {FATE_S_UNLOCK_PRESTIGE}. Niveau actuel : prestige {prestige}.
-        </div>
-      )}
-
-      {/* GRILLE des 10 sets */}
-      <div
+      {/* Set picker */}
+      <label style={{ fontSize: 10, color: "#888", display: "block", marginBottom: 4 }}>SET</label>
+      <select
+        value={data?.set || ""}
+        onChange={(e) => onChange({ set: e.target.value || undefined })}
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
-          gap: 10,
+          width: "100%", padding: "6px 8px", marginBottom: 10,
+          background: "rgba(0,0,0,0.3)", color: "#d0d0e0",
+          border: "1px solid var(--brd)", borderRadius: "var(--radius-sm)",
+          fontSize: 12,
         }}
       >
-        {FATE_SETS.map((set) => {
-          const count = selectedFateSets?.[set.id] || 0;
-          const has2pc = count >= 2;
-          const has4pc = count >= 4;
-          return (
-            <div
-              key={set.id}
-              style={{
-                padding: 12,
-                background: count > 0 ? set.color + "0d" : "rgba(255,255,255,0.02)",
-                border: "1px solid " + (count > 0 ? set.color + "55" : "var(--brd)"),
-                borderRadius: "var(--radius-md)",
-                transition: "all 0.15s",
-              }}
-            >
-              {/* Header : icon + name + role */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                <span style={{ fontSize: 24 }}>{set.icon}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: set.color }}>
-                    {set.nameShort}
-                  </div>
-                  <div style={{ fontSize: 10, color: "#888" }}>
-                    {set.role}
-                  </div>
-                </div>
-              </div>
+        <option value="">— Vide —</option>
+        {FATE_SETS.map((s) => (
+          <option key={s.id} value={s.id}>{s.nameShort} ({s.role})</option>
+        ))}
+      </select>
 
-              {/* Description */}
-              <div style={{ fontSize: 11, color: "#a0a0b0", marginBottom: 10, lineHeight: 1.4 }}>
-                {set.desc}
-              </div>
+      {isFilled && (
+        <>
+          {/* Tier picker */}
+          <label style={{ fontSize: 10, color: "#888", display: "block", marginBottom: 4 }}>TIER</label>
+          <div style={{ display: "flex", gap: 4, marginBottom: 10, flexWrap: "wrap" }}>
+            {FATE_TIERS.map((t) => {
+              const active = data?.tier === t;
+              const locked = t === "S" && !sCanUse;
+              return (
+                <button
+                  key={t}
+                  onClick={() => !locked && onChange({ tier: t })}
+                  disabled={locked}
+                  title={locked ? `Débloqué à prestige ${FATE_S_UNLOCK_PRESTIGE}` : ""}
+                  style={{
+                    flex: 1, minWidth: 32, padding: "5px 0",
+                    background: active ? FATE_TIER_COLORS[t] : "rgba(255,255,255,0.03)",
+                    color: active ? "#fff" : (locked ? "#444" : "#888"),
+                    border: "1px solid " + (active ? FATE_TIER_COLORS[t] : "var(--brd)"),
+                    borderRadius: "var(--radius-sm)",
+                    fontSize: 12, fontWeight: 800,
+                    cursor: locked ? "not-allowed" : "pointer",
+                    opacity: locked ? 0.4 : 1,
+                  }}
+                >
+                  {t}{locked ? "🔒" : ""}
+                </button>
+              );
+            })}
+          </div>
 
-              {/* 2pc bonus */}
-              <div
-                style={{
-                  padding: "6px 10px",
-                  background: has2pc ? "rgba(138,223,158,0.10)" : "rgba(255,255,255,0.02)",
-                  border: "1px solid " + (has2pc ? "#8adf9e44" : "rgba(255,255,255,0.05)"),
-                  borderRadius: "var(--radius-sm)",
-                  marginBottom: 6,
-                  opacity: has2pc ? 1 : 0.55,
-                }}
-              >
-                <div style={{ fontSize: 10, fontWeight: 700, color: has2pc ? "#8adf9e" : "#666", marginBottom: 2 }}>
-                  2 PIÈCES {has2pc && "✓"}
-                </div>
-                <div style={{ fontSize: 11, color: has2pc ? "#d0d0e0" : "#777" }}>
-                  {set.twoPieceDesc}
-                </div>
-              </div>
+          {/* Mainstat picker */}
+          <label style={{ fontSize: 10, color: "#888", display: "block", marginBottom: 4 }}>
+            MAINSTAT {data?.tier && <span style={{ float: "right", color: "#666" }}>(parmi {mainstatPool.length} options pour {slot.id})</span>}
+          </label>
+          <select
+            value={data?.mainstat || ""}
+            onChange={(e) => onChange({ mainstat: e.target.value || undefined })}
+            disabled={!data?.tier}
+            style={{
+              width: "100%", padding: "6px 8px", marginBottom: 6,
+              background: "rgba(0,0,0,0.3)", color: "#d0d0e0",
+              border: "1px solid var(--brd)", borderRadius: "var(--radius-sm)",
+              fontSize: 12, opacity: !data?.tier ? 0.5 : 1,
+            }}
+          >
+            <option value="">— Choisir —</option>
+            {mainstatPool.map((s) => (
+              <option key={s} value={s}>{FATE_STAT_LABELS[s] || s}</option>
+            ))}
+          </select>
 
-              {/* 4pc bonus */}
-              <div
-                style={{
-                  padding: "6px 10px",
-                  background: has4pc ? "rgba(232,165,55,0.10)" : "rgba(255,255,255,0.02)",
-                  border: "1px solid " + (has4pc ? "#e8a53744" : "rgba(255,255,255,0.05)"),
-                  borderRadius: "var(--radius-sm)",
-                  marginBottom: 10,
-                  opacity: has4pc ? 1 : 0.55,
-                }}
-              >
-                <div style={{ fontSize: 10, fontWeight: 700, color: has4pc ? "#e8a537" : "#666", marginBottom: 2 }}>
-                  4 PIÈCES {has4pc && "✓"}
-                </div>
-                <div style={{ fontSize: 11, color: has4pc ? "#d0d0e0" : "#777", lineHeight: 1.4 }}>
-                  {set.fourPiece.desc}
-                </div>
-                <div style={{ fontSize: 10, color: has4pc ? "#e8a537cc" : "#666", marginTop: 4, fontStyle: "italic" }}>
-                  → {set.fourPiece.passiveDesc}
-                </div>
+          {/* Roll % slider */}
+          {data?.mainstat && data?.tier && (
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ fontSize: 10, color: "#888" }}>ROLL %</span>
+                <span style={{ fontSize: 10, color: "#e8a537", fontWeight: 700 }}>
+                  {(data.mainRollPct ?? 100).toFixed(0)}% → {fmtMain(mainVal)}
+                </span>
               </div>
-
-              {/* Sélecteur 0 / 2 / 4 */}
-              <div style={{ display: "flex", gap: 6 }}>
-                {[0, 2, 4].map((n) => {
-                  const active = count === n;
-                  return (
-                    <button
-                      key={n}
-                      onClick={() => setCount(set.id, n)}
-                      style={{
-                        flex: 1,
-                        padding: "6px 0",
-                        background: active ? set.color : "rgba(255,255,255,0.03)",
-                        color: active ? "#fff" : "#888",
-                        border: "1px solid " + (active ? set.color : "var(--brd)"),
-                        borderRadius: "var(--radius-sm)",
-                        fontSize: 12,
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.1s",
-                      }}
-                    >
-                      {n} pièce{n > 1 ? "s" : ""}
-                    </button>
-                  );
-                })}
-              </div>
+              <input
+                type="range" min="0" max="100" step="5"
+                value={data.mainRollPct ?? 100}
+                onChange={(e) => onChange({ mainRollPct: Number(e.target.value) })}
+                style={{ width: "100%", accentColor: "#e8a537" }}
+              />
             </div>
-          );
-        })}
+          )}
+
+          {/* Substats */}
+          <label style={{ fontSize: 10, color: "#888", display: "block", marginBottom: 4 }}>
+            SUBSTATS ({(data?.substats || []).length}/4)
+          </label>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {[0, 1, 2, 3].map((idx) => {
+              const ss = data?.substats?.[idx];
+              return (
+                <SubstatRow
+                  key={idx}
+                  index={idx}
+                  data={ss}
+                  defaultTier={data?.tier || "C"}
+                  sCanUse={sCanUse}
+                  onChange={(patch) => {
+                    const arr = [...(data?.substats || [])];
+                    if (patch === null) {
+                      arr.splice(idx, 1);
+                    } else if (arr[idx] == null) {
+                      arr[idx] = patch;
+                    } else {
+                      arr[idx] = { ...arr[idx], ...patch };
+                    }
+                    onChange({ substats: arr.filter(Boolean) });
+                  }}
+                />
+              );
+            })}
+          </div>
+
+          {/* Set bonus reminder */}
+          {set && (
+            <div style={{ marginTop: 10, padding: "6px 8px", background: set.color + "0a", borderRadius: "var(--radius-sm)", fontSize: 10, color: "#a0a0b0" }}>
+              <span style={{ color: set.color, fontWeight: 700 }}>{set.icon} {set.nameShort}</span> · 2pc: {set.twoPieceDesc} · 4pc: {set.fourPiece.passiveDesc}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Sous-composant : ligne d'un substat ───────────────
+function SubstatRow({ index, data, defaultTier, sCanUse, onChange }) {
+  if (!data) {
+    return (
+      <button
+        onClick={() => onChange({ stat: FATE_SUBSTAT_POOL[0], tier: defaultTier, upgrades: 0 })}
+        style={{
+          padding: "5px 8px",
+          background: "rgba(255,255,255,0.02)",
+          border: "1px dashed var(--brd)",
+          borderRadius: "var(--radius-sm)",
+          color: "#666", fontSize: 11,
+          cursor: "pointer", textAlign: "left",
+        }}
+      >
+        + Ajouter substat #{index + 1}
+      </button>
+    );
+  }
+  const v = substatValue(data.stat, data.tier, data.upgrades ?? 0);
+  const isPct = data.stat?.endsWith("_PCT");
+  const fmtV = isPct ? `+${(v * 100).toFixed(2)}%` : `+${v.toFixed(1)}`;
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 60px 90px auto",
+        gap: 4,
+        alignItems: "center",
+        padding: 4,
+        background: "rgba(255,255,255,0.02)",
+        border: "1px solid var(--brd)",
+        borderRadius: "var(--radius-sm)",
+      }}
+    >
+      <select
+        value={data.stat || ""}
+        onChange={(e) => onChange({ stat: e.target.value })}
+        style={{
+          padding: "3px 5px", fontSize: 11,
+          background: "rgba(0,0,0,0.3)", color: "#d0d0e0",
+          border: "1px solid var(--brd)", borderRadius: "var(--radius-sm)",
+        }}
+      >
+        {FATE_SUBSTAT_POOL.map((s) => (
+          <option key={s} value={s}>{FATE_STAT_LABELS[s] || s}</option>
+        ))}
+      </select>
+      <select
+        value={data.tier || "E"}
+        onChange={(e) => onChange({ tier: e.target.value })}
+        style={{
+          padding: "3px 5px", fontSize: 11, fontWeight: 700,
+          background: "rgba(0,0,0,0.3)",
+          color: FATE_TIER_COLORS[data.tier] || "#888",
+          border: "1px solid var(--brd)", borderRadius: "var(--radius-sm)",
+        }}
+      >
+        {FATE_TIERS.map((t) => (
+          <option key={t} value={t} disabled={t === "S" && !sCanUse}>{t}</option>
+        ))}
+      </select>
+      <input
+        type="number" min="0" max="8" step="1"
+        value={data.upgrades ?? 0}
+        onChange={(e) => onChange({ upgrades: Math.max(0, Math.min(8, Number(e.target.value))) })}
+        title="Upgrades 0-8 (0 = base, 8 = +40%)"
+        style={{
+          padding: "3px 5px", fontSize: 11, width: 60, textAlign: "center",
+          background: "rgba(0,0,0,0.3)", color: "#e8a537",
+          border: "1px solid var(--brd)", borderRadius: "var(--radius-sm)",
+        }}
+      />
+      <button
+        onClick={() => onChange(null)}
+        title="Retirer"
+        style={{
+          padding: "3px 6px", fontSize: 10,
+          background: "transparent", color: "#888",
+          border: "none", cursor: "pointer",
+        }}
+      >
+        ✕
+      </button>
+      <div style={{ gridColumn: "1 / -1", fontSize: 10, color: "#8adf9e", textAlign: "right", paddingRight: 8 }}>
+        {fmtV}
       </div>
     </div>
   );
@@ -5090,7 +5510,9 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
   const [skillPoints, setSkillPoints] = useState({});
   const [selectedAugments, setSelectedAugments] = useState([]);
   const [augBonus, setAugBonus] = useState({});
-  const [selectedFateSets, setSelectedFateSets] = useState({}); // { setId: pieceCount (0/2/4) }
+  const [selectedFateSets, setSelectedFateSets] = useState({}); // mode rapide : { setId: count }
+  const [fateLoadout, setFateLoadout] = useState({});   // mode précis : { HEART: {...}, EDGE: {...}, ... }
+  const [fateMode, setFateMode] = useState("quick");    // "quick" | "precise"
   const [showImport, setShowImport] = useState(false);
   const [showShareCard, setShowShareCard] = useState(false);
   const [savedBuilds, setSavedBuilds] = useState([]);
@@ -5116,6 +5538,8 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
         setSelectedAugments(d.selectedAugments);
         setAugBonus(d.augBonus || {});
         setSelectedFateSets(d.selectedFateSets || {});
+        setFateLoadout(d.fateLoadout || {});
+        setFateMode(d.fateMode || "quick");
         setTab("summary");
       }
       if (onClearInitialCode) onClearInitialCode();
@@ -5137,6 +5561,8 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     setSelectedAugments(d.selectedAugments);
     setAugBonus(d.augBonus || {});
     setSelectedFateSets(d.selectedFateSets || {});
+    setFateLoadout(d.fateLoadout || {});
+    setFateMode(d.fateMode || "quick");
     setTab("summary");
   };
   const handleSaveBuild = (name) => {
@@ -5153,6 +5579,8 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
       a: selectedAugments.map((a) => a.id),
       ab: augBonus,
       f: selectedFateSets,
+      fl: fateLoadout,
+      fm: fateMode,
     };
     const newBuilds = [...savedBuilds, { name, data: d, date: Date.now() }];
     setSavedBuilds(newBuilds);
@@ -5172,6 +5600,8 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     setSelectedAugments((d.a || []).map((id) => AUGMENTS.find((a) => a.id === id)).filter(Boolean));
     setAugBonus(d.ab || {});
     setSelectedFateSets(d.f || {});
+    setFateLoadout(d.fl || {});
+    setFateMode(d.fm || "quick");
     setTab("summary");
   };
   const handleDeleteBuild = (idx) => {
@@ -5193,6 +5623,8 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     selectedAugments,
     augBonus,
     selectedFateSets,
+    fateLoadout,
+    fateMode,
   };
   // Centralized stat computation
   const {
@@ -5215,7 +5647,8 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
     skillPoints,
     selectedAugments,
     augBonus,
-    selectedFateSets,
+    selectedFateSets: fateMode === "quick" ? selectedFateSets : null,
+    fateLoadout: fateMode === "precise" ? fateLoadout : null,
   });
   const evoName = selectedEvo && EVOLUTIONS[selectedEvo] ? EVOLUTIONS[selectedEvo].name : null;
   return (
@@ -5441,6 +5874,10 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
           <FatesTab
             selectedFateSets={selectedFateSets}
             setSelectedFateSets={setSelectedFateSets}
+            fateLoadout={fateLoadout}
+            setFateLoadout={setFateLoadout}
+            fateMode={fateMode}
+            setFateMode={setFateMode}
             prestige={prestige}
           />
         )}

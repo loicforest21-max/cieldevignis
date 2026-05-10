@@ -16,7 +16,7 @@
 //   Pass 5 : Fates (réservé pour Phase 5 ; stub neutre en Phase 1)
 // ═══════════════════════════════════════════════════
 import { STATS, RACES, CLASSES, AUGMENTS, EVOLUTIONS } from "./data/core.js";
-import { FATE_SETS, resolveFateStat } from "./data/fates.js";
+import { FATE_SETS, resolveFateStat, mainstatValue, substatValue } from "./data/fates.js";
 
 // ─── Constantes EL 9.0 (depuis leveling.json + config.json) ───
 export const BASE_SP = 10;
@@ -212,18 +212,20 @@ export function computeAugMultipliers(selectedAugments) {
 }
 
 // ─── Pass 5 : Fates (EndlessFates 0.1.0) ─────────────
-// Input : selectedFateSets = { warborn: 4, iron_bastion: 2, ... }
-//         (objet setId → nombre de pièces, total ≤ 5)
-// Sortie : { flat: { stat: addValue }, mult: { stat: multiplier }, weaponDmgMult }
+// Deux modes supportés :
 //
-// Application :
-//   - 2pc bonus si count ≥ 2
-//   - 4pc bonus (passive approximation depuis le mod) si count ≥ 4
-//   - WEAPON_BONUS_DAMAGE_PCT cumulé dans weaponDmgMult (consommé par DpsTab)
-export function computeFateBonuses(selectedFateSets) {
+// MODE RAPIDE (Phase 3a) : selectedFateSets = { warborn: 4, iron_bastion: 2, ... }
+//   - Active 2pc/4pc d'après le compteur, sans simuler les vraies fates.
+//
+// MODE PRÉCIS (Phase 3b) : fateLoadout = { HEART: { set, mainstat, tier, mainRollPct, substats: [...] }, ... }
+//   - Calcule la mainstat exacte (base × roll%) pour chaque slot équipé
+//   - Ajoute les substats individuels (avec upgrades 0..8)
+//   - Active les bonus 2pc/4pc d'après les sets équipés
+//
+// Sortie : { flat: { stat: addValue }, mult: { stat: multiplier }, weaponDmgMult }
+export function computeFateBonuses(selectedFateSets, fateLoadout) {
   const flat = {}, mult = {};
   let weaponDmgMult = 1;
-  if (!selectedFateSets) return { flat, mult, weaponDmgMult };
 
   const apply = (statKey, value) => {
     const r = resolveFateStat(statKey);
@@ -235,24 +237,51 @@ export function computeFateBonuses(selectedFateSets) {
     if (r.kind === "mult") {
       mult[r.stat] = (mult[r.stat] || 1) * (1 + value);
     } else if (r.kind === "pct_additive") {
-      // STR_PCT 0.18 → +18 points (la stat est elle-même un %)
       flat[r.stat] = (flat[r.stat] || 0) + value * 100;
     } else {
-      // _FLAT ou pas de suffixe → addition directe
       flat[r.stat] = (flat[r.stat] || 0) + value;
     }
   };
 
+  // Si fateLoadout est fourni : MODE PRÉCIS (mainstats + substats individuels)
+  if (fateLoadout && typeof fateLoadout === "object") {
+    // 1. Mainstats + substats par slot
+    for (const slot of Object.values(fateLoadout)) {
+      if (!slot || !slot.set) continue;
+      // Mainstat
+      if (slot.mainstat && slot.tier) {
+        const v = mainstatValue(slot.mainstat, slot.tier, slot.mainRollPct ?? 100);
+        apply(slot.mainstat, v);
+      }
+      // Substats
+      (slot.substats || []).forEach((ss) => {
+        if (!ss?.stat || !ss?.tier) return;
+        const v = substatValue(ss.stat, ss.tier, ss.upgrades ?? 0);
+        apply(ss.stat, v);
+      });
+    }
+    // 2. Set bonuses depuis le loadout (count ≥ 2 → 2pc, count ≥ 4 → 4pc)
+    const counts = {};
+    for (const slot of Object.values(fateLoadout)) {
+      if (slot?.set) counts[slot.set] = (counts[slot.set] || 0) + 1;
+    }
+    for (const [setId, count] of Object.entries(counts)) {
+      const set = FATE_SETS.find(s => s.id === setId);
+      if (!set) continue;
+      if (count >= 2 && set.twoPiece) set.twoPiece.forEach(b => apply(b.stat, b.value));
+      if (count >= 4 && set.fourPiece?.passive) set.fourPiece.passive.forEach(b => apply(b.stat, b.value));
+    }
+    return { flat, mult, weaponDmgMult };
+  }
+
+  // Sinon : MODE RAPIDE (compteur de sets uniquement)
+  if (!selectedFateSets) return { flat, mult, weaponDmgMult };
   for (const [setId, count] of Object.entries(selectedFateSets)) {
     if (!count || count < 2) continue;
     const set = FATE_SETS.find(s => s.id === setId);
     if (!set) continue;
-    if (count >= 2 && set.twoPiece) {
-      set.twoPiece.forEach(b => apply(b.stat, b.value));
-    }
-    if (count >= 4 && set.fourPiece?.passive) {
-      set.fourPiece.passive.forEach(b => apply(b.stat, b.value));
-    }
+    if (count >= 2 && set.twoPiece) set.twoPiece.forEach(b => apply(b.stat, b.value));
+    if (count >= 4 && set.fourPiece?.passive) set.fourPiece.passive.forEach(b => apply(b.stat, b.value));
   }
   return { flat, mult, weaponDmgMult };
 }
@@ -280,7 +309,9 @@ export function encodeBuild(s) {
       sp: s.skillPoints,
       a: s.selectedAugments.map((a) => a.id),
       ab: s.augBonus,
-      f: s.selectedFateSets || {},  // EL Fates 0.1.0 — { setId: count }
+      f: s.selectedFateSets || {},  // mode rapide
+      fl: s.fateLoadout || null,    // mode précis
+      fm: s.fateMode || "quick",    // "quick" | "precise"
     })
   );
 }
@@ -300,6 +331,8 @@ export function decodeBuild(str) {
       selectedAugments: (d.a || []).map((id) => AUGMENTS.find((a) => a.id === id)).filter(Boolean),
       augBonus: d.ab || {},
       selectedFateSets: d.f || {},
+      fateLoadout: d.fl || null,
+      fateMode: d.fm || "quick",
     };
   } catch {
     return null;
@@ -323,7 +356,7 @@ export async function saveBuildsList(builds) {
 // ═══════════════════════════════════════════════════════
 export function computeFullStats({
   race, evoId, c1, t1, c2, t2, level, skillPoints,
-  selectedAugments, augBonus: manualAug, selectedFateSets,
+  selectedAugments, augBonus: manualAug, selectedFateSets, fateLoadout,
 }) {
   const activeRace = getActiveRace(race, evoId || race?.id);
   const inn = computeInnates(activeRace, c1, t1, c2, t2, level);
@@ -348,21 +381,17 @@ export function computeFullStats({
   // Pass 4 : multiplicateurs d'augments (Brute Force etc.)
   const { mult: augMult, lock: augLock } = computeAugMultipliers(selectedAugments);
 
-  // Pass 5 : Fates (sets équipés → bonus 2pc + 4pc passifs)
-  const fateBonus = computeFateBonuses(selectedFateSets || {});
+  // Pass 5 : Fates — mode précis (loadout) prioritaire sur mode rapide (counts)
+  const fateBonus = computeFateBonuses(selectedFateSets || {}, fateLoadout);
 
   const finalStats = {};
   const details = {};
   STATS.forEach((s) => {
     const raw = computeStat(s, activeRace, inn, skillPoints, totalAug, postBonus);
     let total = raw.total;
-    // Ajouts flat des fates (avant multiplicateurs)
     total += fateBonus.flat?.[s.key] || 0;
-    // Multiplicateurs des augments
     if (augMult[s.key] != null) total *= augMult[s.key];
-    // Multiplicateurs des fates (LIFE_FORCE_PCT, STAMINA_PCT, FLOW_PCT)
     if (fateBonus.mult?.[s.key] != null) total *= fateBonus.mult[s.key];
-    // Lock (Brute Force precLock)
     if (augLock[s.key] != null) total = augLock[s.key];
     finalStats[s.key] = total;
     details[s.key] = { ...raw, fateFlat: fateBonus.flat?.[s.key] || 0, fateMult: fateBonus.mult?.[s.key] || 1, total };
