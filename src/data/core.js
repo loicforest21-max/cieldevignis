@@ -2299,6 +2299,7 @@ const EVOLUTIONS = {
     desc: "A celestial sovereign whose divine sorcery bends the battlefield to radiant judgment.",
     stage: "tier_2",
     prestige: 10, path: "sorcery",
+    minSk: { life_force: 225, sorcery: 225 },
     attrs: {
       life_force: 129.6,
       strength: 1.08,
@@ -2330,6 +2331,7 @@ const EVOLUTIONS = {
     desc: "The ultimate Ascended state, uniting immortal vitality with both divine might and transcendent sorcery.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { life_force: 450 },
     attrs: {
       life_force: 187.9,
       strength: 1.48,
@@ -2363,6 +2365,7 @@ const EVOLUTIONS = {
     desc: "An Ascended champion who turns divine vitality into overwhelming martial power.",
     stage: "tier_1",
     prestige: 5, path: "strength",
+    minSk: { life_force: 150, strength: 150 },
     attrs: {
       life_force: 112.7,
       strength: 1.12,
@@ -2393,6 +2396,7 @@ const EVOLUTIONS = {
     desc: "An Ascended adept who channels divine radiance through disciplined sorcery.",
     stage: "tier_1",
     prestige: 5, path: "sorcery",
+    minSk: { life_force: 150, sorcery: 150 },
     attrs: {
       life_force: 112.7,
       strength: 0.98,
@@ -2424,6 +2428,7 @@ const EVOLUTIONS = {
     desc: "A towering paragon of divine force whose body and will crush mortal resistance.",
     stage: "tier_2",
     prestige: 10, path: "strength",
+    minSk: { life_force: 225, strength: 225 },
     attrs: {
       life_force: 129.6,
       strength: 1.23,
@@ -2478,6 +2483,7 @@ const EVOLUTIONS = {
     desc: "A Celestial who channels their cosmic nature into an endless wellspring of arcane flow, sustaining magic far beyond normal limits.",
     stage: "tier_1",
     prestige: 5, path: "flow",
+    minSk: { sorcery: 150, flow: 150 },
     attrs: {
       life_force: 67.8,
       strength: 0.81,
@@ -2503,6 +2509,7 @@ const EVOLUTIONS = {
     desc: "A Celestial who weaponizes cosmic precision into devastating critical bursts, turning every spell into a potential killing blow.",
     stage: "tier_1",
     prestige: 5, path: "crit",
+    minSk: { sorcery: 150, ferocity: 150 },
     attrs: {
       life_force: 67.8,
       strength: 0.85,
@@ -2533,6 +2540,7 @@ const EVOLUTIONS = {
     desc: "A Celestial Adept who has mastered the art of infinite cosmic flow, converting mana into a boundless engine of arcane destruction.",
     stage: "tier_2",
     prestige: 10, path: "flow",
+    minSk: { sorcery: 225, flow: 225 },
     attrs: {
       life_force: 78.0,
       strength: 0.85,
@@ -2558,6 +2566,7 @@ const EVOLUTIONS = {
     desc: "A Celestial Arcanum who has refined cosmic precision to its apex, shattering enemies with catastrophic critical strikes.",
     stage: "tier_2",
     prestige: 10, path: "crit",
+    minSk: { sorcery: 225, ferocity: 225 },
     attrs: {
       life_force: 78.0,
       strength: 0.93,
@@ -2588,6 +2597,7 @@ const EVOLUTIONS = {
     desc: "The pinnacle of Celestial ascension — a cosmic sovereign who commands both infinite arcane flow and supreme critical devastation.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { sorcery: 262, flow: 188, ferocity: 300 },
     attrs: {
       life_force: 113.1,
       strength: 1.12,
@@ -2649,6 +2659,7 @@ const EVOLUTIONS = {
     desc: "A Darkin who sharpened their carnage into direct martial supremacy.",
     stage: "tier_1",
     prestige: 5, path: "strength",
+    minSk: { strength: 180, life_force: 120 },
     attrs: {
       life_force: 74.8,
       strength: 1.22,
@@ -2679,6 +2690,7 @@ const EVOLUTIONS = {
     desc: "An ascended blood sovereign whose sorcery overwhelms flesh and will.",
     stage: "tier_2",
     prestige: 10, path: "sorcery",
+    minSk: { sorcery: 225, ferocity: 135, life_force: 90 },
     attrs: {
       life_force: 86.0,
       strength: 1.03,
@@ -2710,6 +2722,7 @@ const EVOLUTIONS = {
     desc: "A blood-mage Darkin who bends life essence into cursed sorcery.",
     stage: "tier_1",
     prestige: 5, path: "sorcery",
+    minSk: { sorcery: 180, life_force: 120 },
     attrs: {
       life_force: 74.8,
       strength: 0.94,
@@ -2741,6 +2754,7 @@ const EVOLUTIONS = {
     desc: "A transcendent Darkin who fuses warlord brutality with blood sorcery mastery.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { life_force: 225, ferocity: 225 },
     attrs: {
       life_force: 124.6,
       strength: 1.61,
@@ -2774,6 +2788,7 @@ const EVOLUTIONS = {
     desc: "A supreme war tyrant whose blood-fueled power dominates the battlefield.",
     stage: "tier_2",
     prestige: 10, path: "strength",
+    minSk: { strength: 225, ferocity: 135, life_force: 90 },
     attrs: {
       life_force: 86.0,
       strength: 1.34,
@@ -2828,6 +2843,7 @@ const EVOLUTIONS = {
     desc: "The pinnacle of draconic evolution — an Alpha Dragon who commands both the unbreakable resilience of a sentinel and the devastating ferocity of a tyrant.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { life_force: 300, ferocity: 225 },
     attrs: {
       life_force: 425.9,
       strength: 1.48,
@@ -2855,6 +2871,7 @@ const EVOLUTIONS = {
     desc: "A Dragonborn who channels their draconic resilience into an unbreakable fortress of scales and vitality.",
     stage: "tier_1",
     prestige: 5, path: "defense",
+    minSk: { life_force: 150, stamina: 150 },
     attrs: {
       life_force: 153.9,
       strength: 1.07,
@@ -2880,6 +2897,7 @@ const EVOLUTIONS = {
     desc: "A Dragonborn who sharpens their draconic ferocity into relentless critical devastation, striking with the force of a predator.",
     stage: "tier_1",
     prestige: 5, path: "offense",
+    minSk: { ferocity: 150 },
     attrs: {
       life_force: 131.1,
       strength: 1.12,
@@ -2906,6 +2924,7 @@ const EVOLUTIONS = {
     desc: "A Dragon Guardian who has mastered the art of draconic endurance, becoming an immovable wall of scales and regenerative power.",
     stage: "tier_2",
     prestige: 10, path: "defense",
+    minSk: { life_force: 225, stamina: 225 },
     attrs: {
       life_force: 207.8,
       strength: 1.12,
@@ -2931,6 +2950,7 @@ const EVOLUTIONS = {
     desc: "A Drake Marauder who has ascended into apex predator status, critical strikes triggering with terrifying frequency and devastation.",
     stage: "tier_2",
     prestige: 10, path: "offense",
+    minSk: { ferocity: 225 },
     attrs: {
       life_force: 150.8,
       strength: 1.23,
@@ -2981,6 +3001,7 @@ const EVOLUTIONS = {
     desc: "A towering bastion of living stone that converts every blow into inevitable counterforce.",
     stage: "tier_2",
     prestige: 10, path: "defense",
+    minSk: { life_force: 225, stamina: 225 },
     attrs: {
       life_force: 355.4,
       strength: 0.66,
@@ -3006,6 +3027,7 @@ const EVOLUTIONS = {
     desc: "A war-forged golem frame tuned for violent impact and relentless stamina-fueled pressure.",
     stage: "tier_1",
     prestige: 5, path: "damage",
+    minSk: { stamina: 150 },
     attrs: {
       life_force: 224.2,
       strength: 0.66,
@@ -3032,6 +3054,7 @@ const EVOLUTIONS = {
     desc: "The perfected golem state, unifying supreme defense with catastrophic endurance-driven offense.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { life_force: 487, stamina: 113 },
     attrs: {
       life_force: 728.5,
       strength: 0.87,
@@ -3059,6 +3082,7 @@ const EVOLUTIONS = {
     desc: "An annihilation-class golem that fuses crushing force with inexhaustible battle endurance.",
     stage: "tier_2",
     prestige: 10, path: "damage",
+    minSk: { stamina: 225 },
     attrs: {
       life_force: 257.9,
       strength: 0.73,
@@ -3085,6 +3109,7 @@ const EVOLUTIONS = {
     desc: "A fortified golem form focused on absolute mitigation and unshakable front-line control.",
     stage: "tier_1",
     prestige: 5, path: "defense",
+    minSk: { life_force: 150, stamina: 150 },
     attrs: {
       life_force: 263.2,
       strength: 0.63,
@@ -3134,6 +3159,7 @@ const EVOLUTIONS = {
     desc: "A battle-forged warleader who amplifies critical devastation through strength or sorcery mastery.",
     stage: "tier_2",
     prestige: 10, path: "damage",
+    minSk: { ferocity: 225 },
     attrs: {
       life_force: 129.6,
       strength: 1.03,
@@ -3160,6 +3186,7 @@ const EVOLUTIONS = {
     desc: "The ultimate human sovereign, uniting expedition mastery with conquering might into absolute dominance.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { discipline: 150, haste: 112, ferocity: 300 },
     attrs: {
       life_force: 314.7,
       strength: 1.23,
@@ -3187,6 +3214,7 @@ const EVOLUTIONS = {
     desc: "A disciplined trailblazer who survives harsh frontiers through relentless pacing and tactical precision.",
     stage: "tier_1",
     prestige: 5, path: "adventurer",
+    minSk: { discipline: 150, haste: 150 },
     attrs: {
       life_force: 127.4,
       strength: 0.89,
@@ -3212,6 +3240,7 @@ const EVOLUTIONS = {
     desc: "A ruthless combat specialist who turns raw force or arcane talent into devastating critical damage.",
     stage: "tier_1",
     prestige: 5, path: "damage",
+    minSk: { ferocity: 150 },
     attrs: {
       life_force: 112.7,
       strength: 0.94,
@@ -3238,6 +3267,7 @@ const EVOLUTIONS = {
     desc: "A master adventurer whose discipline and speed let them outlast any campaign and outmaneuver any threat.",
     stage: "tier_2",
     prestige: 10, path: "adventurer",
+    minSk: { discipline: 180, haste: 135, stamina: 135 },
     attrs: {
       life_force: 165.6,
       strength: 0.94,
@@ -3287,6 +3317,7 @@ const EVOLUTIONS = {
     desc: "A frenzied Iceborn executioner who turns precision and ferocity into brutal critical slaughter.",
     stage: "tier_1",
     prestige: 5, path: "damage",
+    minSk: { ferocity: 180, stamina: 120 },
     attrs: {
       life_force: 108.1,
       strength: 1.17,
@@ -3312,6 +3343,7 @@ const EVOLUTIONS = {
     desc: "The absolute ruler of frozen war, fusing titan endurance with ragnarok-level critical annihilation.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { life_force: 300, stamina: 75, ferocity: 375 },
     attrs: {
       life_force: 351.2,
       strength: 1.54,
@@ -3339,6 +3371,7 @@ const EVOLUTIONS = {
     desc: "A glacial bulwark who endures impossible punishment through frozen vitality and steadfast stamina.",
     stage: "tier_1",
     prestige: 5, path: "tank",
+    minSk: { life_force: 150, stamina: 150 },
     attrs: {
       life_force: 126.9,
       strength: 1.11,
@@ -3364,6 +3397,7 @@ const EVOLUTIONS = {
     desc: "A cataclysmic Iceborn warform where each critical strike echoes like a shattering avalanche.",
     stage: "tier_2",
     prestige: 10, path: "damage",
+    minSk: { ferocity: 315, stamina: 135 },
     attrs: {
       life_force: 124.3,
       strength: 1.28,
@@ -3389,6 +3423,7 @@ const EVOLUTIONS = {
     desc: "An unstoppable mountain of ice and wrath, advancing through battle with inexhaustible endurance.",
     stage: "tier_2",
     prestige: 10, path: "tank",
+    minSk: { life_force: 225, stamina: 225 },
     attrs: {
       life_force: 171.3,
       strength: 1.17,
@@ -3438,6 +3473,7 @@ const EVOLUTIONS = {
     desc: "The ultimate Vastaya state where primal might, spirit craft, and impossible speed merge into one apex form.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { haste: 150, discipline: 75, ferocity: 225 },
     attrs: {
       life_force: 155.3,
       strength: 1.42,
@@ -3465,6 +3501,7 @@ const EVOLUTIONS = {
     desc: "An apex pack sovereign whose feral speed and strength overwhelm everything in reach.",
     stage: "tier_2",
     prestige: 10, path: "strength",
+    minSk: { strength: 225, haste: 225 },
     attrs: {
       life_force: 107.1,
       strength: 1.19,
@@ -3490,6 +3527,7 @@ const EVOLUTIONS = {
     desc: "A predatory Vastaya path that hones speed and lethal strikes into instinctive supremacy.",
     stage: "tier_1",
     prestige: 5, path: "strength",
+    minSk: { strength: 150, haste: 150 },
     attrs: {
       life_force: 93.1,
       strength: 1.08,
@@ -3515,6 +3553,7 @@ const EVOLUTIONS = {
     desc: "A spirit-tuned Vastaya who blends uncanny speed with precise nature sorcery.",
     stage: "tier_1",
     prestige: 5, path: "sorcery",
+    minSk: { sorcery: 150, haste: 150 },
     attrs: {
       life_force: 93.1,
       strength: 1.08,
@@ -3540,6 +3579,7 @@ const EVOLUTIONS = {
     desc: "A transcendent channeler bound to ancestral spirits, weaving velocity and arcane instinct as one.",
     stage: "tier_2",
     prestige: 10, path: "sorcery",
+    minSk: { sorcery: 225, haste: 225 },
     attrs: {
       life_force: 107.1,
       strength: 1.19,
@@ -3590,6 +3630,7 @@ const EVOLUTIONS = {
     desc: "A monstrous void fortress that crushes opposition through impossible resilience and retaliatory force.",
     stage: "tier_2",
     prestige: 10, path: "defense",
+    minSk: { life_force: 225, stamina: 225 },
     attrs: {
       life_force: 178.6,
       strength: 1.08,
@@ -3616,6 +3657,7 @@ const EVOLUTIONS = {
     desc: "The ultimate void incarnation, where indestructible defense and predatory destruction collapse into one form.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { life_force: 300, ferocity: 112 },
     attrs: {
       life_force: 366.1,
       strength: 1.42,
@@ -3644,6 +3686,7 @@ const EVOLUTIONS = {
     desc: "A Voidborn who hardens corruptive flesh into a living bulwark of abyssal endurance.",
     stage: "tier_1",
     prestige: 5, path: "defense",
+    minSk: { life_force: 150, stamina: 150 },
     attrs: {
       life_force: 132.3,
       strength: 1.03,
@@ -3670,6 +3713,7 @@ const EVOLUTIONS = {
     desc: "A predatory void stalker that turns ferocity and dark power into lethal crit-heavy assaults.",
     stage: "tier_1",
     prestige: 5, path: "damage",
+    minSk: { ferocity: 150 },
     attrs: {
       life_force: 112.7,
       strength: 1.08,
@@ -3697,6 +3741,7 @@ const EVOLUTIONS = {
     desc: "An apex hunter of the abyss, blending brutal crit pressure with martial or arcane void mastery.",
     stage: "tier_2",
     prestige: 10, path: "damage",
+    minSk: { ferocity: 225 },
     attrs: {
       life_force: 129.6,
       strength: 1.19,
@@ -3748,6 +3793,7 @@ const EVOLUTIONS = {
     desc: "The final Watcher state, judging reality itself with boundless sustain and annihilating eldritch power.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { flow: 187, life_force: 112, sorcery: 263, ferocity: 188 },
     attrs: {
       life_force: 149.6,
       strength: 0.99,
@@ -3781,6 +3827,7 @@ const EVOLUTIONS = {
     desc: "An apex destroyer from beyond, weaving sorcery and critical force into terrifying void eruptions.",
     stage: "tier_2",
     prestige: 10, path: "damage",
+    minSk: { sorcery: 225, ferocity: 225 },
     attrs: {
       life_force: 103.2,
       strength: 0.82,
@@ -3812,6 +3859,7 @@ const EVOLUTIONS = {
     desc: "A void-channeling assassin-scholar who sharpens sorcery into catastrophic critical bursts.",
     stage: "tier_1",
     prestige: 5, path: "damage",
+    minSk: { sorcery: 150, ferocity: 150 },
     attrs: {
       life_force: 89.7,
       strength: 0.75,
@@ -3843,6 +3891,7 @@ const EVOLUTIONS = {
     desc: "A prophetic Watcher whose mastery of mana and vitality lets them sustain impossible cosmic pressure.",
     stage: "tier_2",
     prestige: 10, path: "support",
+    minSk: { flow: 225, life_force: 90, stamina: 135 },
     attrs: {
       life_force: 103.2,
       strength: 0.75,
@@ -3869,6 +3918,7 @@ const EVOLUTIONS = {
     desc: "A Watcher who bends void insight toward sustaining eldritch energies and preserving fragile flesh.",
     stage: "tier_1",
     prestige: 5, path: "support",
+    minSk: { flow: 150, life_force: 150 },
     attrs: {
       life_force: 89.7,
       strength: 0.71,
@@ -3918,6 +3968,7 @@ const EVOLUTIONS = {
     desc: "A predatory spirit form that turns critical violence into rapid executions.",
     stage: "tier_1",
     prestige: 5, path: "damage",
+    minSk: { ferocity: 150 },
     attrs: {
       life_force: 56.3,
       strength: 1.05,
@@ -3949,6 +4000,7 @@ const EVOLUTIONS = {
     desc: "The sovereign form of cursed spirits, fusing untouchable evasion with overwhelming critical lethality.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { haste: 150, stamina: 75, ferocity: 375 },
     attrs: {
       life_force: 94.0,
       strength: 1.38,
@@ -3982,6 +4034,7 @@ const EVOLUTIONS = {
     desc: "An apex killer spirit that amplifies critical devastation through ruthless martial or arcane mastery.",
     stage: "tier_2",
     prestige: 10, path: "damage",
+    minSk: { ferocity: 225 },
     attrs: {
       life_force: 64.8,
       strength: 1.15,
@@ -4013,6 +4066,7 @@ const EVOLUTIONS = {
     desc: "A perfected evasive apparition that phases through danger and keeps pressure with relentless mobility.",
     stage: "tier_2",
     prestige: 10, path: "evasion",
+    minSk: { haste: 225, stamina: 225 },
     attrs: {
       life_force: 64.8,
       strength: 1.05,
@@ -4038,6 +4092,7 @@ const EVOLUTIONS = {
     desc: "A fleeting spirit form that slips through battlefields with impossible speed and ghostly endurance.",
     stage: "tier_1",
     prestige: 5, path: "evasion",
+    minSk: { haste: 150, stamina: 150 },
     attrs: {
       life_force: 56.3,
       strength: 1.0,
@@ -4087,6 +4142,7 @@ const EVOLUTIONS = {
     desc: "A master support Yordle whose mana reserves and stamina control empower endless magical pressure.",
     stage: "tier_2",
     prestige: 10, path: "support",
+    minSk: { flow: 180, stamina: 180, haste: 90 },
     attrs: {
       life_force: 68.8,
       strength: 0.89,
@@ -4113,6 +4169,7 @@ const EVOLUTIONS = {
     desc: "The pinnacle Yordle form, mastering support enchantment and trickster devastation in one legendary body.",
     stage: "final",
     prestige: 20, path: "hybrid",
+    minSk: { flow: 150, stamina: 150, haste: 150, ferocity: 300 },
     attrs: {
       life_force: 99.7,
       strength: 1.18,
@@ -4146,6 +4203,7 @@ const EVOLUTIONS = {
     desc: "An apex prankster of destruction, blending impossible speed with brutal crit bursts.",
     stage: "tier_2",
     prestige: 10, path: "damage",
+    minSk: { haste: 225, ferocity: 225 },
     attrs: {
       life_force: 68.8,
       strength: 0.98,
@@ -4177,6 +4235,7 @@ const EVOLUTIONS = {
     desc: "A budding support Yordle who channels whimsical mana and stamina into relentless team utility.",
     stage: "tier_1",
     prestige: 5, path: "support",
+    minSk: { flow: 150, stamina: 150 },
     attrs: {
       life_force: 59.8,
       strength: 0.85,
@@ -4203,6 +4262,7 @@ const EVOLUTIONS = {
     desc: "A chaotic damage dealer who weaponizes speed and critical force to dismantle enemies before they react.",
     stage: "tier_1",
     prestige: 5, path: "damage",
+    minSk: { haste: 150, ferocity: 150 },
     attrs: {
       life_force: 59.8,
       strength: 0.89,

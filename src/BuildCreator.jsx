@@ -119,7 +119,52 @@ const bs = (c, sm) => ({
 // ═══════════════════════════════════════════
 // TAB: RACE
 // ═══════════════════════════════════════════
-function EvoTree({ race, selectedEvo, setSelectedEvo }) {
+
+// Helper : évalue si une évolution est unlockable
+// Retourne : { unlocked: bool, missingSkills: [{stat, has, need}], missingPrestige: number|null }
+function evaluateEvoUnlock(evo, skillPoints, prestige) {
+  if (!evo) return { unlocked: true, missingSkills: [], missingPrestige: null };
+  const result = { unlocked: true, missingSkills: [], missingPrestige: null };
+  // Prestige check
+  if (evo.prestige > 0 && (prestige || 0) < evo.prestige) {
+    result.unlocked = false;
+    result.missingPrestige = evo.prestige - (prestige || 0);
+  }
+  // Skill mins check
+  if (evo.minSk) {
+    for (const [statKey, minVal] of Object.entries(evo.minSk)) {
+      const has = (skillPoints || {})[statKey] || 0;
+      if (has < minVal) {
+        result.unlocked = false;
+        result.missingSkills.push({ stat: statKey, has, need: minVal });
+      }
+    }
+  }
+  return result;
+}
+
+// Helper : génère un tooltip texte natif (title=) pour un évolution
+function evoTooltip(evo, unlock) {
+  if (!evo) return "";
+  const lines = [evo.name];
+  if (evo.prestige > 0) lines.push(`Prestige requis : P${evo.prestige}`);
+  if (evo.minSk) {
+    lines.push("Skills requis :");
+    Object.entries(evo.minSk).forEach(([k, v]) => {
+      const s = STATS.find((st) => st.key === k);
+      const has = unlock?.missingSkills?.find((m) => m.stat === k)?.has ?? "?";
+      const ok = (unlock?.missingSkills?.find((m) => m.stat === k) == null);
+      lines.push(`  ${ok ? "✓" : "✗"} ${s?.name || k} ≥ ${v}  (actuel : ${has})`);
+    });
+  }
+  if (unlock?.missingPrestige != null) {
+    lines.push(`✗ Manque ${unlock.missingPrestige} niveaux de prestige`);
+  }
+  if (unlock?.unlocked) lines.push("✓ Débloquée");
+  return lines.join("\n");
+}
+
+function EvoTree({ race, selectedEvo, setSelectedEvo, skillPoints, prestige }) {
   const stages = ["base", "tier_1", "tier_2", "final"];
   const by = {};
   stages.forEach((s) => {
@@ -161,10 +206,14 @@ function EvoTree({ race, selectedEvo, setSelectedEvo }) {
             {by[stage].map((n) => {
               const sel = selectedEvo === n.id;
               const evo = EVOLUTIONS[n.id];
+              const unlock = evaluateEvoUnlock(evo, skillPoints, prestige);
+              const isLocked = !unlock.unlocked;
+              const tooltip = evoTooltip(evo, unlock);
               return (
                 <div
                   key={n.id}
                   onClick={() => setSelectedEvo(n.id)}
+                  title={tooltip}
                   style={{
                     background: sel ? SC[stage] + "25" : SC[stage] + "0a",
                     border: "2px solid " + (sel ? SC[stage] : SC[stage] + "44"),
@@ -178,9 +227,14 @@ function EvoTree({ race, selectedEvo, setSelectedEvo }) {
                     cursor: "pointer",
                     transition: "all 0.2s",
                     boxShadow: sel ? "0 2px 12px " + SC[stage] + "30" : "none",
+                    opacity: isLocked && !sel ? 0.55 : 1,
+                    position: "relative",
                   }}
                 >
-                  <div>{evo?.name || n.name}</div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                    {isLocked && <span style={{ fontSize: 10, opacity: 0.85 }}>🔒</span>}
+                    <span>{evo?.name || n.name}</span>
+                  </div>
                   {n.prestige > 0 && <div style={{ fontSize: 9, opacity: 0.6 }}>P{n.prestige}</div>}
                 </div>
               );
@@ -195,9 +249,10 @@ function EvoTree({ race, selectedEvo, setSelectedEvo }) {
   );
 }
 
-function EvoDetails({ evoId, raceColor }) {
+function EvoDetails({ evoId, raceColor, skillPoints, prestige }) {
   const evo = EVOLUTIONS[evoId];
   if (!evo) return null;
+  const unlock = evaluateEvoUnlock(evo, skillPoints, prestige);
   return (
     <div style={{ marginTop: 10 }}>
       <div style={{ fontSize: 12, fontWeight: 700, color: raceColor, marginBottom: 6 }}>
@@ -215,12 +270,29 @@ function EvoDetails({ evoId, raceColor }) {
           {SL[evo.stage]}
           {evo.prestige > 0 ? ` P${evo.prestige}` : ""}
         </span>
+        {/* Badge unlock status */}
+        {(evo.minSk || evo.prestige > 0) && (
+          <span
+            style={{
+              fontSize: 9,
+              fontWeight: 800,
+              padding: "2px 8px",
+              borderRadius: "var(--radius-md)",
+              marginLeft: 6,
+              background: unlock.unlocked ? "#2ed57315" : "#e74c3c15",
+              color: unlock.unlocked ? "#2ed573" : "#e74c3c",
+              border: "1px solid " + (unlock.unlocked ? "#2ed57344" : "#e74c3c44"),
+            }}
+          >
+            {unlock.unlocked ? "✓ DÉBLOQUÉE" : "🔒 VERROUILLÉE"}
+          </span>
+        )}
       </div>
       <div style={{ fontSize: 11, color: "#888", marginBottom: 8, lineHeight: 1.4 }}>
         {evo.desc}
       </div>
       {/* Requirements */}
-      {(evo.minSk || evo.minAny || evo.reqForms) && (
+      {(evo.minSk || evo.minAny || evo.reqForms || evo.prestige > 0) && (
         <div
           style={{
             marginBottom: 8,
@@ -231,23 +303,52 @@ function EvoDetails({ evoId, raceColor }) {
           }}
         >
           <div style={{ fontSize: 10, fontWeight: 700, color: "#f5a623", marginBottom: 3 }}>
-            Requirements
+            Prérequis
           </div>
+          {/* Prestige */}
+          {evo.prestige > 0 && (
+            <div style={{ fontSize: 10, marginBottom: 3 }}>
+              <span
+                style={{
+                  background: unlock.missingPrestige != null ? "#e74c3c20" : "#2ed57320",
+                  color: unlock.missingPrestige != null ? "#e74c3c" : "#2ed573",
+                  padding: "1px 6px",
+                  borderRadius: 4,
+                  fontWeight: 700,
+                }}
+              >
+                {unlock.missingPrestige != null ? "✗" : "✓"} Prestige ≥ {evo.prestige}
+                {" "}
+                <span style={{ opacity: 0.7 }}>
+                  (actuel : {prestige || 0})
+                </span>
+              </span>
+            </div>
+          )}
+          {/* Skill mins */}
           {evo.minSk && (
             <div style={{ fontSize: 10, color: "#aaa", display: "flex", gap: 6, flexWrap: "wrap" }}>
               {Object.entries(evo.minSk).map(([k, v]) => {
                 const s = STATS.find((st) => st.key === k);
+                const has = (skillPoints || {})[k] || 0;
+                const ok = has >= v;
                 return (
                   <span
                     key={k}
+                    title={`${s?.name || k} actuel : ${has} / requis : ${v}`}
                     style={{
-                      background: s?.color + "15",
-                      color: s?.color || "#aaa",
-                      padding: "1px 6px",
+                      background: ok ? "#2ed57315" : "#e74c3c15",
+                      color: ok ? "#2ed573" : "#e74c3c",
+                      padding: "2px 8px",
                       borderRadius: 4,
+                      fontWeight: 700,
+                      border: "1px solid " + (ok ? "#2ed57344" : "#e74c3c44"),
                     }}
                   >
-                    {s?.icon || ""} {s?.name || k} ≥{v}
+                    {ok ? "✓" : "✗"} {s?.icon || ""} {s?.name || k} ≥{v}
+                    <span style={{ opacity: 0.6, marginLeft: 4 }}>
+                      ({has})
+                    </span>
                   </span>
                 );
               })}
@@ -351,7 +452,7 @@ function EvoDetails({ evoId, raceColor }) {
   );
 }
 
-function RaceTab({ selectedRace: sr, setSelectedRace: set, selectedEvo, setSelectedEvo }) {
+function RaceTab({ selectedRace: sr, setSelectedRace: set, selectedEvo, setSelectedEvo, skillPoints, prestige }) {
   const KEY_STATS = ["life_force", "strength", "sorcery", "defense", "haste"];
   return (
     <div>
@@ -511,8 +612,8 @@ function RaceTab({ selectedRace: sr, setSelectedRace: set, selectedEvo, setSelec
               </div>
             </div>
           </div>
-          <EvoTree race={sr} selectedEvo={selectedEvo || sr.id} setSelectedEvo={setSelectedEvo} />
-          <EvoDetails evoId={selectedEvo || sr.id} raceColor={sr.color} />
+          <EvoTree race={sr} selectedEvo={selectedEvo || sr.id} setSelectedEvo={setSelectedEvo} skillPoints={skillPoints} prestige={prestige} />
+          <EvoDetails evoId={selectedEvo || sr.id} raceColor={sr.color} skillPoints={skillPoints} prestige={prestige} />
         </div>
       )}
     </div>
@@ -5826,6 +5927,8 @@ function BuildCreator({ initialCode, onClearInitialCode, onPublishToCommunity })
             setSelectedRace={setSelectedRace}
             selectedEvo={selectedEvo}
             setSelectedEvo={setSelectedEvo}
+            skillPoints={skillPoints}
+            prestige={prestige}
           />
         )}
         {tab === "class" && (
